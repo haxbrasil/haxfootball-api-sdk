@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update HaxFootball API SDK"
+  short_description: "Update the SDK from the latest HaxFootball API contract."
+  default_prompt: "Update this HaxFootball API SDK according to the latest HaxFootball API state."
