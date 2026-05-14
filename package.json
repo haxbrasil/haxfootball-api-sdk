@@ -1,0 +1,53 @@
+{
+  "name": "@haxbrasil/haxfootball-api-sdk",
+  "version": "0.1.0",
+  "description": "Fetch-based TypeScript SDK for HaxFootball rooms and the HaxFootball API.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haxbrasil/haxfootball-api-sdk.git"
+  },
+  "packageManager": "pnpm@11.0.9",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "openapi/haxfootball-api.yaml",
+    "README.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./openapi": {
+      "default": "./openapi/haxfootball-api.yaml"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsdown --clean",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "generate": "openapi-typescript openapi/haxfootball-api.yaml -o src/generated/openapi.ts && prettier --write src/generated/openapi.ts",
+    "prebuild": "pnpm run generate",
+    "pretest": "pnpm run generate",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "openapi-typescript": "^7.10.1",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.16.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
