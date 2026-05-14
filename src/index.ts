@@ -1,6 +1,7 @@
 export {
   HaxFootballApiClient,
   createHaxFootballApiClient,
+  createHaxFootballRoomApiClient,
   type FetchLike,
   type HaxFootballApiClientOptions,
   type MaybePromise,

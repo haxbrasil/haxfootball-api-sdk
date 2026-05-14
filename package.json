@@ -1,7 +1,7 @@
 {
   "name": "@haxbrasil/haxfootball-api-sdk",
   "version": "0.1.0",
-  "description": "Fetch-based TypeScript SDK for HaxFootball rooms and the HaxFootball API.",
+  "description": "Fetch-based TypeScript SDK for the HaxFootball API.",
   "type": "module",
   "private": true,
   "license": "MIT",

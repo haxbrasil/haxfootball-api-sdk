@@ -10,6 +10,8 @@ description: Update the HaxFootball API SDK from the latest HaxFootball API cont
 Keep the SDK aligned with the latest HaxFootball API while preserving the SDK's public design:
 
 - Native `fetch` transport.
+- Generic client first; room runtime environment support belongs in explicit
+  room helpers/adapters.
 - Request methods return `ApiResult<T>` for recoverable API, network, abort, and invalid-response failures.
 - Client construction may throw for programmer/configuration errors.
 - Generated contract types come from `openapi/haxfootball-api.yaml`.
@@ -45,6 +47,7 @@ pnpm run generate
    - Changed request bodies, path params, query params, responses, or error shapes.
    - Multipart/file upload changes.
    - Auth or base URL changes.
+   - Runtime assumptions for browser, admin portal, scripts, services, or room processes.
 6. Update SDK source files:
    - Keep transport behavior in `src/client.ts`.
    - Keep Result/error types in `src/result.ts`.
@@ -56,6 +59,7 @@ pnpm run generate
    - Add or update resource-level files rather than growing unrelated modules.
    - Keep method names domain-oriented, not raw HTTP operation IDs.
    - Keep request methods returning `Promise<ApiResult<T>>`.
+   - Do not make room runtimes the default SDK context; expose room-specific behavior through explicit helpers.
 8. Update tests for changed behavior:
    - Add request-shape tests for new methods.
    - Add result-shape tests for changed error or response behavior.

@@ -69,14 +69,15 @@ export class HaxFootballApiClient {
     }
 
     this.apiUrl = normalizeBaseUrl(
-      options.apiUrl ?? readEnvironment("ROOM_API_URL")
+      options.apiUrl ?? readEnvironment("HAXFOOTBALL_API_URL"),
+      "HaxFootballApiClient requires apiUrl or HAXFOOTBALL_API_URL in the environment"
     );
     this.authUrl = normalizeAuthUrl(options.authUrl, this.apiUrl);
     this.token =
       options.token ??
-      readEnvironment("__ROOM_API_JWT") ??
-      readEnvironment("ROOM_API_JWT");
-    this.apiKey = options.apiKey;
+      readEnvironment("HAXFOOTBALL_API_TOKEN") ??
+      readEnvironment("HAXFOOTBALL_API_JWT");
+    this.apiKey = options.apiKey ?? readEnvironment("HAXFOOTBALL_API_KEY");
     this.headers = options.headers;
     this.timeoutMs = options.timeoutMs;
 
@@ -210,6 +211,22 @@ export function createHaxFootballApiClient(
   options: HaxFootballApiClientOptions = {}
 ): HaxFootballApiClient {
   return new HaxFootballApiClient(options);
+}
+
+export function createHaxFootballRoomApiClient(
+  options: HaxFootballApiClientOptions = {}
+): HaxFootballApiClient {
+  return new HaxFootballApiClient({
+    ...options,
+    apiUrl:
+      options.apiUrl ??
+      readEnvironment("__ROOM_API_URL") ??
+      readEnvironment("ROOM_API_URL"),
+    token:
+      options.token ??
+      readEnvironment("__ROOM_API_JWT") ??
+      readEnvironment("ROOM_API_JWT")
+  });
 }
 
 async function resolveHeaders(
@@ -370,11 +387,12 @@ function isAbortError(cause: unknown): boolean {
   );
 }
 
-function normalizeBaseUrl(input: string | URL | undefined): URL {
+function normalizeBaseUrl(
+  input: string | URL | undefined,
+  missingMessage: string
+): URL {
   if (!input) {
-    throw new Error(
-      "HaxFootballApiClient requires apiUrl or ROOM_API_URL in the environment"
-    );
+    throw new Error(missingMessage);
   }
 
   const url = new URL(input);

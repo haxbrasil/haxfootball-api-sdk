@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { createHaxFootballApiClient, type FetchLike } from "../src";
+import {
+  createHaxFootballApiClient,
+  createHaxFootballRoomApiClient,
+  type FetchLike
+} from "../src";
 
 describe("HaxFootballApiClient", () => {
   it("sends typed JSON requests with bearer auth and returns data results", async () => {
@@ -15,7 +19,7 @@ describe("HaxFootballApiClient", () => {
     );
     const client = createHaxFootballApiClient({
       apiUrl: "https://api.example.com/api",
-      token: "room-token",
+      token: "api-token",
       fetch: fetcher
     });
 
@@ -33,7 +37,7 @@ describe("HaxFootballApiClient", () => {
     expect(url?.toString()).toBe("https://api.example.com/api/players");
     expect(init?.method).toBe("POST");
     expect(new Headers(init?.headers).get("authorization")).toBe(
-      "Bearer room-token"
+      "Bearer api-token"
     );
     expect(new Headers(init?.headers).get("content-type")).toBe(
       "application/json"
@@ -61,7 +65,7 @@ describe("HaxFootballApiClient", () => {
     );
     const client = createHaxFootballApiClient({
       apiUrl: "https://api.example.com/api",
-      token: "room-token",
+      token: "api-token",
       fetch: fetcher
     });
 
@@ -85,7 +89,7 @@ describe("HaxFootballApiClient", () => {
       .mockRejectedValue(new TypeError("fetch failed"));
     const client = createHaxFootballApiClient({
       apiUrl: "https://api.example.com/api",
-      token: "room-token",
+      token: "api-token",
       fetch: fetcher
     });
 
@@ -106,7 +110,7 @@ describe("HaxFootballApiClient", () => {
       );
     const client = createHaxFootballApiClient({
       apiUrl: "https://api.example.com/api",
-      token: "room-token",
+      token: "api-token",
       fetch: fetcher
     });
 
@@ -158,7 +162,7 @@ describe("HaxFootballApiClient", () => {
     );
     const client = createHaxFootballApiClient({
       apiUrl: "https://api.example.com/api",
-      token: "room-token",
+      token: "api-token",
       fetch: fetcher
     });
 
@@ -180,7 +184,65 @@ describe("HaxFootballApiClient", () => {
       createHaxFootballApiClient({
         fetch: vi.fn<FetchLike>()
       })
-    ).toThrow("requires apiUrl or ROOM_API_URL");
+    ).toThrow("requires apiUrl or HAXFOOTBALL_API_URL");
+  });
+
+  it("can read generic API configuration from the environment", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse({
+        items: [],
+        page: { limit: 50, nextCursor: null }
+      })
+    );
+
+    await withEnvironment(
+      {
+        HAXFOOTBALL_API_URL: "https://api.example.com/api",
+        HAXFOOTBALL_API_TOKEN: "generic-token"
+      },
+      async () => {
+        const client = createHaxFootballApiClient({ fetch: fetcher });
+        const result = await client.players.list();
+
+        expect(result.ok).toBe(true);
+      }
+    );
+
+    const [url, init] = fetcher.mock.calls[0] ?? [];
+
+    expect(url?.toString()).toBe("https://api.example.com/api/players");
+    expect(new Headers(init?.headers).get("authorization")).toBe(
+      "Bearer generic-token"
+    );
+  });
+
+  it("keeps room process environment support behind an explicit helper", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse({
+        items: [],
+        page: { limit: 50, nextCursor: null }
+      })
+    );
+
+    await withEnvironment(
+      {
+        __ROOM_API_URL: "https://room-api.example.com/api",
+        __ROOM_API_JWT: "room-token"
+      },
+      async () => {
+        const client = createHaxFootballRoomApiClient({ fetch: fetcher });
+        const result = await client.players.list();
+
+        expect(result.ok).toBe(true);
+      }
+    );
+
+    const [url, init] = fetcher.mock.calls[0] ?? [];
+
+    expect(url?.toString()).toBe("https://room-api.example.com/api/players");
+    expect(new Headers(init?.headers).get("authorization")).toBe(
+      "Bearer room-token"
+    );
   });
 });
 
@@ -195,4 +257,28 @@ function jsonResponse(
       ...init.headers
     }
   });
+}
+
+async function withEnvironment<T>(
+  values: Record<string, string>,
+  callback: () => Promise<T>
+): Promise<T> {
+  const previousValues = new Map<string, string | undefined>();
+
+  for (const [key, value] of Object.entries(values)) {
+    previousValues.set(key, process.env[key]);
+    process.env[key] = value;
+  }
+
+  try {
+    return await callback();
+  } finally {
+    for (const [key, value] of previousValues) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+  }
 }

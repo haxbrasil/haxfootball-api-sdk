@@ -428,10 +428,10 @@ var HaxFootballApiClient = class {
 	constructor(options = {}) {
 		this.fetcher = options.fetch ?? globalThis.fetch?.bind(globalThis);
 		if (!this.fetcher) throw new Error("HaxFootballApiClient requires a fetch implementation in this runtime");
-		this.apiUrl = normalizeBaseUrl(options.apiUrl ?? readEnvironment("ROOM_API_URL"));
+		this.apiUrl = normalizeBaseUrl(options.apiUrl ?? readEnvironment("HAXFOOTBALL_API_URL"), "HaxFootballApiClient requires apiUrl or HAXFOOTBALL_API_URL in the environment");
 		this.authUrl = normalizeAuthUrl(options.authUrl, this.apiUrl);
-		this.token = options.token ?? readEnvironment("__ROOM_API_JWT") ?? readEnvironment("ROOM_API_JWT");
-		this.apiKey = options.apiKey;
+		this.token = options.token ?? readEnvironment("HAXFOOTBALL_API_TOKEN") ?? readEnvironment("HAXFOOTBALL_API_JWT");
+		this.apiKey = options.apiKey ?? readEnvironment("HAXFOOTBALL_API_KEY");
 		this.headers = options.headers;
 		this.timeoutMs = options.timeoutMs;
 		const resources = createResources(this);
@@ -523,6 +523,13 @@ var HaxFootballApiClient = class {
 };
 function createHaxFootballApiClient(options = {}) {
 	return new HaxFootballApiClient(options);
+}
+function createHaxFootballRoomApiClient(options = {}) {
+	return new HaxFootballApiClient({
+		...options,
+		apiUrl: options.apiUrl ?? readEnvironment("__ROOM_API_URL") ?? readEnvironment("ROOM_API_URL"),
+		token: options.token ?? readEnvironment("__ROOM_API_JWT") ?? readEnvironment("ROOM_API_JWT")
+	});
 }
 async function resolveHeaders(headers) {
 	return typeof headers === "function" ? headers() : headers;
@@ -622,8 +629,8 @@ function fetchFailure(cause) {
 function isAbortError(cause) {
 	return cause instanceof DOMException && cause.name === "AbortError" || cause instanceof Error && cause.name === "AbortError";
 }
-function normalizeBaseUrl(input) {
-	if (!input) throw new Error("HaxFootballApiClient requires apiUrl or ROOM_API_URL in the environment");
+function normalizeBaseUrl(input, missingMessage) {
+	if (!input) throw new Error(missingMessage);
 	const url = new URL(input);
 	url.pathname = stripTrailingSlash(url.pathname);
 	return url;
@@ -668,5 +675,5 @@ function readEnvironment(name) {
 }
 
 //#endregion
-export { HaxFootballApiClient, createHaxFootballApiClient };
+export { HaxFootballApiClient, createHaxFootballApiClient, createHaxFootballRoomApiClient };
 //# sourceMappingURL=index.js.map

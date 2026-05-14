@@ -4,8 +4,9 @@ Guidance for AI agents working in this repository.
 
 ## Project
 
-`haxfootball-api-sdk` is a fetch-based TypeScript SDK for HaxFootball rooms and
-the HaxFootball API. It is installed from GitHub, not published to npm.
+`haxfootball-api-sdk` is a fetch-based TypeScript SDK for the HaxFootball API.
+It is used by web pages, admin portals, scripts, services, and room runtimes. It
+is installed from GitHub, not published to npm.
 
 Keep request methods returning `ApiResult<T>` for recoverable API, network,
 abort, and invalid-response failures. Client construction may throw for
@@ -28,7 +29,8 @@ pnpm run build
 
 - `openapi/haxfootball-api.yaml`: API contract source used by the SDK.
 - `src/generated/openapi.ts`: generated OpenAPI types. Do not edit by hand.
-- `src/client.ts`: transport, auth, URL handling, and result mapping.
+- `src/client.ts`: transport, auth, URL handling, room runtime adapter, and
+  result mapping.
 - `src/result.ts`: public Result and failure types.
 - `src/types.ts`: ergonomic exported aliases over generated schemas.
 - `src/resources/`: domain resource methods such as players, matches, rooms,
