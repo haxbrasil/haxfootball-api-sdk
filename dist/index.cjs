@@ -1,313 +1,188 @@
 
-//#region src/resources.ts
-function createResources(client) {
+//#region src/resources/accounts.ts
+function createAccountsResource(client) {
 	return {
-		accounts: {
-			list: (query, config) => client.request({
-				path: "/accounts",
-				query,
-				...config
-			}),
-			get: (uuid, config) => client.request({
-				path: `/accounts/${encodeURIComponent(uuid)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/accounts",
-				body,
-				...config
-			}),
-			confirm: (body, config) => client.request({
-				method: "POST",
-				path: "/accounts/confirm",
-				body,
-				...config
-			}),
-			update: (uuid, body, config) => client.request({
-				method: "PATCH",
-				path: `/accounts/${encodeURIComponent(uuid)}`,
-				body,
-				...config
-			})
-		},
-		auth: { createToken: (body, config) => client.requestAuth({
+		list: (query, config) => client.request({
+			path: "/accounts",
+			query,
+			...config
+		}),
+		get: (uuid, config) => client.request({
+			path: `/accounts/${encodeURIComponent(uuid)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
 			method: "POST",
+			path: "/accounts",
 			body,
 			...config
-		}) },
-		matches: {
-			list: (query, config) => client.request({
-				path: "/matches",
-				query,
-				...config
-			}),
-			get: (id, config) => client.request({
-				path: `/matches/${encodeURIComponent(id)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/matches",
-				body,
-				...config
-			}),
-			update: (id, body, config) => client.request({
-				method: "PATCH",
-				path: `/matches/${encodeURIComponent(id)}`,
-				body,
-				...config
-			}),
-			appendEvents: (id, body, config) => client.request({
-				method: "POST",
-				path: `/matches/${encodeURIComponent(id)}/events`,
-				body,
-				...config
-			}),
-			getMetrics: (id, config) => client.request({
-				path: `/matches/${encodeURIComponent(id)}/metrics`,
-				...config
-			}),
-			associateRecording: (id, body, config) => client.request({
-				method: "PATCH",
-				path: `/matches/${encodeURIComponent(id)}/recording`,
-				body,
-				...config
-			}),
-			listStatEvents: (id, query, config) => client.request({
-				path: `/matches/${encodeURIComponent(id)}/stat-events`,
-				query,
-				...config
-			}),
-			addStatEvent: (id, body, config) => client.request({
-				method: "POST",
-				path: `/matches/${encodeURIComponent(id)}/stat-events`,
-				body,
-				...config
-			}),
-			disableStatEvent: (id, eventId, body = { disabled: true }, config) => client.request({
-				method: "PATCH",
-				path: `/matches/${encodeURIComponent(id)}/stat-events/${encodeURIComponent(eventId)}`,
-				body,
-				...config
-			})
-		},
-		permissions: {
-			list: (query, config) => client.request({
-				path: "/permissions",
-				query,
-				...config
-			}),
-			get: (uuid, config) => client.request({
-				path: `/permissions/${encodeURIComponent(uuid)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/permissions",
-				body,
-				...config
-			}),
-			update: (uuid, body, config) => client.request({
-				method: "PATCH",
-				path: `/permissions/${encodeURIComponent(uuid)}`,
-				body,
-				...config
-			}),
-			remove: (uuid, config) => client.request({
-				method: "DELETE",
-				path: `/permissions/${encodeURIComponent(uuid)}`,
-				...config
-			})
-		},
-		players: {
-			list: (query, config) => client.request({
-				path: "/players",
-				query,
-				...config
-			}),
-			get: (externalId, config) => client.request({
-				path: `/players/${encodeURIComponent(externalId)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/players",
-				body,
-				...config
-			}),
-			associateAccount: (externalId, body, config) => client.request({
-				method: "PATCH",
-				path: `/players/${encodeURIComponent(externalId)}/account`,
-				body,
-				...config
-			})
-		},
-		recordings: {
-			list: (query, config) => client.request({
-				path: "/recs",
-				query,
-				...config
-			}),
-			get: (id, config) => client.request({
-				path: `/recs/${encodeURIComponent(id)}`,
-				...config
-			}),
-			create: (input, config) => client.request({
-				method: "POST",
-				path: "/recs",
-				formData: recordingFormData(input),
-				...config
-			})
-		},
-		roles: {
-			list: (query, config) => client.request({
-				path: "/roles",
-				query,
-				...config
-			}),
-			get: (uuid, config) => client.request({
-				path: `/roles/${encodeURIComponent(uuid)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/roles",
-				body,
-				...config
-			}),
-			update: (uuid, body, config) => client.request({
-				method: "PATCH",
-				path: `/roles/${encodeURIComponent(uuid)}`,
-				body,
-				...config
-			}),
-			remove: (uuid, config) => client.request({
-				method: "DELETE",
-				path: `/roles/${encodeURIComponent(uuid)}`,
-				...config
-			})
-		},
-		rooms: {
-			list: (query, config) => client.request({
-				path: "/rooms",
-				query,
-				...config
-			}),
-			get: (id, config) => client.request({
-				path: `/rooms/${encodeURIComponent(id)}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/rooms",
-				body,
-				...config
-			}),
-			close: (id, config) => client.request({
-				method: "POST",
-				path: `/rooms/${encodeURIComponent(id)}/close`,
-				...config
-			}),
-			reportReady: (id, body, config) => client.request({
-				method: "POST",
-				path: `/rooms/${encodeURIComponent(id)}/ready`,
-				body,
-				...config
-			}),
-			programs: {
-				list: (query, config) => client.request({
-					path: "/room-programs",
-					query,
-					...config
-				}),
-				get: (id, config) => client.request({
-					path: `/room-programs/${encodeURIComponent(id)}`,
-					...config
-				}),
-				create: (body, config) => client.request({
-					method: "POST",
-					path: "/room-programs",
-					body,
-					...config
-				}),
-				update: (id, body, config) => client.request({
-					method: "PATCH",
-					path: `/room-programs/${encodeURIComponent(id)}`,
-					body,
-					...config
-				}),
-				listVersions: (id, query, config) => client.request({
-					path: `/room-programs/${encodeURIComponent(id)}/versions`,
-					query,
-					...config
-				}),
-				createVersion: (id, body, config) => client.request({
-					method: "POST",
-					path: `/room-programs/${encodeURIComponent(id)}/versions`,
-					body,
-					...config
-				}),
-				discoverVersions: (id, body, config) => client.request({
-					method: "POST",
-					path: `/room-programs/${encodeURIComponent(id)}/versions/discover`,
-					body,
-					...config
-				})
-			},
-			proxyEndpoints: {
-				list: (query, config) => client.request({
-					path: "/room-proxy-endpoints",
-					query,
-					...config
-				}),
-				create: (body, config) => client.request({
-					method: "POST",
-					path: "/room-proxy-endpoints",
-					body,
-					...config
-				}),
-				update: (id, body, config) => client.request({
-					method: "PATCH",
-					path: `/room-proxy-endpoints/${encodeURIComponent(id)}`,
-					body,
-					...config
-				})
-			}
-		},
-		statEventSchemas: {
-			list: (query, config) => client.request({
-				path: "/stat-event-schemas",
-				query,
-				...config
-			}),
-			getLatest: (id, config) => client.request({
-				path: `/stat-event-schemas/${encodeURIComponent(id)}`,
-				...config
-			}),
-			getVersion: (id, version, config) => client.request({
-				path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
-				...config
-			}),
-			create: (body, config) => client.request({
-				method: "POST",
-				path: "/stat-event-schemas",
-				body,
-				...config
-			}),
-			publishVersion: (id, body, config) => client.request({
-				method: "POST",
-				path: `/stat-event-schemas/${encodeURIComponent(id)}/versions`,
-				body,
-				...config
-			}),
-			updateVersion: (id, version, body, config) => client.request({
-				method: "PATCH",
-				path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
-				body,
-				...config
-			})
-		}
+		}),
+		confirm: (body, config) => client.request({
+			method: "POST",
+			path: "/accounts/confirm",
+			body,
+			...config
+		}),
+		update: (uuid, body, config) => client.request({
+			method: "PATCH",
+			path: `/accounts/${encodeURIComponent(uuid)}`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/auth.ts
+function createAuthResource(client) {
+	return { createToken: (body, config) => client.requestAuth({
+		method: "POST",
+		body,
+		...config
+	}) };
+}
+
+//#endregion
+//#region src/resources/matches.ts
+function createMatchesResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/matches",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/matches",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/matches/${encodeURIComponent(id)}`,
+			body,
+			...config
+		}),
+		appendEvents: (id, body, config) => client.request({
+			method: "POST",
+			path: `/matches/${encodeURIComponent(id)}/events`,
+			body,
+			...config
+		}),
+		getMetrics: (id, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/metrics`,
+			...config
+		}),
+		associateRecording: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/matches/${encodeURIComponent(id)}/recording`,
+			body,
+			...config
+		}),
+		listStatEvents: (id, query, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/stat-events`,
+			query,
+			...config
+		}),
+		addStatEvent: (id, body, config) => client.request({
+			method: "POST",
+			path: `/matches/${encodeURIComponent(id)}/stat-events`,
+			body,
+			...config
+		}),
+		disableStatEvent: (id, eventId, body = { disabled: true }, config) => client.request({
+			method: "PATCH",
+			path: `/matches/${encodeURIComponent(id)}/stat-events/${encodeURIComponent(eventId)}`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/permissions.ts
+function createPermissionsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/permissions",
+			query,
+			...config
+		}),
+		get: (uuid, config) => client.request({
+			path: `/permissions/${encodeURIComponent(uuid)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/permissions",
+			body,
+			...config
+		}),
+		update: (uuid, body, config) => client.request({
+			method: "PATCH",
+			path: `/permissions/${encodeURIComponent(uuid)}`,
+			body,
+			...config
+		}),
+		remove: (uuid, config) => client.request({
+			method: "DELETE",
+			path: `/permissions/${encodeURIComponent(uuid)}`,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/players.ts
+function createPlayersResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/players",
+			query,
+			...config
+		}),
+		get: (externalId, config) => client.request({
+			path: `/players/${encodeURIComponent(externalId)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/players",
+			body,
+			...config
+		}),
+		associateAccount: (externalId, body, config) => client.request({
+			method: "PATCH",
+			path: `/players/${encodeURIComponent(externalId)}/account`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/recordings.ts
+function createRecordingsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/recs",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/recs/${encodeURIComponent(id)}`,
+			...config
+		}),
+		create: (input, config) => client.request({
+			method: "POST",
+			path: "/recs",
+			formData: recordingFormData(input),
+			...config
+		})
 	};
 }
 function recordingFormData(input) {
@@ -326,6 +201,191 @@ function toBlob(input, contentType = "application/octet-stream") {
 		return new Blob([copy], { type: contentType });
 	}
 	return new Blob([input], { type: contentType });
+}
+
+//#endregion
+//#region src/resources/roles.ts
+function createRolesResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/roles",
+			query,
+			...config
+		}),
+		get: (uuid, config) => client.request({
+			path: `/roles/${encodeURIComponent(uuid)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/roles",
+			body,
+			...config
+		}),
+		update: (uuid, body, config) => client.request({
+			method: "PATCH",
+			path: `/roles/${encodeURIComponent(uuid)}`,
+			body,
+			...config
+		}),
+		remove: (uuid, config) => client.request({
+			method: "DELETE",
+			path: `/roles/${encodeURIComponent(uuid)}`,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/rooms.ts
+function createRoomsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/rooms",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/rooms/${encodeURIComponent(id)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/rooms",
+			body,
+			...config
+		}),
+		close: (id, config) => client.request({
+			method: "POST",
+			path: `/rooms/${encodeURIComponent(id)}/close`,
+			...config
+		}),
+		reportReady: (id, body, config) => client.request({
+			method: "POST",
+			path: `/rooms/${encodeURIComponent(id)}/ready`,
+			body,
+			...config
+		}),
+		programs: createRoomProgramsResource(client),
+		proxyEndpoints: createRoomProxyEndpointsResource(client)
+	};
+}
+function createRoomProgramsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/room-programs",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/room-programs/${encodeURIComponent(id)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/room-programs",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/room-programs/${encodeURIComponent(id)}`,
+			body,
+			...config
+		}),
+		listVersions: (id, query, config) => client.request({
+			path: `/room-programs/${encodeURIComponent(id)}/versions`,
+			query,
+			...config
+		}),
+		createVersion: (id, body, config) => client.request({
+			method: "POST",
+			path: `/room-programs/${encodeURIComponent(id)}/versions`,
+			body,
+			...config
+		}),
+		discoverVersions: (id, body, config) => client.request({
+			method: "POST",
+			path: `/room-programs/${encodeURIComponent(id)}/versions/discover`,
+			body,
+			...config
+		})
+	};
+}
+function createRoomProxyEndpointsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/room-proxy-endpoints",
+			query,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/room-proxy-endpoints",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/room-proxy-endpoints/${encodeURIComponent(id)}`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/stat-event-schemas.ts
+function createStatEventSchemasResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/stat-event-schemas",
+			query,
+			...config
+		}),
+		getLatest: (id, config) => client.request({
+			path: `/stat-event-schemas/${encodeURIComponent(id)}`,
+			...config
+		}),
+		getVersion: (id, version, config) => client.request({
+			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/stat-event-schemas",
+			body,
+			...config
+		}),
+		publishVersion: (id, body, config) => client.request({
+			method: "POST",
+			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions`,
+			body,
+			...config
+		}),
+		updateVersion: (id, version, body, config) => client.request({
+			method: "PATCH",
+			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/index.ts
+function createResources(client) {
+	return {
+		accounts: createAccountsResource(client),
+		auth: createAuthResource(client),
+		matches: createMatchesResource(client),
+		permissions: createPermissionsResource(client),
+		players: createPlayersResource(client),
+		recordings: createRecordingsResource(client),
+		roles: createRolesResource(client),
+		rooms: createRoomsResource(client),
+		statEventSchemas: createStatEventSchemasResource(client)
+	};
 }
 
 //#endregion

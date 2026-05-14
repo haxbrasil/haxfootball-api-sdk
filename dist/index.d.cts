@@ -1,3 +1,559 @@
+//#region src/resources/shared.d.ts
+type RequestConfig = {
+  signal?: AbortSignal;
+  timeoutMs?: number;
+};
+//#endregion
+//#region src/resources/index.d.ts
+type HaxFootballApiResources = ReturnType<typeof createResources>;
+declare function createResources(client: HaxFootballApiClient): {
+  accounts: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    confirm: (body: ConfirmAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      valid: boolean;
+    }>>;
+    update: (uuid: string, body: UpdateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+  };
+  auth: {
+    createToken: (body: CreateTokenInput, config?: RequestConfig) => Promise<ApiResult<CreateTokenResponse>>;
+  };
+  matches: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    appendEvents: (id: string, body: AppendMatchEventsInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    getMetrics: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      metrics: {
+        [key: string]: unknown;
+      };
+      player: components["schemas"]["Player"];
+    }[]>>;
+    associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    listStatEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchStatEventsResponse>>;
+    addStatEvent: (id: string, body: AddMatchStatEventInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      disabled: boolean;
+      disabledAt: (string | null) | null;
+      id: string;
+      occurredAt: (string | null) | null;
+      player: components["schemas"]["Player"];
+      sequence: string | number;
+      tick: (number | null) | null;
+      type: string;
+      updatedAt: string;
+      value: unknown;
+    }>>;
+    disableStatEvent: (id: string, eventId: string, body?: DisableMatchStatEventInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      disabled: boolean;
+      disabledAt: (string | null) | null;
+      id: string;
+      occurredAt: (string | null) | null;
+      player: components["schemas"]["Player"];
+      sequence: string | number;
+      tick: (number | null) | null;
+      type: string;
+      updatedAt: string;
+      value: unknown;
+    }>>;
+  };
+  permissions: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPermissionsResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    update: (uuid: string, body: UpdatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      deleted: boolean;
+    }>>;
+  };
+  players: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
+    get: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+    create: (body: CreatePlayerInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+    associateAccount: (externalId: string, body: AssociatePlayerAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+  };
+  recordings: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRecordingsResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      sizeBytes: number;
+      url: string;
+    }>>;
+    create: (input: CreateRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      sizeBytes: number;
+      url: string;
+    }>>;
+  };
+  roles: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRolesResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: string;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: string;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    update: (uuid: string, body: UpdateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: string;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      deleted: boolean;
+    }>>;
+  };
+  rooms: {
+    list: (query?: ListRoomsQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomsResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    create: (body: CreateRoomInput, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    close: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    programs: {
+      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramsResponse>>;
+      get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        supportsManualLinking: boolean;
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      create: (body: CreateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        supportsManualLinking: boolean;
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      update: (id: string, body: UpdateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        supportsManualLinking: boolean;
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      listVersions: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramVersionsResponse>>;
+      createVersion: (id: string, body: CreateRoomProgramVersionInput, config?: RequestConfig) => Promise<ApiResult<{
+        artifact: components["schemas"]["RoomProgramVersionArtifact"];
+        createdAt: string;
+        id: string;
+        installStrategy: "none" | "npm-ci" | "npm-install";
+        nodeEntrypoint: string;
+        programId: string;
+        updatedAt: string;
+        version: string;
+      }>>;
+      discoverVersions: (id: string, body: DiscoverRoomProgramVersionsInput, config?: RequestConfig) => Promise<ApiResult<{
+        artifact: components["schemas"]["RoomProgramVersionArtifact"];
+        createdAt: string;
+        id: string;
+        installStrategy: "none" | "npm-ci" | "npm-install";
+        nodeEntrypoint: string;
+        programId: string;
+        updatedAt: string;
+        version: string;
+      }[]>>;
+    };
+    proxyEndpoints: {
+      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProxyEndpointsResponse>>;
+      create: (body: CreateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        displayName: string;
+        enabled: boolean;
+        id: string;
+        key: string;
+        outboundIp: string;
+        proxyUrl: string;
+        updatedAt: string;
+      }>>;
+      update: (id: string, body: UpdateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        displayName: string;
+        enabled: boolean;
+        id: string;
+        key: string;
+        outboundIp: string;
+        proxyUrl: string;
+        updatedAt: string;
+      }>>;
+    };
+  };
+  statEventSchemas: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListStatEventSchemasResponse>>;
+    getLatest: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    getVersion: (id: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    create: (body: CreateStatEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    publishVersion: (id: string, body: PublishStatEventSchemaVersionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    updateVersion: (id: string, version: number, body: UpdateStatEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+  };
+};
+//#endregion
+//#region src/result.d.ts
+type ResponseMeta = {
+  status: number;
+  statusText: string;
+  url: string;
+  headers: Headers;
+};
+type ApiErrorCode = "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL_SERVER_ERROR" | (string & {});
+type ApiResponseFailure = {
+  kind: "api";
+  status: number;
+  statusText: string;
+  url: string;
+  headers: Headers;
+  code?: ApiErrorCode;
+  message: string;
+  body: unknown;
+};
+type NetworkFailure = {
+  kind: "network";
+  message: string;
+  cause: unknown;
+};
+type AbortedFailure = {
+  kind: "aborted";
+  message: string;
+  cause?: unknown;
+};
+type InvalidResponseFailure = {
+  kind: "invalid-response";
+  status: number;
+  statusText: string;
+  url: string;
+  headers: Headers;
+  message: string;
+  bodyText: string;
+};
+type ApiFailure = ApiResponseFailure | NetworkFailure | AbortedFailure | InvalidResponseFailure;
+type ApiSuccess<T> = {
+  ok: true;
+  data: T;
+  response: ResponseMeta;
+};
+type ApiResult<T> = ApiSuccess<T> | {
+  ok: false;
+  error: ApiFailure;
+  response?: ResponseMeta;
+};
+//#endregion
+//#region src/client.d.ts
+type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+type MaybePromise<T> = T | Promise<T>;
+type TokenProvider = () => MaybePromise<string | undefined>;
+type HeadersProvider = () => MaybePromise<HeadersInit | undefined>;
+type HaxFootballApiClientOptions = {
+  apiUrl?: string | URL | undefined;
+  authUrl?: string | URL | undefined;
+  token?: string | TokenProvider | undefined;
+  apiKey?: string | undefined;
+  fetch?: FetchLike | undefined;
+  headers?: HeadersInit | HeadersProvider | undefined;
+  timeoutMs?: number | undefined;
+};
+type RequestOptions = {
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  path: string;
+  query?: Record<string, unknown> | undefined;
+  body?: unknown | undefined;
+  formData?: FormData | undefined;
+  auth?: "bearer" | "none";
+  headers?: HeadersInit | undefined;
+  signal?: AbortSignal | undefined;
+  timeoutMs?: number | undefined;
+};
+declare class HaxFootballApiClient {
+  readonly accounts: HaxFootballApiResources["accounts"];
+  readonly auth: HaxFootballApiResources["auth"];
+  readonly matches: HaxFootballApiResources["matches"];
+  readonly permissions: HaxFootballApiResources["permissions"];
+  readonly players: HaxFootballApiResources["players"];
+  readonly recordings: HaxFootballApiResources["recordings"];
+  readonly roles: HaxFootballApiResources["roles"];
+  readonly rooms: HaxFootballApiResources["rooms"];
+  readonly statEventSchemas: HaxFootballApiResources["statEventSchemas"];
+  readonly apiUrl: URL;
+  readonly authUrl: URL;
+  private readonly fetcher;
+  private readonly token;
+  private readonly apiKey;
+  private readonly headers;
+  private readonly timeoutMs;
+  private cachedApiKeyToken;
+  constructor(options?: HaxFootballApiClientOptions);
+  request<T>(options: RequestOptions): Promise<ApiResult<T>>;
+  requestAuth<T>(options: Omit<RequestOptions, "path">): Promise<ApiResult<T>>;
+  private resolveBearerToken;
+  private buildHeaders;
+}
+declare function createHaxFootballApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
+//#endregion
 //#region src/generated/openapi.d.ts
 /**
  * This file was auto-generated by openapi-typescript.
@@ -4334,560 +4890,6 @@ type CreateRecordingInput = {
   filename?: string;
   contentType?: string;
 };
-//#endregion
-//#region src/result.d.ts
-type ResponseMeta = {
-  status: number;
-  statusText: string;
-  url: string;
-  headers: Headers;
-};
-type ApiErrorCode = "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL_SERVER_ERROR" | (string & {});
-type ApiResponseFailure = {
-  kind: "api";
-  status: number;
-  statusText: string;
-  url: string;
-  headers: Headers;
-  code?: ApiErrorCode;
-  message: string;
-  body: unknown;
-};
-type NetworkFailure = {
-  kind: "network";
-  message: string;
-  cause: unknown;
-};
-type AbortedFailure = {
-  kind: "aborted";
-  message: string;
-  cause?: unknown;
-};
-type InvalidResponseFailure = {
-  kind: "invalid-response";
-  status: number;
-  statusText: string;
-  url: string;
-  headers: Headers;
-  message: string;
-  bodyText: string;
-};
-type ApiFailure = ApiResponseFailure | NetworkFailure | AbortedFailure | InvalidResponseFailure;
-type ApiSuccess<T> = {
-  ok: true;
-  data: T;
-  response: ResponseMeta;
-};
-type ApiResult<T> = ApiSuccess<T> | {
-  ok: false;
-  error: ApiFailure;
-  response?: ResponseMeta;
-};
-//#endregion
-//#region src/resources.d.ts
-type RequestConfig = {
-  signal?: AbortSignal;
-  timeoutMs?: number;
-};
-type HaxFootballApiResources = ReturnType<typeof createResources>;
-declare function createResources(client: HaxFootballApiClient): {
-  accounts: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    confirm: (body: ConfirmAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      valid: boolean;
-    }>>;
-    update: (uuid: string, body: UpdateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-  };
-  auth: {
-    createToken: (body: CreateTokenInput, config?: RequestConfig) => Promise<ApiResult<CreateTokenResponse>>;
-  };
-  matches: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    appendEvents: (id: string, body: AppendMatchEventsInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    getMetrics: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      metrics: {
-        [key: string]: unknown;
-      };
-      player: components["schemas"]["Player"];
-    }[]>>;
-    associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      statEventSchema: (components["schemas"]["StatEventSchemaReference"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    listStatEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchStatEventsResponse>>;
-    addStatEvent: (id: string, body: AddMatchStatEventInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      disabled: boolean;
-      disabledAt: (string | null) | null;
-      id: string;
-      occurredAt: (string | null) | null;
-      player: components["schemas"]["Player"];
-      sequence: string | number;
-      tick: (number | null) | null;
-      type: string;
-      updatedAt: string;
-      value: unknown;
-    }>>;
-    disableStatEvent: (id: string, eventId: string, body?: DisableMatchStatEventInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      disabled: boolean;
-      disabledAt: (string | null) | null;
-      id: string;
-      occurredAt: (string | null) | null;
-      player: components["schemas"]["Player"];
-      sequence: string | number;
-      tick: (number | null) | null;
-      type: string;
-      updatedAt: string;
-      value: unknown;
-    }>>;
-  };
-  permissions: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPermissionsResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    update: (uuid: string, body: UpdatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      deleted: boolean;
-    }>>;
-  };
-  players: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
-    get: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-    create: (body: CreatePlayerInput, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-    associateAccount: (externalId: string, body: AssociatePlayerAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-  };
-  recordings: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRecordingsResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      id: string;
-      sizeBytes: number;
-      url: string;
-    }>>;
-    create: (input: CreateRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      id: string;
-      sizeBytes: number;
-      url: string;
-    }>>;
-  };
-  roles: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRolesResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: string;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: string;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    update: (uuid: string, body: UpdateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: string;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      deleted: boolean;
-    }>>;
-  };
-  rooms: {
-    list: (query?: ListRoomsQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomsResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    create: (body: CreateRoomInput, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    close: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    programs: {
-      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramsResponse>>;
-      get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      create: (body: CreateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      update: (id: string, body: UpdateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      listVersions: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramVersionsResponse>>;
-      createVersion: (id: string, body: CreateRoomProgramVersionInput, config?: RequestConfig) => Promise<ApiResult<{
-        artifact: components["schemas"]["RoomProgramVersionArtifact"];
-        createdAt: string;
-        id: string;
-        installStrategy: "none" | "npm-ci" | "npm-install";
-        nodeEntrypoint: string;
-        programId: string;
-        updatedAt: string;
-        version: string;
-      }>>;
-      discoverVersions: (id: string, body: DiscoverRoomProgramVersionsInput, config?: RequestConfig) => Promise<ApiResult<{
-        artifact: components["schemas"]["RoomProgramVersionArtifact"];
-        createdAt: string;
-        id: string;
-        installStrategy: "none" | "npm-ci" | "npm-install";
-        nodeEntrypoint: string;
-        programId: string;
-        updatedAt: string;
-        version: string;
-      }[]>>;
-    };
-    proxyEndpoints: {
-      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProxyEndpointsResponse>>;
-      create: (body: CreateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        displayName: string;
-        enabled: boolean;
-        id: string;
-        key: string;
-        outboundIp: string;
-        proxyUrl: string;
-        updatedAt: string;
-      }>>;
-      update: (id: string, body: UpdateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        displayName: string;
-        enabled: boolean;
-        id: string;
-        key: string;
-        outboundIp: string;
-        proxyUrl: string;
-        updatedAt: string;
-      }>>;
-    };
-  };
-  statEventSchemas: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListStatEventSchemasResponse>>;
-    getLatest: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    getVersion: (id: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    create: (body: CreateStatEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    publishVersion: (id: string, body: PublishStatEventSchemaVersionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    updateVersion: (id: string, version: number, body: UpdateStatEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-  };
-};
-//#endregion
-//#region src/client.d.ts
-type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
-type MaybePromise<T> = T | Promise<T>;
-type TokenProvider = () => MaybePromise<string | undefined>;
-type HeadersProvider = () => MaybePromise<HeadersInit | undefined>;
-type HaxFootballApiClientOptions = {
-  apiUrl?: string | URL | undefined;
-  authUrl?: string | URL | undefined;
-  token?: string | TokenProvider | undefined;
-  apiKey?: string | undefined;
-  fetch?: FetchLike | undefined;
-  headers?: HeadersInit | HeadersProvider | undefined;
-  timeoutMs?: number | undefined;
-};
-type RequestOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
-  path: string;
-  query?: Record<string, unknown> | undefined;
-  body?: unknown | undefined;
-  formData?: FormData | undefined;
-  auth?: "bearer" | "none";
-  headers?: HeadersInit | undefined;
-  signal?: AbortSignal | undefined;
-  timeoutMs?: number | undefined;
-};
-declare class HaxFootballApiClient {
-  readonly accounts: HaxFootballApiResources["accounts"];
-  readonly auth: HaxFootballApiResources["auth"];
-  readonly matches: HaxFootballApiResources["matches"];
-  readonly permissions: HaxFootballApiResources["permissions"];
-  readonly players: HaxFootballApiResources["players"];
-  readonly recordings: HaxFootballApiResources["recordings"];
-  readonly roles: HaxFootballApiResources["roles"];
-  readonly rooms: HaxFootballApiResources["rooms"];
-  readonly statEventSchemas: HaxFootballApiResources["statEventSchemas"];
-  readonly apiUrl: URL;
-  readonly authUrl: URL;
-  private readonly fetcher;
-  private readonly token;
-  private readonly apiKey;
-  private readonly headers;
-  private readonly timeoutMs;
-  private cachedApiKeyToken;
-  constructor(options?: HaxFootballApiClientOptions);
-  request<T>(options: RequestOptions): Promise<ApiResult<T>>;
-  requestAuth<T>(options: Omit<RequestOptions, "path">): Promise<ApiResult<T>>;
-  private resolveBearerToken;
-  private buildHeaders;
-}
-declare function createHaxFootballApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
 //#endregion
 export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, type operations, type paths };
 //# sourceMappingURL=index.d.cts.map
