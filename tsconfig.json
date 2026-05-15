@@ -15,7 +15,7 @@
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "sourceMap": true
   },
   "include": ["src", "test", "tsdown.config.ts", "vitest.config.ts"]
