@@ -69,6 +69,12 @@ export type ListMatchStatEventsResponse = PaginatedResponse<MatchStatEvent>;
 export type CreateTokenInput = Schema<"CreateTokenBody">;
 export type CreateTokenResponse = Schema<"CreateTokenResponse">;
 
+export type SessionAccount = Schema<"SessionAccount">;
+export type ResolveSessionInput = Schema<"ResolveSessionBody">;
+export type ResolveSessionResponse = Schema<"ResolveSessionResponse">;
+export type ConfirmSessionInput = Schema<"ConfirmSessionBody">;
+export type ConfirmSessionResponse = Schema<"ConfirmSessionResponse">;
+
 export type LaunchConfig = {
   [key: string]: string | number | boolean | null;
 };

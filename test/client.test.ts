@@ -179,6 +179,89 @@ describe("HaxFootballApiClient", () => {
     expect(new Headers(init?.headers).has("content-type")).toBe(false);
   });
 
+  it("resolves and confirms sessions with typed JSON requests", async () => {
+    const fetcher = vi
+      .fn<FetchLike>()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          status: "password_required",
+          playerId: "player-1",
+          account: {
+            uuid: "00000000-0000-4000-8000-000000000001",
+            name: "Gabriel",
+            externalId: "800000000000000001"
+          }
+        })
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          valid: true,
+          playerId: "player-1",
+          canonicalName: "Gabriel",
+          account: {
+            uuid: "00000000-0000-4000-8000-000000000001",
+            name: "Gabriel",
+            externalId: "800000000000000001"
+          }
+        })
+      );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    const resolveResult = await client.sessions.resolve({
+      roomId: "room-1",
+      roomPlayerId: 7,
+      name: "Gabriel",
+      auth: "auth-1",
+      conn: "conn-1"
+    });
+    const confirmResult = await client.sessions.confirm({
+      roomId: "room-1",
+      roomPlayerId: 7,
+      name: "Gabriel",
+      auth: "auth-1",
+      conn: "conn-1",
+      password: "pass1234"
+    });
+
+    expect(resolveResult.ok).toBe(true);
+    expect(confirmResult.ok).toBe(true);
+
+    const [resolveUrl, resolveInit] = fetcher.mock.calls[0] ?? [];
+    const [confirmUrl, confirmInit] = fetcher.mock.calls[1] ?? [];
+
+    expect(resolveUrl?.toString()).toBe(
+      "https://api.example.com/api/sessions/resolve"
+    );
+    expect(confirmUrl?.toString()).toBe(
+      "https://api.example.com/api/sessions/confirm"
+    );
+    expect(resolveInit?.method).toBe("POST");
+    expect(confirmInit?.method).toBe("POST");
+    expect(resolveInit?.body).toBe(
+      JSON.stringify({
+        roomId: "room-1",
+        roomPlayerId: 7,
+        name: "Gabriel",
+        auth: "auth-1",
+        conn: "conn-1"
+      })
+    );
+    expect(confirmInit?.body).toBe(
+      JSON.stringify({
+        roomId: "room-1",
+        roomPlayerId: 7,
+        name: "Gabriel",
+        auth: "auth-1",
+        conn: "conn-1",
+        password: "pass1234"
+      })
+    );
+  });
+
   it("throws for missing client configuration", () => {
     expect(() =>
       createHaxFootballApiClient({

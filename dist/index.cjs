@@ -335,6 +335,25 @@ function createRoomProxyEndpointsResource(client) {
 }
 
 //#endregion
+//#region src/resources/sessions.ts
+function createSessionsResource(client) {
+	return {
+		resolve: (body, config) => client.request({
+			method: "POST",
+			path: "/sessions/resolve",
+			body,
+			...config
+		}),
+		confirm: (body, config) => client.request({
+			method: "POST",
+			path: "/sessions/confirm",
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
 //#region src/resources/stat-event-schemas.ts
 function createStatEventSchemasResource(client) {
 	return {
@@ -384,6 +403,7 @@ function createResources(client) {
 		recordings: createRecordingsResource(client),
 		roles: createRolesResource(client),
 		rooms: createRoomsResource(client),
+		sessions: createSessionsResource(client),
 		statEventSchemas: createStatEventSchemasResource(client)
 	};
 }
@@ -417,6 +437,7 @@ var HaxFootballApiClient = class {
 	recordings;
 	roles;
 	rooms;
+	sessions;
 	statEventSchemas;
 	apiUrl;
 	authUrl;
@@ -444,6 +465,7 @@ var HaxFootballApiClient = class {
 		this.recordings = resources.recordings;
 		this.roles = resources.roles;
 		this.rooms = resources.rooms;
+		this.sessions = resources.sessions;
 		this.statEventSchemas = resources.statEventSchemas;
 	}
 	async request(options) {

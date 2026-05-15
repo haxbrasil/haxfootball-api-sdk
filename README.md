@@ -72,6 +72,27 @@ const result = await api.rooms.reportReady(roomId, {
 });
 ```
 
+## Sessions
+
+```ts
+const resolved = await api.sessions.resolve({
+  roomId,
+  roomPlayerId,
+  name,
+  auth,
+  conn
+});
+
+const confirmed = await api.sessions.confirm({
+  roomId,
+  roomPlayerId,
+  name,
+  auth,
+  conn,
+  password
+});
+```
+
 ## Result Contract
 
 Request methods do not throw for recoverable request failures. They return a

@@ -515,6 +515,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/sessions/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm room player session */
+    post: operations["postApiSessionsConfirm"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/sessions/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resolve room player session */
+    post: operations["postApiSessionsResolve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/stat-event-schemas": {
     parameters: {
       query?: never;
@@ -690,6 +724,21 @@ export interface components {
     ConfirmAccountResponse: {
       valid: boolean;
     };
+    ConfirmSessionBody: components["schemas"]["ResolveSessionBody"] & {
+      password: string;
+    };
+    ConfirmSessionResponse:
+      | {
+          /** @constant */
+          valid: false;
+        }
+      | {
+          account: components["schemas"]["SessionAccount"];
+          canonicalName: string;
+          playerId: string;
+          /** @constant */
+          valid: true;
+        };
     CreateAccountBody: {
       externalId: string;
       name: string;
@@ -967,6 +1016,33 @@ export interface components {
       commId: string;
       roomLink: string;
     };
+    ResolveSessionBody: {
+      auth: (string | null) | null;
+      conn: (string | null) | null;
+      name: string;
+      roomId: string;
+      roomPlayerId: string | number;
+    };
+    ResolveSessionResponse:
+      | {
+          account: null;
+          playerId: string;
+          /** @constant */
+          status: "guest";
+        }
+      | {
+          account: components["schemas"]["SessionAccount"];
+          canonicalName: string;
+          playerId: string;
+          /** @constant */
+          status: "signed_in";
+        }
+      | {
+          account: components["schemas"]["SessionAccount"];
+          playerId: string;
+          /** @constant */
+          status: "password_required";
+        };
     Role: {
       createdAt: string;
       isDefault: boolean;
@@ -1080,6 +1156,12 @@ export interface components {
       /** Format: uuid */
       id: string;
       version: string;
+    };
+    SessionAccount: {
+      externalId: string;
+      name: string;
+      /** Format: uuid */
+      uuid: string;
     };
     StatEventSchema: {
       createdAt: string;
@@ -3830,6 +3912,108 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiSessionsConfirm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmSessionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConfirmSessionResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiSessionsResolve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResolveSessionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResolveSessionResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
         };
       };
       /** @description Response for status 500 */

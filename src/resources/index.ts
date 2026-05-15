@@ -7,6 +7,7 @@ import { createPlayersResource } from "./players";
 import { createRecordingsResource } from "./recordings";
 import { createRolesResource } from "./roles";
 import { createRoomsResource } from "./rooms";
+import { createSessionsResource } from "./sessions";
 import { createStatEventSchemasResource } from "./stat-event-schemas";
 
 export type { RequestConfig } from "./shared";
@@ -23,6 +24,7 @@ export function createResources(client: HaxFootballApiClient) {
     recordings: createRecordingsResource(client),
     roles: createRolesResource(client),
     rooms: createRoomsResource(client),
+    sessions: createSessionsResource(client),
     statEventSchemas: createStatEventSchemasResource(client)
   };
 }

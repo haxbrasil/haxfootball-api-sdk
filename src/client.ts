@@ -47,6 +47,7 @@ export class HaxFootballApiClient {
   readonly recordings: HaxFootballApiResources["recordings"];
   readonly roles: HaxFootballApiResources["roles"];
   readonly rooms: HaxFootballApiResources["rooms"];
+  readonly sessions: HaxFootballApiResources["sessions"];
   readonly statEventSchemas: HaxFootballApiResources["statEventSchemas"];
 
   readonly apiUrl: URL;
@@ -91,6 +92,7 @@ export class HaxFootballApiClient {
     this.recordings = resources.recordings;
     this.roles = resources.roles;
     this.rooms = resources.rooms;
+    this.sessions = resources.sessions;
     this.statEventSchemas = resources.statEventSchemas;
   }
 

@@ -394,6 +394,30 @@ declare function createResources(client: HaxFootballApiClient): {
       }>>;
     };
   };
+  sessions: {
+    resolve: (body: ResolveSessionInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: null;
+      playerId: string;
+      status: "guest";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      status: "signed_in";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      playerId: string;
+      status: "password_required";
+    }>>;
+    confirm: (body: ConfirmSessionInput, config?: RequestConfig) => Promise<ApiResult<{
+      valid: false;
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      valid: true;
+    }>>;
+  };
   statEventSchemas: {
     list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListStatEventSchemasResponse>>;
     getLatest: (id: string, config?: RequestConfig) => Promise<ApiResult<{
@@ -537,6 +561,7 @@ declare class HaxFootballApiClient {
   readonly recordings: HaxFootballApiResources["recordings"];
   readonly roles: HaxFootballApiResources["roles"];
   readonly rooms: HaxFootballApiResources["rooms"];
+  readonly sessions: HaxFootballApiResources["sessions"];
   readonly statEventSchemas: HaxFootballApiResources["statEventSchemas"];
   readonly apiUrl: URL;
   readonly authUrl: URL;
@@ -1072,6 +1097,40 @@ interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/sessions/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm room player session */
+    post: operations["postApiSessionsConfirm"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/sessions/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resolve room player session */
+    post: operations["postApiSessionsResolve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/stat-event-schemas": {
     parameters: {
       query?: never;
@@ -1241,6 +1300,19 @@ interface components {
     };
     ConfirmAccountResponse: {
       valid: boolean;
+    };
+    ConfirmSessionBody: components["schemas"]["ResolveSessionBody"] & {
+      password: string;
+    };
+    ConfirmSessionResponse: {
+      /** @constant */
+      valid: false;
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      /** @constant */
+      valid: true;
     };
     CreateAccountBody: {
       externalId: string;
@@ -1517,6 +1589,30 @@ interface components {
       commId: string;
       roomLink: string;
     };
+    ResolveSessionBody: {
+      auth: (string | null) | null;
+      conn: (string | null) | null;
+      name: string;
+      roomId: string;
+      roomPlayerId: string | number;
+    };
+    ResolveSessionResponse: {
+      account: null;
+      playerId: string;
+      /** @constant */
+      status: "guest";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      /** @constant */
+      status: "signed_in";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      playerId: string;
+      /** @constant */
+      status: "password_required";
+    };
     Role: {
       createdAt: string;
       isDefault: boolean;
@@ -1628,6 +1724,12 @@ interface components {
       /** Format: uuid */
       id: string;
       version: string;
+    };
+    SessionAccount: {
+      externalId: string;
+      name: string;
+      /** Format: uuid */
+      uuid: string;
     };
     StatEventSchema: {
       createdAt: string;
@@ -4390,6 +4492,108 @@ interface operations {
       };
     };
   };
+  postApiSessionsConfirm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConfirmSessionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConfirmSessionResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiSessionsResolve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResolveSessionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResolveSessionResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiStat-event-schemas": {
     parameters: {
       query?: {
@@ -4851,6 +5055,11 @@ type ListMatchesResponse = PaginatedResponse<MatchSummary>;
 type ListMatchStatEventsResponse = PaginatedResponse<MatchStatEvent>;
 type CreateTokenInput = Schema<"CreateTokenBody">;
 type CreateTokenResponse = Schema<"CreateTokenResponse">;
+type SessionAccount = Schema<"SessionAccount">;
+type ResolveSessionInput = Schema<"ResolveSessionBody">;
+type ResolveSessionResponse = Schema<"ResolveSessionResponse">;
+type ConfirmSessionInput = Schema<"ConfirmSessionBody">;
+type ConfirmSessionResponse = Schema<"ConfirmSessionResponse">;
 type LaunchConfig = {
   [key: string]: string | number | boolean | null;
 };
@@ -4892,5 +5101,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
+export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
 //# sourceMappingURL=index.d.cts.map
