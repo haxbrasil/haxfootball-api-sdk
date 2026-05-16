@@ -253,6 +253,8 @@ declare function createResources(client: HaxFootballApiClient): {
     get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       id: string;
       launchConfig: {
         [key: string]: string | number | boolean | null;
@@ -261,13 +263,15 @@ declare function createResources(client: HaxFootballApiClient): {
       proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
       public: boolean;
       roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     }>>;
     create: (body: CreateRoomInput, config?: RequestConfig) => Promise<ApiResult<{
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       id: string;
       launchConfig: {
         [key: string]: string | number | boolean | null;
@@ -276,13 +280,15 @@ declare function createResources(client: HaxFootballApiClient): {
       proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
       public: boolean;
       roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     }>>;
     close: (id: string, config?: RequestConfig) => Promise<ApiResult<{
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       id: string;
       launchConfig: {
         [key: string]: string | number | boolean | null;
@@ -291,13 +297,15 @@ declare function createResources(client: HaxFootballApiClient): {
       proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
       public: boolean;
       roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     }>>;
     reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       id: string;
       launchConfig: {
         [key: string]: string | number | boolean | null;
@@ -306,7 +314,7 @@ declare function createResources(client: HaxFootballApiClient): {
       proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
       public: boolean;
       roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     }>>;
@@ -317,10 +325,10 @@ declare function createResources(client: HaxFootballApiClient): {
         description: (string | null) | null;
         haxballTokenEnvVar: string;
         id: string;
+        integrationMode: "external" | "integrated";
         launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
         title: (string | null) | null;
         updatedAt: string;
       }>>;
@@ -329,10 +337,10 @@ declare function createResources(client: HaxFootballApiClient): {
         description: (string | null) | null;
         haxballTokenEnvVar: string;
         id: string;
+        integrationMode: "external" | "integrated";
         launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
         title: (string | null) | null;
         updatedAt: string;
       }>>;
@@ -341,10 +349,10 @@ declare function createResources(client: HaxFootballApiClient): {
         description: (string | null) | null;
         haxballTokenEnvVar: string;
         id: string;
+        integrationMode: "external" | "integrated";
         launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        supportsManualLinking: boolean;
         title: (string | null) | null;
         updatedAt: string;
       }>>;
@@ -352,9 +360,9 @@ declare function createResources(client: HaxFootballApiClient): {
       createVersion: (id: string, body: CreateRoomProgramVersionInput, config?: RequestConfig) => Promise<ApiResult<{
         artifact: components["schemas"]["RoomProgramVersionArtifact"];
         createdAt: string;
+        entrypoint: string;
         id: string;
         installStrategy: "none" | "npm-ci" | "npm-install";
-        nodeEntrypoint: string;
         programId: string;
         updatedAt: string;
         version: string;
@@ -362,9 +370,9 @@ declare function createResources(client: HaxFootballApiClient): {
       discoverVersions: (id: string, body: DiscoverRoomProgramVersionsInput, config?: RequestConfig) => Promise<ApiResult<{
         artifact: components["schemas"]["RoomProgramVersionArtifact"];
         createdAt: string;
+        entrypoint: string;
         id: string;
         installStrategy: "none" | "npm-ci" | "npm-install";
-        nodeEntrypoint: string;
         programId: string;
         updatedAt: string;
         version: string;
@@ -958,6 +966,57 @@ interface paths {
     patch: operations["patchApiRoom-programsById"];
     trace?: never;
   };
+  "/api/room-programs/{id}/artifacts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upload room artifact */
+    post: operations["postApiRoom-programsByIdArtifacts"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/room-programs/{id}/version-aliases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List room program version aliases */
+    get: operations["getApiRoom-programsByIdVersion-aliases"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/room-programs/{id}/version-aliases/{alias}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Create or update room program version alias */
+    put: operations["putApiRoom-programsByIdVersion-aliasesByAlias"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/room-programs/{id}/versions": {
     parameters: {
       query?: never;
@@ -1089,7 +1148,7 @@ interface paths {
     };
     get?: never;
     put?: never;
-    /** Report room ready for manual linking */
+    /** Report integrated room ready */
     post: operations["postApiRoomsByIdReady"];
     delete?: never;
     options?: never;
@@ -1201,6 +1260,23 @@ interface paths {
     patch: operations["patchApiStat-event-schemasByIdVersionsByVersion"];
     trace?: never;
   };
+  "/artifacts/rooms/{branch}/{sha}/{assetName}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download uploaded room artifact */
+    get: operations["getArtifactsRoomsByBranchByShaByAssetName"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/auth": {
     parameters: {
       query?: never;
@@ -1280,6 +1356,8 @@ interface components {
     CloseRoomResponse: {
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       /** Format: uuid */
       id: string;
       launchConfig: {
@@ -1290,7 +1368,7 @@ interface components {
       public: boolean;
       roomLink: (string | null) | null;
       /** @enum {string} */
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     };
@@ -1370,17 +1448,18 @@ interface components {
     CreateRoomProgramBody: {
       description?: string;
       haxballTokenEnvVar?: string;
+      /** @enum {string} */
+      integrationMode: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-      supportsManualLinking?: boolean;
       title?: string;
     };
     CreateRoomProgramVersionBody: {
       artifact: components["schemas"]["RoomProgramVersionArtifact"];
+      entrypoint: string;
       /** @enum {string} */
       installStrategy?: "none" | "npm-ci" | "npm-install";
-      nodeEntrypoint: string;
       version: string;
     };
     CreateRoomProxyEndpointBody: {
@@ -1407,9 +1486,9 @@ interface components {
       disabled: true;
     };
     DiscoverRoomProgramVersionsBody: {
+      entrypoint: string;
       /** @enum {string} */
       installStrategy?: "none" | "npm-ci" | "npm-install";
-      nodeEntrypoint: string;
     };
     DiscoverRoomProgramVersionsResponse: components["schemas"]["RoomProgramVersion"][];
     InternalServerError: {
@@ -1445,6 +1524,10 @@ interface components {
     };
     ListRoles: {
       items: components["schemas"]["Role"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListRoomProgramVersionAliases: {
+      items: components["schemas"]["RoomProgramVersionAlias"][];
       page: components["schemas"]["PageInfo"];
     };
     ListRoomProgramVersions: {
@@ -1627,6 +1710,8 @@ interface components {
     Room: {
       closedAt: (string | null) | null;
       createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
       /** Format: uuid */
       id: string;
       launchConfig: {
@@ -1637,9 +1722,20 @@ interface components {
       public: boolean;
       roomLink: (string | null) | null;
       /** @enum {string} */
-      state: "provisioning" | "running" | "closed";
+      state: "provisioning" | "running" | "closed" | "failed";
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
+    };
+    RoomArtifact: {
+      assetName: string;
+      assetUrl: string;
+      checksumSha256: string;
+      storageKey: string;
+    };
+    RoomArtifactParams: {
+      assetName: string;
+      branch: string;
+      sha: string;
     };
     RoomLaunchConfigField: {
       defaultValue?: string | number | boolean | null;
@@ -1662,10 +1758,11 @@ interface components {
       haxballTokenEnvVar: string;
       /** Format: uuid */
       id: string;
+      /** @enum {string} */
+      integrationMode: "external" | "integrated";
       launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-      supportsManualLinking: boolean;
       title: (string | null) | null;
       updatedAt: string;
     };
@@ -1677,15 +1774,29 @@ interface components {
     RoomProgramVersion: {
       artifact: components["schemas"]["RoomProgramVersionArtifact"];
       createdAt: string;
+      entrypoint: string;
       /** Format: uuid */
       id: string;
       /** @enum {string} */
       installStrategy: "none" | "npm-ci" | "npm-install";
-      nodeEntrypoint: string;
       /** Format: uuid */
       programId: string;
       updatedAt: string;
       version: string;
+    };
+    RoomProgramVersionAlias: {
+      alias: string;
+      createdAt: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      programId: string;
+      updatedAt: string;
+      version: {
+        /** Format: uuid */
+        id: string;
+        version: string;
+      };
     };
     RoomProgramVersionArtifact: {
       assetName: string;
@@ -1791,13 +1902,14 @@ interface components {
     UpdateRoomProgramBody: {
       description?: (string | null) | null;
       haxballTokenEnvVar?: string;
+      /** @enum {string} */
+      integrationMode?: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
       releaseSource?: {
         assetPattern: string;
         owner: string;
         repo: string;
       };
-      supportsManualLinking?: boolean;
       title?: (string | null) | null;
     };
     UpdateRoomProxyEndpointBody: {
@@ -1808,6 +1920,19 @@ interface components {
     };
     UpdateStatEventSchemaBody: {
       definition: unknown;
+    };
+    UploadRoomArtifactBody: {
+      assetName: string;
+      branch: string;
+      /**
+       * Format: binary
+       * @default File
+       */
+      file: string;
+      sha: string;
+    };
+    UpsertRoomProgramVersionAliasBody: {
+      version: string;
     };
   };
   responses: never;
@@ -3855,6 +3980,192 @@ interface operations {
       };
     };
   };
+  "postApiRoom-programsByIdArtifacts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["UploadRoomArtifactBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RoomArtifact"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiRoom-programsByIdVersion-aliases": {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListRoomProgramVersionAliases"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "putApiRoom-programsByIdVersion-aliasesByAlias": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        alias: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpsertRoomProgramVersionAliasBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RoomProgramVersionAlias"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiRoom-programsByIdVersions": {
     parameters: {
       query?: {
@@ -4208,7 +4519,7 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
-        state?: "open" | "provisioning" | "running" | "closed" | "all";
+        state?: "open" | "provisioning" | "running" | "closed" | "failed" | "all";
       };
       header?: never;
       path?: never;
@@ -4915,6 +5226,57 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getArtifactsRoomsByBranchByShaByAssetName: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        branch: string;
+        sha: string;
+        assetName: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
         };
       };
       /** @description Response for status 404 */

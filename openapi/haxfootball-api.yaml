@@ -115,6 +115,16 @@ components:
           nullable: true
         createdAt:
           type: string
+        failedAt:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
+        failureReason:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
         id:
           format: uuid
           type: string
@@ -146,6 +156,7 @@ components:
             - provisioning
             - running
             - closed
+            - failed
           type: string
         updatedAt:
           type: string
@@ -163,6 +174,8 @@ components:
         - createdAt
         - updatedAt
         - closedAt
+        - failedAt
+        - failureReason
       type: object
     ConfirmAccountBody:
       properties:
@@ -407,6 +420,11 @@ components:
           minLength: 1
           pattern: ^[A-Z_][A-Z0-9_]*$
           type: string
+        integrationMode:
+          enum:
+            - external
+            - integrated
+          type: string
         launchConfigFields:
           items:
             $ref: "#/components/schemas/RoomLaunchConfigField"
@@ -418,28 +436,27 @@ components:
           type: string
         releaseSource:
           $ref: "#/components/schemas/RoomProgramReleaseSource"
-        supportsManualLinking:
-          type: boolean
         title:
           minLength: 1
           type: string
       required:
         - name
         - releaseSource
+        - integrationMode
       type: object
     CreateRoomProgramVersionBody:
       properties:
         artifact:
           $ref: "#/components/schemas/RoomProgramVersionArtifact"
+        entrypoint:
+          maxLength: 240
+          minLength: 1
+          type: string
         installStrategy:
           enum:
             - none
             - npm-ci
             - npm-install
-          type: string
-        nodeEntrypoint:
-          maxLength: 240
-          minLength: 1
           type: string
         version:
           maxLength: 80
@@ -448,7 +465,7 @@ components:
       required:
         - version
         - artifact
-        - nodeEntrypoint
+        - entrypoint
       type: object
     CreateRoomProxyEndpointBody:
       properties:
@@ -518,18 +535,18 @@ components:
       type: object
     DiscoverRoomProgramVersionsBody:
       properties:
+        entrypoint:
+          maxLength: 240
+          minLength: 1
+          type: string
         installStrategy:
           enum:
             - none
             - npm-ci
             - npm-install
           type: string
-        nodeEntrypoint:
-          maxLength: 240
-          minLength: 1
-          type: string
       required:
-        - nodeEntrypoint
+        - entrypoint
       type: object
     DiscoverRoomProgramVersionsResponse:
       items:
@@ -628,6 +645,18 @@ components:
         items:
           items:
             $ref: "#/components/schemas/Role"
+          type: array
+        page:
+          $ref: "#/components/schemas/PageInfo"
+      required:
+        - items
+        - page
+      type: object
+    ListRoomProgramVersionAliases:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/RoomProgramVersionAlias"
           type: array
         page:
           $ref: "#/components/schemas/PageInfo"
@@ -1257,6 +1286,16 @@ components:
           nullable: true
         createdAt:
           type: string
+        failedAt:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
+        failureReason:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
         id:
           format: uuid
           type: string
@@ -1288,6 +1327,7 @@ components:
             - provisioning
             - running
             - closed
+            - failed
           type: string
         updatedAt:
           type: string
@@ -1305,6 +1345,48 @@ components:
         - createdAt
         - updatedAt
         - closedAt
+        - failedAt
+        - failureReason
+      type: object
+    RoomArtifact:
+      properties:
+        assetName:
+          type: string
+        assetUrl:
+          type: string
+        checksumSha256:
+          maxLength: 64
+          minLength: 64
+          type: string
+        storageKey:
+          type: string
+      required:
+        - assetName
+        - assetUrl
+        - checksumSha256
+        - storageKey
+      type: object
+    RoomArtifactParams:
+      properties:
+        assetName:
+          maxLength: 160
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._-]*\.tgz$
+          type: string
+        branch:
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-z0-9][a-z0-9-]{0,63}$
+          type: string
+        sha:
+          maxLength: 40
+          minLength: 7
+          pattern: ^[a-f0-9]{7,40}$
+          type: string
+      required:
+        - branch
+        - sha
+        - assetName
       type: object
     RoomLaunchConfigField:
       properties:
@@ -1377,6 +1459,11 @@ components:
         id:
           format: uuid
           type: string
+        integrationMode:
+          enum:
+            - external
+            - integrated
+          type: string
         launchConfigFields:
           items:
             $ref: "#/components/schemas/RoomLaunchConfigField"
@@ -1388,8 +1475,6 @@ components:
           type: string
         releaseSource:
           $ref: "#/components/schemas/RoomProgramReleaseSource"
-        supportsManualLinking:
-          type: boolean
         title:
           anyOf:
             - type: string
@@ -1404,7 +1489,7 @@ components:
         - description
         - releaseSource
         - launchConfigFields
-        - supportsManualLinking
+        - integrationMode
         - haxballTokenEnvVar
         - createdAt
         - updatedAt
@@ -1434,6 +1519,9 @@ components:
           $ref: "#/components/schemas/RoomProgramVersionArtifact"
         createdAt:
           type: string
+        entrypoint:
+          minLength: 1
+          type: string
         id:
           format: uuid
           type: string
@@ -1442,9 +1530,6 @@ components:
             - none
             - npm-ci
             - npm-install
-          type: string
-        nodeEntrypoint:
-          minLength: 1
           type: string
         programId:
           format: uuid
@@ -1459,8 +1544,45 @@ components:
         - programId
         - version
         - artifact
-        - nodeEntrypoint
+        - entrypoint
         - installStrategy
+        - createdAt
+        - updatedAt
+      type: object
+    RoomProgramVersionAlias:
+      properties:
+        alias:
+          maxLength: 80
+          minLength: 1
+          pattern: ^[a-z0-9][a-z0-9-]{0,79}$
+          type: string
+        createdAt:
+          type: string
+        id:
+          format: uuid
+          type: string
+        programId:
+          format: uuid
+          type: string
+        updatedAt:
+          type: string
+        version:
+          properties:
+            id:
+              format: uuid
+              type: string
+            version:
+              minLength: 1
+              type: string
+          required:
+            - id
+            - version
+          type: object
+      required:
+        - id
+        - programId
+        - alias
+        - version
         - createdAt
         - updatedAt
       type: object
@@ -1786,6 +1908,11 @@ components:
           minLength: 1
           pattern: ^[A-Z_][A-Z0-9_]*$
           type: string
+        integrationMode:
+          enum:
+            - external
+            - integrated
+          type: string
         launchConfigFields:
           items:
             $ref: "#/components/schemas/RoomLaunchConfigField"
@@ -1809,8 +1936,6 @@ components:
             - repo
             - assetPattern
           type: object
-        supportsManualLinking:
-          type: boolean
         title:
           anyOf:
             - minLength: 1
@@ -1837,6 +1962,42 @@ components:
         definition: {}
       required:
         - definition
+      type: object
+    UploadRoomArtifactBody:
+      properties:
+        assetName:
+          maxLength: 160
+          minLength: 1
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._-]*\.tgz$
+          type: string
+        branch:
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-z0-9][a-z0-9-]{0,63}$
+          type: string
+        file:
+          default: File
+          format: binary
+          type: string
+        sha:
+          maxLength: 40
+          minLength: 7
+          pattern: ^[a-f0-9]{7,40}$
+          type: string
+      required:
+        - branch
+        - sha
+        - assetName
+        - file
+      type: object
+    UpsertRoomProgramVersionAliasBody:
+      properties:
+        version:
+          maxLength: 80
+          minLength: 1
+          type: string
+      required:
+        - version
       type: object
   securitySchemes:
     bearerAuth:
@@ -3528,6 +3689,177 @@ paths:
       summary: Update room program
       tags:
         - Rooms
+  /api/room-programs/{id}/artifacts:
+    post:
+      operationId: postApiRoom-programsByIdArtifacts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadRoomArtifactBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomArtifact"
+          description: Response for status 201
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Upload room artifact
+      tags:
+        - Rooms
+  /api/room-programs/{id}/version-aliases:
+    get:
+      operationId: getApiRoom-programsByIdVersion-aliases
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            anyOf:
+              - default: 0
+                format: integer
+                type: string
+              - maximum: 100
+                minimum: 1
+                type: integer
+            maximum: 100
+            minimum: 1
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            minLength: 1
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListRoomProgramVersionAliases"
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: List room program version aliases
+      tags:
+        - Rooms
+  /api/room-programs/{id}/version-aliases/{alias}:
+    put:
+      operationId: putApiRoom-programsByIdVersion-aliasesByAlias
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: alias
+          required: true
+          schema:
+            maxLength: 80
+            minLength: 1
+            pattern: ^[a-z0-9][a-z0-9-]{0,79}$
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertRoomProgramVersionAliasBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomProgramVersionAlias"
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Create or update room program version alias
+      tags:
+        - Rooms
   /api/room-programs/{id}/versions:
     get:
       operationId: getApiRoom-programsByIdVersions
@@ -3859,6 +4191,7 @@ paths:
               - provisioning
               - running
               - closed
+              - failed
               - all
             type: string
       responses:
@@ -4066,7 +4399,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/InternalServerError"
           description: Response for status 500
-      summary: Report room ready for manual linking
+      summary: Report integrated room ready
       tags:
         - Rooms
   /api/sessions/confirm:
@@ -4439,6 +4772,62 @@ paths:
       summary: Update stat event schema version
       tags:
         - Stat Event Schemas
+  /artifacts/rooms/{branch}/{sha}/{assetName}:
+    get:
+      operationId: getArtifactsRoomsByBranchByShaByAssetName
+      parameters:
+        - in: path
+          name: branch
+          required: true
+          schema:
+            maxLength: 64
+            minLength: 1
+            pattern: ^[a-z0-9][a-z0-9-]{0,63}$
+            type: string
+        - in: path
+          name: sha
+          required: true
+          schema:
+            maxLength: 40
+            minLength: 7
+            pattern: ^[a-f0-9]{7,40}$
+            type: string
+        - in: path
+          name: assetName
+          required: true
+          schema:
+            maxLength: 160
+            minLength: 1
+            pattern: ^[A-Za-z0-9][A-Za-z0-9._-]*\.tgz$
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      security: []
+      summary: Download uploaded room artifact
+      tags:
+        - Rooms
   /auth:
     post:
       operationId: postAuth
