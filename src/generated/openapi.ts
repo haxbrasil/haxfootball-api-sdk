@@ -57,6 +57,91 @@ export interface paths {
     patch: operations["patchApiAccountsByUuid"];
     trace?: never;
   };
+  "/api/job-schedules": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List job schedules */
+    get: operations["getApiJob-schedules"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/job-schedules/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get job schedule */
+    get: operations["getApiJob-schedulesById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/jobs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List jobs */
+    get: operations["getApiJobs"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/jobs/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get job */
+    get: operations["getApiJobsById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/languages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List languages */
+    get: operations["getApiLanguages"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches": {
     parameters: {
       query?: never;
@@ -69,6 +154,23 @@ export interface paths {
     put?: never;
     /** Create a match */
     post: operations["postApiMatches"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/matches/metrics/query": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Query match metrics */
+    post: operations["postApiMatchesMetricsQuery"];
     delete?: never;
     options?: never;
     head?: never;
@@ -618,6 +720,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/stat-event-schemas/by-name/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get latest stat event schema by name */
+    get: operations["getApiStat-event-schemasBy-nameByName"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/stat-event-schemas/by-name/{name}/versions/{version}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get stat event schema version by name */
+    get: operations["getApiStat-event-schemasBy-nameByNameVersionsByVersion"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/stat-event-schemas/{id}": {
     parameters: {
       query?: never;
@@ -668,6 +804,40 @@ export interface paths {
     head?: never;
     /** Update stat event schema version */
     patch: operations["patchApiStat-event-schemasByIdVersionsByVersion"];
+    trace?: never;
+  };
+  "/api/values/bulk": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Bulk upsert localized values */
+    post: operations["postApiValuesBulk"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/values/{value}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a localized value */
+    get: operations["getApiValuesByValue"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/artifacts/rooms/{branch}/{sha}/{assetName}": {
@@ -766,6 +936,13 @@ export interface components {
             message: string;
           };
         };
+    BulkUpsertValuesBody: {
+      values: {
+        label: string;
+        language: string;
+        value: string;
+      }[];
+    };
     CloseRoomResponse: {
       closedAt: (string | null) | null;
       createdAt: string;
@@ -850,7 +1027,7 @@ export interface components {
     CreateRoleBody: {
       name: string;
       /** @default [] */
-      permissions: string[];
+      permissions: (string | "*")[];
       title: string;
     };
     CreateRoomBody: {
@@ -915,8 +1092,57 @@ export interface components {
         message: string;
       };
     };
+    Job: {
+      attempts: string | number;
+      createdAt: string;
+      error?: unknown;
+      finishedAt: (string | null) | null;
+      /** Format: uuid */
+      id: string;
+      lockedAt: (string | null) | null;
+      lockedBy: (string | null) | null;
+      maxAttempts: string | number;
+      payload?: unknown;
+      result?: unknown;
+      runAfter: string;
+      startedAt: (string | null) | null;
+      /** @enum {string} */
+      status: "queued" | "running" | "succeeded" | "failed" | "canceled";
+      type: string;
+      updatedAt: string;
+    };
+    JobSchedule: {
+      createdAt: string;
+      enabled: boolean;
+      /** Format: uuid */
+      id: string;
+      intervalSeconds: string | number;
+      key: string;
+      lastEnqueuedAt: (string | null) | null;
+      nextRunAt: string;
+      payload?: unknown;
+      type: string;
+      updatedAt: string;
+    };
     ListAccounts: {
       items: components["schemas"]["Account"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListJobSchedules: {
+      items: components["schemas"]["JobSchedule"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListJobs: {
+      items: components["schemas"]["Job"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListLanguages: {
+      items: {
+        code: string;
+        createdAt: string;
+        name: string;
+        updatedAt: string;
+      }[];
       page: components["schemas"]["PageInfo"];
     };
     ListMatchStatEvents: {
@@ -1075,6 +1301,117 @@ export interface components {
     PublishStatEventSchemaVersionBody: {
       definition: unknown;
     };
+    QueryMatchMetrics: {
+      items: {
+        contribution: {
+          eventsCount: string | number;
+          matchesCount: string | number;
+          playersCount: string | number;
+        };
+        group:
+          | {
+              externalId: string;
+              /** Format: uuid */
+              id: string;
+              name: string;
+              /** @constant */
+              type: "account";
+            }
+          | {
+              account: (components["schemas"]["PlayerAccount"] | null) | null;
+              country: (string | null) | null;
+              id: string;
+              name: string;
+              /** @constant */
+              type: "player";
+            };
+        metrics: {
+          [key: string]: unknown;
+        };
+        rank: string | number;
+      }[];
+      meta: {
+        availableMetrics: {
+          description: (string | null) | null;
+          format?: string;
+          hidden?: boolean;
+          key: string;
+          label: string;
+          precision?: number;
+          valueType?: string;
+        }[];
+        group: {
+          /** @enum {string} */
+          by: "account" | "player" | "account-or-player";
+          /** @constant */
+          identityMode: "current";
+        };
+        schema: {
+          /** Format: uuid */
+          id: string;
+          isLatest: boolean;
+          name: string;
+          version: string | number;
+        };
+        sort: unknown[];
+        totals: {
+          eventsCount: string | number;
+          groupsCount: string | number;
+          matchesCount: string | number;
+        };
+      };
+      page: components["schemas"]["PageInfo"];
+    };
+    QueryMatchMetricsBody: {
+      filters?: {
+        accountIds?: string[];
+        eventTypes?: string[];
+        matchIds?: string[];
+        period?: {
+          /** @enum {string} */
+          field: "initiatedAt" | "endedAt" | "createdAt";
+          from?: string;
+          to?: string;
+        };
+        playerIds?: string[];
+        statuses?: ("completed" | "ongoing")[];
+      };
+      group?: {
+        /** @enum {string} */
+        by: "account" | "player" | "account-or-player";
+      };
+      language?: string;
+      metrics?: string[];
+      page?: {
+        cursor?: string;
+        limit?: string | number;
+      };
+      schema:
+        | {
+            /** Format: uuid */
+            id: string;
+            version?: string | number;
+          }
+        | {
+            name: string;
+            version?: string | number;
+          };
+      sort?: (
+        | {
+            direction: "asc" | "desc";
+            key: string;
+            /** @constant */
+            type: "metric";
+          }
+        | {
+            direction: "asc" | "desc";
+            /** @constant */
+            key: "name";
+            /** @constant */
+            type: "field";
+          }
+      )[];
+    };
     Recording: {
       createdAt: string;
       id: string;
@@ -1119,6 +1456,7 @@ export interface components {
           status: "password_required";
         };
     Role: {
+      bypassAllPermissions: boolean;
       createdAt: string;
       isDefault: boolean;
       name: string;
@@ -1320,7 +1658,7 @@ export interface components {
     UpdateRoleBody: {
       name?: string;
       /** @default [] */
-      permissions: string[];
+      permissions: (string | "*")[];
       title?: string;
     };
     UpdateRoomProgramBody: {
@@ -1357,6 +1695,18 @@ export interface components {
     };
     UpsertRoomProgramVersionAliasBody: {
       version: string;
+    };
+    Value: {
+      labels: {
+        label: string;
+        language: {
+          code: string;
+          createdAt: string;
+          name: string;
+          updatedAt: string;
+        };
+      }[];
+      value: string;
     };
   };
   responses: never;
@@ -1639,6 +1989,272 @@ export interface operations {
       };
     };
   };
+  "getApiJob-schedules": {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListJobSchedules"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiJob-schedulesById": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["JobSchedule"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiJobs: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListJobs"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiJobsById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Job"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiLanguages: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListLanguages"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   getApiMatches: {
     parameters: {
       query?: {
@@ -1709,6 +2325,66 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["Match"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiMatchesMetricsQuery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["QueryMatchMetricsBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["QueryMatchMetrics"];
         };
       };
       /** @description Response for status 400 */
@@ -4437,6 +5113,123 @@ export interface operations {
       };
     };
   };
+  "getApiStat-event-schemasBy-nameByName": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StatEventSchema"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiStat-event-schemasBy-nameByNameVersionsByVersion": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+        version: string | number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StatEventSchema"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiStat-event-schemasById": {
     parameters: {
       query?: never;
@@ -4639,6 +5432,115 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["StatEventSchema"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiValuesBulk: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BulkUpsertValuesBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Value"][];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiValuesByValue: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        value: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Value"];
         };
       };
       /** @description Response for status 400 */
