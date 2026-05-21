@@ -146,6 +146,10 @@ declare function createResources(client: HaxFootballApiClient): {
       }[];
       meta: {
         availableMetrics: {
+          category: ({
+            key: string;
+            label: string;
+          } | null) | null;
           description: (string | null) | null;
           format?: string;
           hidden?: boolean;
@@ -2061,6 +2065,10 @@ interface components {
       }[];
       meta: {
         availableMetrics: {
+          category: ({
+            key: string;
+            label: string;
+          } | null) | null;
           description: (string | null) | null;
           format?: string;
           hidden?: boolean;
