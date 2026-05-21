@@ -25,6 +25,8 @@ export type ConfirmAccountInput = Schema<"ConfirmAccountBody">;
 export type ConfirmAccountResponse = Schema<"ConfirmAccountResponse">;
 export type CreateAccountInput = Schema<"CreateAccountBody">;
 export type UpdateAccountInput = Schema<"UpdateAccountBody">;
+export type ListAccountsQuery =
+  operations["getApiAccounts"]["parameters"]["query"];
 export type ListAccountsResponse = PaginatedResponse<Account>;
 
 export type Permission = Schema<"Permission">;
@@ -43,7 +45,10 @@ export type Player = Schema<"Player">;
 export type PlayerAccount = Schema<"PlayerAccount">;
 export type CreatePlayerInput = Schema<"CreatePlayerBody">;
 export type AssociatePlayerAccountInput = Schema<"AssociatePlayerAccountBody">;
+export type ListPlayersQuery =
+  operations["getApiPlayers"]["parameters"]["query"];
 export type ListPlayersResponse = PaginatedResponse<Player>;
+export type ListPlayerMatchesResponse = PaginatedResponse<MatchSummary>;
 
 export type Recording = Schema<"Recording">;
 export type ListRecordingsResponse = PaginatedResponse<Recording>;
@@ -53,6 +58,8 @@ export type MatchSummary = Schema<"MatchSummary">;
 export type MatchEvent = Schema<"MatchEvent">;
 export type MatchEventInput = Schema<"MatchEventInput">;
 export type MatchMetrics = Schema<"MatchMetrics">;
+export type QueryMatchMetricsInput = Schema<"QueryMatchMetricsBody">;
+export type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 export type MatchScore = Schema<"MatchScore">;
 export type MatchStatEvent = Schema<"MatchStatEvent">;
 export type MatchStint = Schema<"MatchStint">;

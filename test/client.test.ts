@@ -7,7 +7,7 @@ import {
 
 describe("HaxFootballApiClient", () => {
   it("sends typed JSON requests with bearer auth and returns data results", async () => {
-    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+    const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
       jsonResponse({
         id: "player-1",
         name: "Gabriel",
@@ -148,6 +148,124 @@ describe("HaxFootballApiClient", () => {
     expect(authInit?.body).toBe(JSON.stringify({ apiKey: "app-key" }));
     expect(new Headers(listInit?.headers).get("authorization")).toBe(
       "Bearer jwt-token"
+    );
+  });
+
+  it("supports account lookup and filtered list helpers", async () => {
+    const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
+      jsonResponse({
+        uuid: "00000000-0000-4000-8000-000000000001",
+        name: "Gabriel",
+        externalId: "800000000000000001",
+        role: {
+          uuid: "00000000-0000-4000-8000-000000000002",
+          name: "default",
+          title: "Default",
+          permissions: [],
+          bypassAllPermissions: false,
+          isDefault: true,
+          createdAt: "2026-01-01T00:00:00.000Z",
+          updatedAt: "2026-01-01T00:00:00.000Z"
+        },
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z"
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.accounts.getByName("Gabriel");
+    await client.accounts.getByExternalId("800000000000000001");
+    await client.accounts.list({
+      search: "Gab",
+      name: "Gabriel",
+      externalId: "800000000000000001",
+      roleUuid: "00000000-0000-4000-8000-000000000002"
+    });
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/accounts/by-name/Gabriel"
+    );
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      "https://api.example.com/api/accounts/by-external-id/800000000000000001"
+    );
+    expect(fetcher.mock.calls[2]?.[0].toString()).toBe(
+      "https://api.example.com/api/accounts?search=Gab&name=Gabriel&externalId=800000000000000001&roleUuid=00000000-0000-4000-8000-000000000002"
+    );
+  });
+
+  it("supports player match history and match metrics query helpers", async () => {
+    const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
+      jsonResponse({
+        items: [],
+        page: { limit: 50, nextCursor: null }
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.players.list({
+      search: "Gab",
+      accountUuid: "00000000-0000-4000-8000-000000000001",
+      country: "br"
+    });
+    await client.players.listMatches("player-1", { limit: 10 });
+    await client.matches.queryMetrics({
+      schema: { name: "haxfootball" },
+      group: { by: "player" },
+      language: "pt"
+    });
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/players?search=Gab&accountUuid=00000000-0000-4000-8000-000000000001&country=br"
+    );
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      "https://api.example.com/api/players/player-1/matches?limit=10"
+    );
+    expect(fetcher.mock.calls[2]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/metrics/query"
+    );
+    expect(fetcher.mock.calls[2]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[2]?.[1]?.body).toBe(
+      JSON.stringify({
+        schema: { name: "haxfootball" },
+        group: { by: "player" },
+        language: "pt"
+      })
+    );
+  });
+
+  it("supports stat event schema lookup by name", async () => {
+    const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
+      jsonResponse({
+        id: "00000000-0000-4000-8000-000000000001",
+        name: "haxfootball",
+        version: 1,
+        definition: {},
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z"
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.statEventSchemas.getLatestByName("haxfootball");
+    await client.statEventSchemas.getVersionByName("haxfootball", 1);
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/stat-event-schemas/by-name/haxfootball"
+    );
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      "https://api.example.com/api/stat-event-schemas/by-name/haxfootball/versions/1"
     );
   });
 

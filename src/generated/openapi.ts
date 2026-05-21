@@ -22,6 +22,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/accounts/by-external-id/{externalId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get an account by external ID */
+    get: operations["getApiAccountsBy-external-idByExternalId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/accounts/by-name/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get an account by name */
+    get: operations["getApiAccountsBy-nameByName"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/accounts/confirm": {
     parameters: {
       query?: never;
@@ -368,6 +402,23 @@ export interface paths {
     head?: never;
     /** Associate a player with an account */
     patch: operations["patchApiPlayersByExternalIdAccount"];
+    trace?: never;
+  };
+  "/api/players/{externalId}/matches": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List player matches */
+    get: operations["getApiPlayersByExternalIdMatches"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/recs": {
@@ -1157,6 +1208,10 @@ export interface components {
       items: components["schemas"]["Permission"][];
       page: components["schemas"]["PageInfo"];
     };
+    ListPlayerMatches: {
+      items: components["schemas"]["MatchSummary"][];
+      page: components["schemas"]["PageInfo"];
+    };
     ListPlayers: {
       items: components["schemas"]["Player"][];
       page: components["schemas"]["PageInfo"];
@@ -1722,6 +1777,10 @@ export interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        search?: string;
+        name?: string;
+        externalId?: string;
+        roleUuid?: string;
       };
       header?: never;
       path?: never;
@@ -1805,6 +1864,122 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiAccountsBy-external-idByExternalId": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        externalId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Account"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiAccountsBy-nameByName": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Account"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
         };
       };
       /** @description Response for status 500 */
@@ -3197,6 +3372,9 @@ export interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        search?: string;
+        accountUuid?: string;
+        country?: string;
       };
       header?: never;
       path?: never;
@@ -3373,6 +3551,67 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["Player"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiPlayersByExternalIdMatches: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path: {
+        externalId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListPlayerMatches"];
         };
       };
       /** @description Response for status 400 */

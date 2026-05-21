@@ -22,10 +22,22 @@ export function createStatEventSchemasResource(client: HaxFootballApiClient) {
         path: `/stat-event-schemas/${encodeURIComponent(id)}`,
         ...config
       }),
+    getLatestByName: (name: string, config?: RequestConfig) =>
+      client.request<StatEventSchema>({
+        path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}`,
+        ...config
+      }),
     getVersion: (id: string, version: number, config?: RequestConfig) =>
       client.request<StatEventSchema>({
         path: `/stat-event-schemas/${encodeURIComponent(
           id
+        )}/versions/${encodeURIComponent(String(version))}`,
+        ...config
+      }),
+    getVersionByName: (name: string, version: number, config?: RequestConfig) =>
+      client.request<StatEventSchema>({
+        path: `/stat-event-schemas/by-name/${encodeURIComponent(
+          name
         )}/versions/${encodeURIComponent(String(version))}`,
         ...config
       }),

@@ -2,6 +2,8 @@ import type { HaxFootballApiClient } from "../client";
 import type {
   AssociatePlayerAccountInput,
   CreatePlayerInput,
+  ListPlayerMatchesResponse,
+  ListPlayersQuery,
   ListPlayersResponse,
   PaginationQuery,
   Player
@@ -10,7 +12,7 @@ import type { RequestConfig } from "./shared";
 
 export function createPlayersResource(client: HaxFootballApiClient) {
   return {
-    list: (query?: PaginationQuery, config?: RequestConfig) =>
+    list: (query?: ListPlayersQuery, config?: RequestConfig) =>
       client.request<ListPlayersResponse>({
         path: "/players",
         query,
@@ -19,6 +21,16 @@ export function createPlayersResource(client: HaxFootballApiClient) {
     get: (externalId: string, config?: RequestConfig) =>
       client.request<Player>({
         path: `/players/${encodeURIComponent(externalId)}`,
+        ...config
+      }),
+    listMatches: (
+      externalId: string,
+      query?: PaginationQuery,
+      config?: RequestConfig
+    ) =>
+      client.request<ListPlayerMatchesResponse>({
+        path: `/players/${encodeURIComponent(externalId)}/matches`,
+        query,
         ...config
       }),
     create: (body: CreatePlayerInput, config?: RequestConfig) =>

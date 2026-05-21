@@ -11,6 +11,8 @@ import type {
   MatchMetrics,
   MatchStatEvent,
   PaginationQuery,
+  QueryMatchMetricsInput,
+  QueryMatchMetricsResponse,
   UpdateMatchInput
 } from "../types";
 import type { RequestConfig } from "./shared";
@@ -56,6 +58,13 @@ export function createMatchesResource(client: HaxFootballApiClient) {
     getMetrics: (id: string, config?: RequestConfig) =>
       client.request<MatchMetrics>({
         path: `/matches/${encodeURIComponent(id)}/metrics`,
+        ...config
+      }),
+    queryMetrics: (body: QueryMatchMetricsInput, config?: RequestConfig) =>
+      client.request<QueryMatchMetricsResponse>({
+        method: "POST",
+        path: "/matches/metrics/query",
+        body,
         ...config
       }),
     associateRecording: (

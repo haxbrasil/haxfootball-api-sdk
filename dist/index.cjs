@@ -11,6 +11,14 @@ function createAccountsResource(client) {
 			path: `/accounts/${encodeURIComponent(uuid)}`,
 			...config
 		}),
+		getByName: (name, config) => client.request({
+			path: `/accounts/by-name/${encodeURIComponent(name)}`,
+			...config
+		}),
+		getByExternalId: (externalId, config) => client.request({
+			path: `/accounts/by-external-id/${encodeURIComponent(externalId)}`,
+			...config
+		}),
 		create: (body, config) => client.request({
 			method: "POST",
 			path: "/accounts",
@@ -75,6 +83,12 @@ function createMatchesResource(client) {
 		}),
 		getMetrics: (id, config) => client.request({
 			path: `/matches/${encodeURIComponent(id)}/metrics`,
+			...config
+		}),
+		queryMetrics: (body, config) => client.request({
+			method: "POST",
+			path: "/matches/metrics/query",
+			body,
 			...config
 		}),
 		associateRecording: (id, body, config) => client.request({
@@ -147,6 +161,11 @@ function createPlayersResource(client) {
 		}),
 		get: (externalId, config) => client.request({
 			path: `/players/${encodeURIComponent(externalId)}`,
+			...config
+		}),
+		listMatches: (externalId, query, config) => client.request({
+			path: `/players/${encodeURIComponent(externalId)}/matches`,
+			query,
 			...config
 		}),
 		create: (body, config) => client.request({
@@ -366,8 +385,16 @@ function createStatEventSchemasResource(client) {
 			path: `/stat-event-schemas/${encodeURIComponent(id)}`,
 			...config
 		}),
+		getLatestByName: (name, config) => client.request({
+			path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}`,
+			...config
+		}),
 		getVersion: (id, version, config) => client.request({
 			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
+			...config
+		}),
+		getVersionByName: (name, version, config) => client.request({
+			path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}/versions/${encodeURIComponent(String(version))}`,
 			...config
 		}),
 		create: (body, config) => client.request({

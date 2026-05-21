@@ -4,15 +4,15 @@ import type {
   ConfirmAccountInput,
   ConfirmAccountResponse,
   CreateAccountInput,
+  ListAccountsQuery,
   ListAccountsResponse,
-  PaginationQuery,
   UpdateAccountInput
 } from "../types";
 import type { RequestConfig } from "./shared";
 
 export function createAccountsResource(client: HaxFootballApiClient) {
   return {
-    list: (query?: PaginationQuery, config?: RequestConfig) =>
+    list: (query?: ListAccountsQuery, config?: RequestConfig) =>
       client.request<ListAccountsResponse>({
         path: "/accounts",
         query,
@@ -21,6 +21,16 @@ export function createAccountsResource(client: HaxFootballApiClient) {
     get: (uuid: string, config?: RequestConfig) =>
       client.request<Account>({
         path: `/accounts/${encodeURIComponent(uuid)}`,
+        ...config
+      }),
+    getByName: (name: string, config?: RequestConfig) =>
+      client.request<Account>({
+        path: `/accounts/by-name/${encodeURIComponent(name)}`,
+        ...config
+      }),
+    getByExternalId: (externalId: string, config?: RequestConfig) =>
+      client.request<Account>({
+        path: `/accounts/by-external-id/${encodeURIComponent(externalId)}`,
         ...config
       }),
     create: (body: CreateAccountInput, config?: RequestConfig) =>

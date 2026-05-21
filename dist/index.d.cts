@@ -8,8 +8,24 @@ type RequestConfig = {
 type HaxFootballApiResources = ReturnType<typeof createResources>;
 declare function createResources(client: HaxFootballApiClient): {
   accounts: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
+    list: (query?: ListAccountsQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
     get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    getByExternalId: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       externalId: string;
       name: string;
@@ -104,6 +120,59 @@ declare function createResources(client: HaxFootballApiClient): {
       };
       player: components["schemas"]["Player"];
     }[]>>;
+    queryMetrics: (body: QueryMatchMetricsInput, config?: RequestConfig) => Promise<ApiResult<{
+      items: {
+        contribution: {
+          eventsCount: string | number;
+          matchesCount: string | number;
+          playersCount: string | number;
+        };
+        group: {
+          externalId: string;
+          id: string;
+          name: string;
+          type: "account";
+        } | {
+          account: (components["schemas"]["PlayerAccount"] | null) | null;
+          country: (string | null) | null;
+          id: string;
+          name: string;
+          type: "player";
+        };
+        metrics: {
+          [key: string]: unknown;
+        };
+        rank: string | number;
+      }[];
+      meta: {
+        availableMetrics: {
+          description: (string | null) | null;
+          format?: string;
+          hidden?: boolean;
+          key: string;
+          label: string;
+          precision?: number;
+          valueType?: string;
+        }[];
+        group: {
+          by: "account" | "player" | "account-or-player";
+          identityMode: "current";
+        };
+        schema: {
+          id: string;
+          isLatest: boolean;
+          name: string;
+          version: string | number;
+        };
+        sort: unknown[];
+        totals: {
+          eventsCount: string | number;
+          groupsCount: string | number;
+          matchesCount: string | number;
+        };
+      };
+      page: components["schemas"]["PageInfo"];
+    }>>;
     associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
@@ -174,7 +243,7 @@ declare function createResources(client: HaxFootballApiClient): {
     }>>;
   };
   players: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
+    list: (query?: ListPlayersQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
     get: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
       account: (components["schemas"]["PlayerAccount"] | null) | null;
       country: (string | null) | null;
@@ -183,6 +252,7 @@ declare function createResources(client: HaxFootballApiClient): {
       name: string;
       updatedAt: string;
     }>>;
+    listMatches: (externalId: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayerMatchesResponse>>;
     create: (body: CreatePlayerInput, config?: RequestConfig) => Promise<ApiResult<{
       account: (components["schemas"]["PlayerAccount"] | null) | null;
       country: (string | null) | null;
@@ -442,7 +512,29 @@ declare function createResources(client: HaxFootballApiClient): {
       updatedAt: string;
       version: string | number;
     }>>;
+    getLatestByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
     getVersion: (id: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    getVersionByName: (name: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       definition: unknown;
       description: (string | null) | null;
@@ -609,6 +701,40 @@ interface paths {
     put?: never;
     /** Create an account */
     post: operations["postApiAccounts"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/accounts/by-external-id/{externalId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get an account by external ID */
+    get: operations["getApiAccountsBy-external-idByExternalId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/accounts/by-name/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get an account by name */
+    get: operations["getApiAccountsBy-nameByName"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -961,6 +1087,23 @@ interface paths {
     head?: never;
     /** Associate a player with an account */
     patch: operations["patchApiPlayersByExternalIdAccount"];
+    trace?: never;
+  };
+  "/api/players/{externalId}/matches": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List player matches */
+    get: operations["getApiPlayersByExternalIdMatches"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/recs": {
@@ -1743,6 +1886,10 @@ interface components {
       items: components["schemas"]["Permission"][];
       page: components["schemas"]["PageInfo"];
     };
+    ListPlayerMatches: {
+      items: components["schemas"]["MatchSummary"][];
+      page: components["schemas"]["PageInfo"];
+    };
     ListPlayers: {
       items: components["schemas"]["Player"][];
       page: components["schemas"]["PageInfo"];
@@ -2293,6 +2440,10 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        search?: string;
+        name?: string;
+        externalId?: string;
+        roleUuid?: string;
       };
       header?: never;
       path?: never;
@@ -2376,6 +2527,122 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiAccountsBy-external-idByExternalId": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        externalId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Account"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiAccountsBy-nameByName": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Account"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
         };
       };
       /** @description Response for status 500 */
@@ -3768,6 +4035,9 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        search?: string;
+        accountUuid?: string;
+        country?: string;
       };
       header?: never;
       path?: never;
@@ -3944,6 +4214,67 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["Player"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiPlayersByExternalIdMatches: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path: {
+        externalId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListPlayerMatches"];
         };
       };
       /** @description Response for status 400 */
@@ -6279,6 +6610,7 @@ type ConfirmAccountInput = Schema<"ConfirmAccountBody">;
 type ConfirmAccountResponse = Schema<"ConfirmAccountResponse">;
 type CreateAccountInput = Schema<"CreateAccountBody">;
 type UpdateAccountInput = Schema<"UpdateAccountBody">;
+type ListAccountsQuery = operations["getApiAccounts"]["parameters"]["query"];
 type ListAccountsResponse = PaginatedResponse<Account>;
 type Permission = Schema<"Permission">;
 type CreatePermissionInput = Schema<"CreatePermissionBody">;
@@ -6294,7 +6626,9 @@ type Player = Schema<"Player">;
 type PlayerAccount = Schema<"PlayerAccount">;
 type CreatePlayerInput = Schema<"CreatePlayerBody">;
 type AssociatePlayerAccountInput = Schema<"AssociatePlayerAccountBody">;
+type ListPlayersQuery = operations["getApiPlayers"]["parameters"]["query"];
 type ListPlayersResponse = PaginatedResponse<Player>;
+type ListPlayerMatchesResponse = PaginatedResponse<MatchSummary>;
 type Recording = Schema<"Recording">;
 type ListRecordingsResponse = PaginatedResponse<Recording>;
 type Match = Schema<"Match">;
@@ -6302,6 +6636,8 @@ type MatchSummary = Schema<"MatchSummary">;
 type MatchEvent = Schema<"MatchEvent">;
 type MatchEventInput = Schema<"MatchEventInput">;
 type MatchMetrics = Schema<"MatchMetrics">;
+type QueryMatchMetricsInput = Schema<"QueryMatchMetricsBody">;
+type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 type MatchScore = Schema<"MatchScore">;
 type MatchStatEvent = Schema<"MatchStatEvent">;
 type MatchStint = Schema<"MatchStint">;
@@ -6361,5 +6697,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
+export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
 //# sourceMappingURL=index.d.cts.map
