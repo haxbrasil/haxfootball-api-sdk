@@ -1389,8 +1389,10 @@ export interface components {
         availableMetrics: {
           category:
             | ({
+                description: (string | null) | null;
                 key: string;
                 label: string;
+                primaryMetric: (string | null) | null;
               } | null)
             | null;
           description: (string | null) | null;
