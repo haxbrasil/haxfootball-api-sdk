@@ -160,6 +160,9 @@ declare function createResources(client: HaxFootballApiClient): {
           precision?: number;
           valueType?: string;
         }[];
+        featuredMetrics: {
+          points?: string;
+        };
         group: {
           by: "account" | "player" | "account-or-player";
           identityMode: "current";
@@ -2081,6 +2084,9 @@ interface components {
           precision?: number;
           valueType?: string;
         }[];
+        featuredMetrics: {
+          points?: string;
+        };
         group: {
           /** @enum {string} */
           by: "account" | "player" | "account-or-player";

@@ -1403,6 +1403,9 @@ export interface components {
           precision?: number;
           valueType?: string;
         }[];
+        featuredMetrics: {
+          points?: string;
+        };
         group: {
           /** @enum {string} */
           by: "account" | "player" | "account-or-player";
