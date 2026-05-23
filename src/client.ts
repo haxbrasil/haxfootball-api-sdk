@@ -41,6 +41,7 @@ export type RequestOptions = {
 export class HaxFootballApiClient {
   readonly accounts: HaxFootballApiResources["accounts"];
   readonly auth: HaxFootballApiResources["auth"];
+  readonly gameModes: HaxFootballApiResources["gameModes"];
   readonly matches: HaxFootballApiResources["matches"];
   readonly permissions: HaxFootballApiResources["permissions"];
   readonly players: HaxFootballApiResources["players"];
@@ -86,6 +87,7 @@ export class HaxFootballApiClient {
 
     this.accounts = resources.accounts;
     this.auth = resources.auth;
+    this.gameModes = resources.gameModes;
     this.matches = resources.matches;
     this.permissions = resources.permissions;
     this.players = resources.players;

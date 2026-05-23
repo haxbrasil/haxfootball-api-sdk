@@ -56,11 +56,79 @@ declare function createResources(client: HaxFootballApiClient): {
   auth: {
     createToken: (body: CreateTokenInput, config?: RequestConfig) => Promise<ApiResult<CreateTokenResponse>>;
   };
+  gameModes: {
+    list: (query?: ListGameModesQuery, config?: RequestConfig) => Promise<ApiResult<ListGameModesResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    create: (body: CreateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    update: (id: string, body: UpdateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+  };
   matches: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
+    list: (query?: ListMatchesQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
     get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -75,6 +143,7 @@ declare function createResources(client: HaxFootballApiClient): {
     create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -89,6 +158,7 @@ declare function createResources(client: HaxFootballApiClient): {
     update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -103,6 +173,7 @@ declare function createResources(client: HaxFootballApiClient): {
     appendEvents: (id: string, body: AppendMatchEventsInput, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -185,6 +256,7 @@ declare function createResources(client: HaxFootballApiClient): {
     associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -302,7 +374,10 @@ declare function createResources(client: HaxFootballApiClient): {
       isDefault: boolean;
       name: string;
       permissions: string[];
-      title: string;
+      title: {
+        label: string;
+        value: string;
+      };
       updatedAt: string;
       uuid: string;
     }>>;
@@ -312,7 +387,10 @@ declare function createResources(client: HaxFootballApiClient): {
       isDefault: boolean;
       name: string;
       permissions: string[];
-      title: string;
+      title: {
+        label: string;
+        value: string;
+      };
       updatedAt: string;
       uuid: string;
     }>>;
@@ -322,7 +400,10 @@ declare function createResources(client: HaxFootballApiClient): {
       isDefault: boolean;
       name: string;
       permissions: string[];
-      title: string;
+      title: {
+        label: string;
+        value: string;
+      };
       updatedAt: string;
       uuid: string;
     }>>;
@@ -667,6 +748,7 @@ type RequestOptions = {
 declare class HaxFootballApiClient {
   readonly accounts: HaxFootballApiResources["accounts"];
   readonly auth: HaxFootballApiResources["auth"];
+  readonly gameModes: HaxFootballApiResources["gameModes"];
   readonly matches: HaxFootballApiResources["matches"];
   readonly permissions: HaxFootballApiResources["permissions"];
   readonly players: HaxFootballApiResources["players"];
@@ -783,6 +865,59 @@ interface paths {
     head?: never;
     /** Update an account */
     patch: operations["patchApiAccountsByUuid"];
+    trace?: never;
+  };
+  "/api/game-modes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List game modes */
+    get: operations["getApiGame-modes"];
+    put?: never;
+    /** Create a game mode */
+    post: operations["postApiGame-modes"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/game-modes/by-name/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a game mode by name */
+    get: operations["getApiGame-modesBy-nameByName"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/game-modes/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a game mode */
+    get: operations["getApiGame-modesById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update a game mode */
+    patch: operations["patchApiGame-modesById"];
     trace?: never;
   };
   "/api/job-schedules": {
@@ -1729,9 +1864,18 @@ interface components {
       name: string;
       password: string;
     };
+    CreateGameModeBody: {
+      description?: string | null;
+      name: string;
+      rank?: string | number;
+      title?: string | null;
+      /** @enum {string} */
+      visibility?: "visible" | "hidden";
+    };
     CreateMatchBody: {
       endedAt?: string;
       events?: components["schemas"]["MatchEventInput"][];
+      gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       recordingId?: string;
       score?: {
@@ -1823,6 +1967,30 @@ interface components {
       installStrategy?: "none" | "npm-ci" | "npm-install";
     };
     DiscoverRoomProgramVersionsResponse: components["schemas"]["RoomProgramVersion"][];
+    GameMode: {
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      /** Format: uuid */
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      /** @enum {string} */
+      visibility: "visible" | "hidden";
+    };
+    GameModeReference: {
+      /** Format: uuid */
+      id: string;
+    } | {
+      name: string;
+    };
     InternalServerError: {
       error: {
         /** @constant */
@@ -1864,6 +2032,10 @@ interface components {
     };
     ListAccounts: {
       items: components["schemas"]["Account"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListGameModes: {
+      items: components["schemas"]["GameMode"][];
       page: components["schemas"]["PageInfo"];
     };
     ListJobSchedules: {
@@ -1996,6 +2168,7 @@ interface components {
     MatchSummary: {
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -2113,6 +2286,7 @@ interface components {
       filters?: {
         accountIds?: string[];
         eventTypes?: string[];
+        gameModeNames?: string[];
         matchIds?: string[];
         period?: {
           /** @enum {string} */
@@ -2201,7 +2375,10 @@ interface components {
       name: string;
       /** @default [] */
       permissions: string[];
-      title: string;
+      title: {
+        label: string;
+        value: string;
+      };
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
@@ -2372,9 +2549,18 @@ interface components {
       /** Format: uuid */
       roleUuid?: string;
     };
+    UpdateGameModeBody: {
+      description?: string | null;
+      name?: string;
+      rank?: string | number;
+      title?: string | null;
+      /** @enum {string} */
+      visibility?: "visible" | "hidden";
+    };
     UpdateMatchBody: {
       endedAt?: string;
       events?: components["schemas"]["MatchEventInput"][];
+      gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       score?: {
         blue: string | number;
@@ -2845,6 +3031,291 @@ interface operations {
       };
     };
   };
+  "getApiGame-modes": {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+        visibility?: ("visible" | "hidden") | "all";
+        language?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListGameModes"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiGame-modes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateGameModeBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiGame-modesBy-nameByName": {
+    parameters: {
+      query?: {
+        language?: string;
+      };
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiGame-modesById": {
+    parameters: {
+      query?: {
+        language?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "patchApiGame-modesById": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateGameModeBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiJob-schedules": {
     parameters: {
       query?: {
@@ -3116,6 +3587,7 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        gameMode?: string;
       };
       header?: never;
       path?: never;
@@ -4506,6 +4978,7 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        language?: string;
       };
       header?: never;
       path?: never;
@@ -4604,7 +5077,9 @@ interface operations {
   };
   getApiRolesByUuid: {
     parameters: {
-      query?: never;
+      query?: {
+        language?: string;
+      };
       header?: never;
       path: {
         uuid: string;
@@ -6640,6 +7115,12 @@ type CreateRoleInput = Schema<"CreateRoleBody">;
 type UpdateRoleInput = Schema<"UpdateRoleBody">;
 type RemoveRoleResponse = Schema<"RemoveRoleResponse">;
 type ListRolesResponse = PaginatedResponse<Role>;
+type GameMode = Schema<"GameMode">;
+type GameModeReference = Schema<"GameModeReference">;
+type CreateGameModeInput = Schema<"CreateGameModeBody">;
+type UpdateGameModeInput = Schema<"UpdateGameModeBody">;
+type ListGameModesQuery = operations["getApiGame-modes"]["parameters"]["query"];
+type ListGameModesResponse = PaginatedResponse<GameMode>;
 type Player = Schema<"Player">;
 type PlayerAccount = Schema<"PlayerAccount">;
 type CreatePlayerInput = Schema<"CreatePlayerBody">;
@@ -6665,6 +7146,7 @@ type AppendMatchEventsInput = Schema<"AppendMatchEventsBody">;
 type AddMatchStatEventInput = Schema<"AddMatchStatEventBody">;
 type DisableMatchStatEventInput = Schema<"DisableMatchStatEventBody">;
 type AssociateMatchRecordingInput = Schema<"AssociateMatchRecordingBody">;
+type ListMatchesQuery = operations["getApiMatches"]["parameters"]["query"];
 type ListMatchesResponse = PaginatedResponse<MatchSummary>;
 type ListMatchStatEventsResponse = PaginatedResponse<MatchStatEvent>;
 type CreateTokenInput = Schema<"CreateTokenBody">;
@@ -6715,5 +7197,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListMatchStatEventsResponse, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
+export { type AbortedFailure, Account, AddMatchStatEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AppendMatchEventsInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateStatEventSchemaInput, CreateTokenInput, CreateTokenResponse, DisableMatchStatEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, type FetchLike, GameMode, GameModeReference, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListGameModesQuery, ListGameModesResponse, ListMatchStatEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, ListStatEventSchemasResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStatEvent, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishStatEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, StatEventSchema, StatEventSchemaReference, type TokenProvider, UpdateAccountInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateStatEventSchemaInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
 //# sourceMappingURL=index.d.ts.map

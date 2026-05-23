@@ -5,6 +5,7 @@ import type {
   AssociateMatchRecordingInput,
   CreateMatchInput,
   DisableMatchStatEventInput,
+  ListMatchesQuery,
   ListMatchesResponse,
   ListMatchStatEventsResponse,
   Match,
@@ -19,7 +20,7 @@ import type { RequestConfig } from "./shared";
 
 export function createMatchesResource(client: HaxFootballApiClient) {
   return {
-    list: (query?: PaginationQuery, config?: RequestConfig) =>
+    list: (query?: ListMatchesQuery, config?: RequestConfig) =>
       client.request<ListMatchesResponse>({
         path: "/matches",
         query,

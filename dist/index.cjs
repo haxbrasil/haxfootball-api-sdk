@@ -51,6 +51,38 @@ function createAuthResource(client) {
 }
 
 //#endregion
+//#region src/resources/game-modes.ts
+function createGameModesResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/game-modes",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/game-modes/${encodeURIComponent(id)}`,
+			...config
+		}),
+		getByName: (name, config) => client.request({
+			path: `/game-modes/by-name/${encodeURIComponent(name)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/game-modes",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/game-modes/${encodeURIComponent(id)}`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
 //#region src/resources/matches.ts
 function createMatchesResource(client) {
 	return {
@@ -424,6 +456,7 @@ function createResources(client) {
 	return {
 		accounts: createAccountsResource(client),
 		auth: createAuthResource(client),
+		gameModes: createGameModesResource(client),
 		matches: createMatchesResource(client),
 		permissions: createPermissionsResource(client),
 		players: createPlayersResource(client),
@@ -458,6 +491,7 @@ function responseMeta(response) {
 var HaxFootballApiClient = class {
 	accounts;
 	auth;
+	gameModes;
 	matches;
 	permissions;
 	players;
@@ -486,6 +520,7 @@ var HaxFootballApiClient = class {
 		const resources = createResources(this);
 		this.accounts = resources.accounts;
 		this.auth = resources.auth;
+		this.gameModes = resources.gameModes;
 		this.matches = resources.matches;
 		this.permissions = resources.permissions;
 		this.players = resources.players;

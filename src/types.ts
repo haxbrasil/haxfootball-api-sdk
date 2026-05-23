@@ -41,6 +41,14 @@ export type UpdateRoleInput = Schema<"UpdateRoleBody">;
 export type RemoveRoleResponse = Schema<"RemoveRoleResponse">;
 export type ListRolesResponse = PaginatedResponse<Role>;
 
+export type GameMode = Schema<"GameMode">;
+export type GameModeReference = Schema<"GameModeReference">;
+export type CreateGameModeInput = Schema<"CreateGameModeBody">;
+export type UpdateGameModeInput = Schema<"UpdateGameModeBody">;
+export type ListGameModesQuery =
+  operations["getApiGame-modes"]["parameters"]["query"];
+export type ListGameModesResponse = PaginatedResponse<GameMode>;
+
 export type Player = Schema<"Player">;
 export type PlayerAccount = Schema<"PlayerAccount">;
 export type CreatePlayerInput = Schema<"CreatePlayerBody">;
@@ -70,6 +78,8 @@ export type AddMatchStatEventInput = Schema<"AddMatchStatEventBody">;
 export type DisableMatchStatEventInput = Schema<"DisableMatchStatEventBody">;
 export type AssociateMatchRecordingInput =
   Schema<"AssociateMatchRecordingBody">;
+export type ListMatchesQuery =
+  operations["getApiMatches"]["parameters"]["query"];
 export type ListMatchesResponse = PaginatedResponse<MatchSummary>;
 export type ListMatchStatEventsResponse = PaginatedResponse<MatchStatEvent>;
 

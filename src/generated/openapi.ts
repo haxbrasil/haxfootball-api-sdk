@@ -91,6 +91,59 @@ export interface paths {
     patch: operations["patchApiAccountsByUuid"];
     trace?: never;
   };
+  "/api/game-modes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List game modes */
+    get: operations["getApiGame-modes"];
+    put?: never;
+    /** Create a game mode */
+    post: operations["postApiGame-modes"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/game-modes/by-name/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a game mode by name */
+    get: operations["getApiGame-modesBy-nameByName"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/game-modes/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a game mode */
+    get: operations["getApiGame-modesById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update a game mode */
+    patch: operations["patchApiGame-modesById"];
+    trace?: never;
+  };
   "/api/job-schedules": {
     parameters: {
       query?: never;
@@ -1042,9 +1095,18 @@ export interface components {
       name: string;
       password: string;
     };
+    CreateGameModeBody: {
+      description?: string | null;
+      name: string;
+      rank?: string | number;
+      title?: string | null;
+      /** @enum {string} */
+      visibility?: "visible" | "hidden";
+    };
     CreateMatchBody: {
       endedAt?: string;
       events?: components["schemas"]["MatchEventInput"][];
+      gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       recordingId?: string;
       score?: {
@@ -1136,6 +1198,36 @@ export interface components {
       installStrategy?: "none" | "npm-ci" | "npm-install";
     };
     DiscoverRoomProgramVersionsResponse: components["schemas"]["RoomProgramVersion"][];
+    GameMode: {
+      createdAt: string;
+      description:
+        | ({
+            label: string;
+            value: string;
+          } | null)
+        | null;
+      /** Format: uuid */
+      id: string;
+      name: string;
+      rank: string | number;
+      title:
+        | ({
+            label: string;
+            value: string;
+          } | null)
+        | null;
+      updatedAt: string;
+      /** @enum {string} */
+      visibility: "visible" | "hidden";
+    };
+    GameModeReference:
+      | {
+          /** Format: uuid */
+          id: string;
+        }
+      | {
+          name: string;
+        };
     InternalServerError: {
       error: {
         /** @constant */
@@ -1177,6 +1269,10 @@ export interface components {
     };
     ListAccounts: {
       items: components["schemas"]["Account"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListGameModes: {
+      items: components["schemas"]["GameMode"][];
       page: components["schemas"]["PageInfo"];
     };
     ListJobSchedules: {
@@ -1309,6 +1405,7 @@ export interface components {
     MatchSummary: {
       createdAt: string;
       endedAt: (string | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
       recording: (components["schemas"]["Recording"] | null) | null;
@@ -1432,6 +1529,7 @@ export interface components {
       filters?: {
         accountIds?: string[];
         eventTypes?: string[];
+        gameModeNames?: string[];
         matchIds?: string[];
         period?: {
           /** @enum {string} */
@@ -1528,7 +1626,10 @@ export interface components {
       name: string;
       /** @default [] */
       permissions: string[];
-      title: string;
+      title: {
+        label: string;
+        value: string;
+      };
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
@@ -1701,9 +1802,18 @@ export interface components {
       /** Format: uuid */
       roleUuid?: string;
     };
+    UpdateGameModeBody: {
+      description?: string | null;
+      name?: string;
+      rank?: string | number;
+      title?: string | null;
+      /** @enum {string} */
+      visibility?: "visible" | "hidden";
+    };
     UpdateMatchBody: {
       endedAt?: string;
       events?: components["schemas"]["MatchEventInput"][];
+      gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       score?: {
         blue: string | number;
@@ -2175,6 +2285,291 @@ export interface operations {
       };
     };
   };
+  "getApiGame-modes": {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+        visibility?: ("visible" | "hidden") | "all";
+        language?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListGameModes"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiGame-modes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateGameModeBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiGame-modesBy-nameByName": {
+    parameters: {
+      query?: {
+        language?: string;
+      };
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiGame-modesById": {
+    parameters: {
+      query?: {
+        language?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "patchApiGame-modesById": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateGameModeBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GameMode"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiJob-schedules": {
     parameters: {
       query?: {
@@ -2446,6 +2841,7 @@ export interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        gameMode?: string;
       };
       header?: never;
       path?: never;
@@ -3836,6 +4232,7 @@ export interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        language?: string;
       };
       header?: never;
       path?: never;
@@ -3934,7 +4331,9 @@ export interface operations {
   };
   getApiRolesByUuid: {
     parameters: {
-      query?: never;
+      query?: {
+        language?: string;
+      };
       header?: never;
       path: {
         uuid: string;
