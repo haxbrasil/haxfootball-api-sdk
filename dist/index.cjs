@@ -107,12 +107,6 @@ function createMatchesResource(client) {
 			body,
 			...config
 		}),
-		appendEvents: (id, body, config) => client.request({
-			method: "POST",
-			path: `/matches/${encodeURIComponent(id)}/events`,
-			body,
-			...config
-		}),
 		getMetrics: (id, config) => client.request({
 			path: `/matches/${encodeURIComponent(id)}/metrics`,
 			...config
@@ -129,20 +123,20 @@ function createMatchesResource(client) {
 			body,
 			...config
 		}),
-		listStatEvents: (id, query, config) => client.request({
-			path: `/matches/${encodeURIComponent(id)}/stat-events`,
+		listEvents: (id, query, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/events`,
 			query,
 			...config
 		}),
-		addStatEvent: (id, body, config) => client.request({
+		addEvent: (id, body, config) => client.request({
 			method: "POST",
-			path: `/matches/${encodeURIComponent(id)}/stat-events`,
+			path: `/matches/${encodeURIComponent(id)}/events`,
 			body,
 			...config
 		}),
-		disableStatEvent: (id, eventId, body = { disabled: true }, config) => client.request({
+		disableEvent: (id, eventId, body = { disabled: true }, config) => client.request({
 			method: "PATCH",
-			path: `/matches/${encodeURIComponent(id)}/stat-events/${encodeURIComponent(eventId)}`,
+			path: `/matches/${encodeURIComponent(id)}/events/${encodeURIComponent(eventId)}`,
 			body,
 			...config
 		})
@@ -405,45 +399,45 @@ function createSessionsResource(client) {
 }
 
 //#endregion
-//#region src/resources/stat-event-schemas.ts
-function createStatEventSchemasResource(client) {
+//#region src/resources/event-schemas.ts
+function createEventSchemasResource(client) {
 	return {
 		list: (query, config) => client.request({
-			path: "/stat-event-schemas",
+			path: "/event-schemas",
 			query,
 			...config
 		}),
 		getLatest: (id, config) => client.request({
-			path: `/stat-event-schemas/${encodeURIComponent(id)}`,
+			path: `/event-schemas/${encodeURIComponent(id)}`,
 			...config
 		}),
 		getLatestByName: (name, config) => client.request({
-			path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}`,
+			path: `/event-schemas/by-name/${encodeURIComponent(name)}`,
 			...config
 		}),
 		getVersion: (id, version, config) => client.request({
-			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
+			path: `/event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
 			...config
 		}),
 		getVersionByName: (name, version, config) => client.request({
-			path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}/versions/${encodeURIComponent(String(version))}`,
+			path: `/event-schemas/by-name/${encodeURIComponent(name)}/versions/${encodeURIComponent(String(version))}`,
 			...config
 		}),
 		create: (body, config) => client.request({
 			method: "POST",
-			path: "/stat-event-schemas",
+			path: "/event-schemas",
 			body,
 			...config
 		}),
 		publishVersion: (id, body, config) => client.request({
 			method: "POST",
-			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions`,
+			path: `/event-schemas/${encodeURIComponent(id)}/versions`,
 			body,
 			...config
 		}),
 		updateVersion: (id, version, body, config) => client.request({
 			method: "PATCH",
-			path: `/stat-event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
+			path: `/event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
 			body,
 			...config
 		})
@@ -464,7 +458,7 @@ function createResources(client) {
 		roles: createRolesResource(client),
 		rooms: createRoomsResource(client),
 		sessions: createSessionsResource(client),
-		statEventSchemas: createStatEventSchemasResource(client)
+		eventSchemas: createEventSchemasResource(client)
 	};
 }
 
@@ -499,7 +493,7 @@ var HaxFootballApiClient = class {
 	roles;
 	rooms;
 	sessions;
-	statEventSchemas;
+	eventSchemas;
 	apiUrl;
 	authUrl;
 	fetcher;
@@ -528,7 +522,7 @@ var HaxFootballApiClient = class {
 		this.roles = resources.roles;
 		this.rooms = resources.rooms;
 		this.sessions = resources.sessions;
-		this.statEventSchemas = resources.statEventSchemas;
+		this.eventSchemas = resources.eventSchemas;
 	}
 	async request(options) {
 		const authResult = options.auth === "none" ? void 0 : await this.resolveBearerToken();

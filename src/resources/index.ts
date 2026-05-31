@@ -9,7 +9,7 @@ import { createRecordingsResource } from "./recordings";
 import { createRolesResource } from "./roles";
 import { createRoomsResource } from "./rooms";
 import { createSessionsResource } from "./sessions";
-import { createStatEventSchemasResource } from "./stat-event-schemas";
+import { createEventSchemasResource } from "./event-schemas";
 
 export type { RequestConfig } from "./shared";
 
@@ -27,6 +27,6 @@ export function createResources(client: HaxFootballApiClient) {
     roles: createRolesResource(client),
     rooms: createRoomsResource(client),
     sessions: createSessionsResource(client),
-    statEventSchemas: createStatEventSchemasResource(client)
+    eventSchemas: createEventSchemasResource(client)
   };
 }

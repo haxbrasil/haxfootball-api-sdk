@@ -49,7 +49,7 @@ export class HaxFootballApiClient {
   readonly roles: HaxFootballApiResources["roles"];
   readonly rooms: HaxFootballApiResources["rooms"];
   readonly sessions: HaxFootballApiResources["sessions"];
-  readonly statEventSchemas: HaxFootballApiResources["statEventSchemas"];
+  readonly eventSchemas: HaxFootballApiResources["eventSchemas"];
 
   readonly apiUrl: URL;
   readonly authUrl: URL;
@@ -95,7 +95,7 @@ export class HaxFootballApiClient {
     this.roles = resources.roles;
     this.rooms = resources.rooms;
     this.sessions = resources.sessions;
-    this.statEventSchemas = resources.statEventSchemas;
+    this.eventSchemas = resources.eventSchemas;
   }
 
   async request<T>(options: RequestOptions): Promise<ApiResult<T>> {

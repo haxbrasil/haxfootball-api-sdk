@@ -1,16 +1,15 @@
 import type { HaxFootballApiClient } from "../client";
 import type {
-  AddMatchStatEventInput,
-  AppendMatchEventsInput,
+  AddMatchEventInput,
   AssociateMatchRecordingInput,
   CreateMatchInput,
-  DisableMatchStatEventInput,
+  DisableMatchEventInput,
   ListMatchesQuery,
   ListMatchesResponse,
-  ListMatchStatEventsResponse,
+  ListMatchEventsResponse,
   Match,
+  MatchEvent,
   MatchMetrics,
-  MatchStatEvent,
   PaginationQuery,
   QueryMatchMetricsInput,
   QueryMatchMetricsResponse,
@@ -45,17 +44,6 @@ export function createMatchesResource(client: HaxFootballApiClient) {
         body,
         ...config
       }),
-    appendEvents: (
-      id: string,
-      body: AppendMatchEventsInput,
-      config?: RequestConfig
-    ) =>
-      client.request<Match>({
-        method: "POST",
-        path: `/matches/${encodeURIComponent(id)}/events`,
-        body,
-        ...config
-      }),
     getMetrics: (id: string, config?: RequestConfig) =>
       client.request<MatchMetrics>({
         path: `/matches/${encodeURIComponent(id)}/metrics`,
@@ -79,36 +67,28 @@ export function createMatchesResource(client: HaxFootballApiClient) {
         body,
         ...config
       }),
-    listStatEvents: (
-      id: string,
-      query?: PaginationQuery,
-      config?: RequestConfig
-    ) =>
-      client.request<ListMatchStatEventsResponse>({
-        path: `/matches/${encodeURIComponent(id)}/stat-events`,
+    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) =>
+      client.request<ListMatchEventsResponse>({
+        path: `/matches/${encodeURIComponent(id)}/events`,
         query,
         ...config
       }),
-    addStatEvent: (
-      id: string,
-      body: AddMatchStatEventInput,
-      config?: RequestConfig
-    ) =>
-      client.request<MatchStatEvent>({
+    addEvent: (id: string, body: AddMatchEventInput, config?: RequestConfig) =>
+      client.request<MatchEvent>({
         method: "POST",
-        path: `/matches/${encodeURIComponent(id)}/stat-events`,
+        path: `/matches/${encodeURIComponent(id)}/events`,
         body,
         ...config
       }),
-    disableStatEvent: (
+    disableEvent: (
       id: string,
       eventId: string,
-      body: DisableMatchStatEventInput = { disabled: true },
+      body: DisableMatchEventInput = { disabled: true },
       config?: RequestConfig
     ) =>
-      client.request<MatchStatEvent>({
+      client.request<MatchEvent>({
         method: "PATCH",
-        path: `/matches/${encodeURIComponent(id)}/stat-events/${encodeURIComponent(
+        path: `/matches/${encodeURIComponent(id)}/events/${encodeURIComponent(
           eventId
         )}`,
         body,

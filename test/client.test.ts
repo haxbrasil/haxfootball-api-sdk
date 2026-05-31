@@ -241,7 +241,7 @@ describe("HaxFootballApiClient", () => {
     );
   });
 
-  it("supports stat event schema lookup by name", async () => {
+  it("supports event schema lookup by name", async () => {
     const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
       jsonResponse({
         id: "00000000-0000-4000-8000-000000000001",
@@ -258,14 +258,14 @@ describe("HaxFootballApiClient", () => {
       fetch: fetcher
     });
 
-    await client.statEventSchemas.getLatestByName("haxfootball");
-    await client.statEventSchemas.getVersionByName("haxfootball", 1);
+    await client.eventSchemas.getLatestByName("haxfootball");
+    await client.eventSchemas.getVersionByName("haxfootball", 1);
 
     expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
-      "https://api.example.com/api/stat-event-schemas/by-name/haxfootball"
+      "https://api.example.com/api/event-schemas/by-name/haxfootball"
     );
     expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
-      "https://api.example.com/api/stat-event-schemas/by-name/haxfootball/versions/1"
+      "https://api.example.com/api/event-schemas/by-name/haxfootball/versions/1"
     );
   });
 

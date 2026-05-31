@@ -69,19 +69,17 @@ export type MatchMetrics = Schema<"MatchMetrics">;
 export type QueryMatchMetricsInput = Schema<"QueryMatchMetricsBody">;
 export type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 export type MatchScore = Schema<"MatchScore">;
-export type MatchStatEvent = Schema<"MatchStatEvent">;
 export type MatchStint = Schema<"MatchStint">;
 export type CreateMatchInput = Schema<"CreateMatchBody">;
 export type UpdateMatchInput = Schema<"UpdateMatchBody">;
-export type AppendMatchEventsInput = Schema<"AppendMatchEventsBody">;
-export type AddMatchStatEventInput = Schema<"AddMatchStatEventBody">;
-export type DisableMatchStatEventInput = Schema<"DisableMatchStatEventBody">;
+export type AddMatchEventInput = Schema<"AddMatchEventBody">;
+export type DisableMatchEventInput = Schema<"DisableMatchEventBody">;
 export type AssociateMatchRecordingInput =
   Schema<"AssociateMatchRecordingBody">;
 export type ListMatchesQuery =
   operations["getApiMatches"]["parameters"]["query"];
 export type ListMatchesResponse = PaginatedResponse<MatchSummary>;
-export type ListMatchStatEventsResponse = PaginatedResponse<MatchStatEvent>;
+export type ListMatchEventsResponse = PaginatedResponse<MatchEvent>;
 
 export type CreateTokenInput = Schema<"CreateTokenBody">;
 export type CreateTokenResponse = Schema<"CreateTokenResponse">;
@@ -130,13 +128,13 @@ export type ListRoomProgramVersionsResponse =
 export type ListRoomProxyEndpointsResponse =
   PaginatedResponse<RoomProxyEndpoint>;
 
-export type StatEventSchema = Schema<"StatEventSchema">;
-export type StatEventSchemaReference = Schema<"StatEventSchemaReference">;
-export type CreateStatEventSchemaInput = Schema<"CreateStatEventSchemaBody">;
-export type PublishStatEventSchemaVersionInput =
-  Schema<"PublishStatEventSchemaVersionBody">;
-export type UpdateStatEventSchemaInput = Schema<"UpdateStatEventSchemaBody">;
-export type ListStatEventSchemasResponse = PaginatedResponse<StatEventSchema>;
+export type EventSchema = Schema<"EventSchema">;
+export type EventSchemaReference = Schema<"EventSchemaReference">;
+export type CreateEventSchemaInput = Schema<"CreateEventSchemaBody">;
+export type PublishEventSchemaVersionInput =
+  Schema<"PublishEventSchemaVersionBody">;
+export type UpdateEventSchemaInput = Schema<"UpdateEventSchemaBody">;
+export type ListEventSchemasResponse = PaginatedResponse<EventSchema>;
 
 export type CreateRecordingInput = {
   file: Blob | ArrayBuffer | ArrayBufferView;

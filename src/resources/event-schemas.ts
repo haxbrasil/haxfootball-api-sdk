@@ -1,73 +1,73 @@
 import type { HaxFootballApiClient } from "../client";
 import type {
-  CreateStatEventSchemaInput,
-  ListStatEventSchemasResponse,
+  CreateEventSchemaInput,
+  EventSchema,
+  ListEventSchemasResponse,
   PaginationQuery,
-  PublishStatEventSchemaVersionInput,
-  StatEventSchema,
-  UpdateStatEventSchemaInput
+  PublishEventSchemaVersionInput,
+  UpdateEventSchemaInput
 } from "../types";
 import type { RequestConfig } from "./shared";
 
-export function createStatEventSchemasResource(client: HaxFootballApiClient) {
+export function createEventSchemasResource(client: HaxFootballApiClient) {
   return {
     list: (query?: PaginationQuery, config?: RequestConfig) =>
-      client.request<ListStatEventSchemasResponse>({
-        path: "/stat-event-schemas",
+      client.request<ListEventSchemasResponse>({
+        path: "/event-schemas",
         query,
         ...config
       }),
     getLatest: (id: string, config?: RequestConfig) =>
-      client.request<StatEventSchema>({
-        path: `/stat-event-schemas/${encodeURIComponent(id)}`,
+      client.request<EventSchema>({
+        path: `/event-schemas/${encodeURIComponent(id)}`,
         ...config
       }),
     getLatestByName: (name: string, config?: RequestConfig) =>
-      client.request<StatEventSchema>({
-        path: `/stat-event-schemas/by-name/${encodeURIComponent(name)}`,
+      client.request<EventSchema>({
+        path: `/event-schemas/by-name/${encodeURIComponent(name)}`,
         ...config
       }),
     getVersion: (id: string, version: number, config?: RequestConfig) =>
-      client.request<StatEventSchema>({
-        path: `/stat-event-schemas/${encodeURIComponent(
+      client.request<EventSchema>({
+        path: `/event-schemas/${encodeURIComponent(
           id
         )}/versions/${encodeURIComponent(String(version))}`,
         ...config
       }),
     getVersionByName: (name: string, version: number, config?: RequestConfig) =>
-      client.request<StatEventSchema>({
-        path: `/stat-event-schemas/by-name/${encodeURIComponent(
+      client.request<EventSchema>({
+        path: `/event-schemas/by-name/${encodeURIComponent(
           name
         )}/versions/${encodeURIComponent(String(version))}`,
         ...config
       }),
-    create: (body: CreateStatEventSchemaInput, config?: RequestConfig) =>
-      client.request<StatEventSchema>({
+    create: (body: CreateEventSchemaInput, config?: RequestConfig) =>
+      client.request<EventSchema>({
         method: "POST",
-        path: "/stat-event-schemas",
+        path: "/event-schemas",
         body,
         ...config
       }),
     publishVersion: (
       id: string,
-      body: PublishStatEventSchemaVersionInput,
+      body: PublishEventSchemaVersionInput,
       config?: RequestConfig
     ) =>
-      client.request<StatEventSchema>({
+      client.request<EventSchema>({
         method: "POST",
-        path: `/stat-event-schemas/${encodeURIComponent(id)}/versions`,
+        path: `/event-schemas/${encodeURIComponent(id)}/versions`,
         body,
         ...config
       }),
     updateVersion: (
       id: string,
       version: number,
-      body: UpdateStatEventSchemaInput,
+      body: UpdateEventSchemaInput,
       config?: RequestConfig
     ) =>
-      client.request<StatEventSchema>({
+      client.request<EventSchema>({
         method: "PATCH",
-        path: `/stat-event-schemas/${encodeURIComponent(
+        path: `/event-schemas/${encodeURIComponent(
           id
         )}/versions/${encodeURIComponent(String(version))}`,
         body,
