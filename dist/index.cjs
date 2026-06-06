@@ -305,6 +305,17 @@ function createRoomsResource(client) {
 			path: `/rooms/${encodeURIComponent(id)}/close`,
 			...config
 		}),
+		listEvents: (id, query, config) => client.request({
+			path: `/rooms/${encodeURIComponent(id)}/events`,
+			query,
+			...config
+		}),
+		addEvent: (id, body, config) => client.request({
+			method: "POST",
+			path: `/rooms/${encodeURIComponent(id)}/events`,
+			body,
+			...config
+		}),
 		reportReady: (id, body, config) => client.request({
 			method: "POST",
 			path: `/rooms/${encodeURIComponent(id)}/ready`,

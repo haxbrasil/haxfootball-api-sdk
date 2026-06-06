@@ -1,5 +1,6 @@
 import type { HaxFootballApiClient } from "../client";
 import type {
+  AddRoomEventInput,
   CreateRoomInput,
   CreateRoomProgramInput,
   CreateRoomProgramVersionInput,
@@ -9,11 +10,13 @@ import type {
   ListRoomProgramsResponse,
   ListRoomProgramVersionsResponse,
   ListRoomProxyEndpointsResponse,
+  ListRoomEventsResponse,
   ListRoomsQuery,
   ListRoomsResponse,
   PaginationQuery,
   ReportRoomReadyInput,
   Room,
+  RoomEvent,
   RoomProgram,
   RoomProgramVersion,
   RoomProxyEndpoint,
@@ -46,6 +49,19 @@ export function createRoomsResource(client: HaxFootballApiClient) {
       client.request<Room>({
         method: "POST",
         path: `/rooms/${encodeURIComponent(id)}/close`,
+        ...config
+      }),
+    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) =>
+      client.request<ListRoomEventsResponse>({
+        path: `/rooms/${encodeURIComponent(id)}/events`,
+        query,
+        ...config
+      }),
+    addEvent: (id: string, body: AddRoomEventInput, config?: RequestConfig) =>
+      client.request<RoomEvent>({
+        method: "POST",
+        path: `/rooms/${encodeURIComponent(id)}/events`,
+        body,
         ...config
       }),
     reportReady: (
