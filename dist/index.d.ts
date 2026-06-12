@@ -495,6 +495,16 @@ declare function createResources(client: HaxFootballApiClient): {
       updatedAt: string;
       value: unknown;
     }>>;
+    listIncidents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomIncidentsResponse>>;
+    addIncident: (id: string, body: AddRoomIncidentInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      sha256: string;
+      sizeBytes: string | number;
+      url: string;
+    }>>;
     reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
       closedAt: (string | null) | null;
       createdAt: string;
@@ -1667,6 +1677,24 @@ interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/rooms/{id}/incidents": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List room incidents */
+    get: operations["getApiRoomsByIdIncidents"];
+    put?: never;
+    /** Add room incident */
+    post: operations["postApiRoomsByIdIncidents"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/rooms/{id}/ready": {
     parameters: {
       query?: never;
@@ -1850,6 +1878,21 @@ interface components {
       tick?: number;
       type: string;
       value: unknown;
+    };
+    AddRoomIncidentBody: {
+      commId: string;
+      /** @enum {string} */
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      playerId?: string | number;
+      reason?: string;
+      records: {
+        at: string;
+        data: unknown;
+        type: string;
+      }[];
+      snapshot?: unknown;
+      tick?: number;
     };
     AssociateMatchRecordingBody: {
       recordingId: string;
@@ -2165,6 +2208,10 @@ interface components {
     };
     ListRoomEvents: {
       items: components["schemas"]["RoomEvent"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListRoomIncidents: {
+      items: components["schemas"]["RoomIncident"][];
       page: components["schemas"]["PageInfo"];
     };
     ListRoomProgramVersionAliases: {
@@ -2537,6 +2584,17 @@ interface components {
       type: string;
       updatedAt: string;
       value: unknown;
+    };
+    RoomIncident: {
+      createdAt: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      sha256: string;
+      sizeBytes: string | number;
+      url: string;
     };
     RoomLaunchConfigField: {
       defaultValue?: string | number | boolean | null;
@@ -6866,6 +6924,129 @@ interface operations {
       };
     };
   };
+  getApiRoomsByIdIncidents: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListRoomIncidents"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiRoomsByIdIncidents: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AddRoomIncidentBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RoomIncident"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   postApiRoomsByIdReady: {
     parameters: {
       query?: never;
@@ -7328,6 +7509,7 @@ type LaunchConfig = {
 };
 type Room = Schema<"Room">;
 type RoomEvent = Schema<"RoomEvent">;
+type RoomIncident = Schema<"RoomIncident">;
 type RoomLaunchConfigField = Schema<"RoomLaunchConfigField">;
 type RoomProgram = Schema<"RoomProgram">;
 type RoomProgramReleaseSource = Schema<"RoomProgramReleaseSource">;
@@ -7339,6 +7521,7 @@ type RoomResponseProxyEndpointSummary = Schema<"RoomResponseProxyEndpointSummary
 type RoomResponseVersionSummary = Schema<"RoomResponseVersionSummary">;
 type CreateRoomInput = Schema<"CreateRoomBody">;
 type AddRoomEventInput = Schema<"AddRoomEventBody">;
+type AddRoomIncidentInput = Schema<"AddRoomIncidentBody">;
 type ReportRoomReadyInput = Schema<"ReportRoomReadyBody">;
 type CreateRoomProgramInput = Schema<"CreateRoomProgramBody">;
 type UpdateRoomProgramInput = Schema<"UpdateRoomProgramBody">;
@@ -7352,6 +7535,7 @@ type ListRoomsQuery = PaginationQuery & {
 };
 type ListRoomsResponse = PaginatedResponse<Room>;
 type ListRoomEventsResponse = PaginatedResponse<RoomEvent>;
+type ListRoomIncidentsResponse = PaginatedResponse<RoomIncident>;
 type ListRoomProgramsResponse = PaginatedResponse<RoomProgram>;
 type ListRoomProgramVersionsResponse = PaginatedResponse<RoomProgramVersion>;
 type ListRoomProxyEndpointsResponse = PaginatedResponse<RoomProxyEndpoint>;
@@ -7367,5 +7551,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, GameMode, GameModeReference, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomEventsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
+export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, GameMode, GameModeReference, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, ListRoomsQuery, ListRoomsResponse, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths };
 //# sourceMappingURL=index.d.ts.map

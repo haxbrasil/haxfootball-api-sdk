@@ -316,6 +316,17 @@ function createRoomsResource(client) {
 			body,
 			...config
 		}),
+		listIncidents: (id, query, config) => client.request({
+			path: `/rooms/${encodeURIComponent(id)}/incidents`,
+			query,
+			...config
+		}),
+		addIncident: (id, body, config) => client.request({
+			method: "POST",
+			path: `/rooms/${encodeURIComponent(id)}/incidents`,
+			body,
+			...config
+		}),
 		reportReady: (id, body, config) => client.request({
 			method: "POST",
 			path: `/rooms/${encodeURIComponent(id)}/ready`,

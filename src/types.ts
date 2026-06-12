@@ -95,6 +95,7 @@ export type LaunchConfig = {
 };
 export type Room = Schema<"Room">;
 export type RoomEvent = Schema<"RoomEvent">;
+export type RoomIncident = Schema<"RoomIncident">;
 export type RoomLaunchConfigField = Schema<"RoomLaunchConfigField">;
 export type RoomProgram = Schema<"RoomProgram">;
 export type RoomProgramReleaseSource = Schema<"RoomProgramReleaseSource">;
@@ -107,6 +108,7 @@ export type RoomResponseProxyEndpointSummary =
 export type RoomResponseVersionSummary = Schema<"RoomResponseVersionSummary">;
 export type CreateRoomInput = Schema<"CreateRoomBody">;
 export type AddRoomEventInput = Schema<"AddRoomEventBody">;
+export type AddRoomIncidentInput = Schema<"AddRoomIncidentBody">;
 export type ReportRoomReadyInput = Schema<"ReportRoomReadyBody">;
 export type CreateRoomProgramInput = Schema<"CreateRoomProgramBody">;
 export type UpdateRoomProgramInput = Schema<"UpdateRoomProgramBody">;
@@ -125,6 +127,7 @@ export type ListRoomsQuery = PaginationQuery & {
 };
 export type ListRoomsResponse = PaginatedResponse<Room>;
 export type ListRoomEventsResponse = PaginatedResponse<RoomEvent>;
+export type ListRoomIncidentsResponse = PaginatedResponse<RoomIncident>;
 export type ListRoomProgramsResponse = PaginatedResponse<RoomProgram>;
 export type ListRoomProgramVersionsResponse =
   PaginatedResponse<RoomProgramVersion>;

@@ -860,6 +860,24 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/rooms/{id}/incidents": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List room incidents */
+    get: operations["getApiRoomsByIdIncidents"];
+    put?: never;
+    /** Add room incident */
+    post: operations["postApiRoomsByIdIncidents"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/rooms/{id}/ready": {
     parameters: {
       query?: never;
@@ -1044,6 +1062,21 @@ export interface components {
       tick?: number;
       type: string;
       value: unknown;
+    };
+    AddRoomIncidentBody: {
+      commId: string;
+      /** @enum {string} */
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      playerId?: string | number;
+      reason?: string;
+      records: {
+        at: string;
+        data: unknown;
+        type: string;
+      }[];
+      snapshot?: unknown;
+      tick?: number;
     };
     AssociateMatchRecordingBody: {
       recordingId: string;
@@ -1371,6 +1404,10 @@ export interface components {
     };
     ListRoomEvents: {
       items: components["schemas"]["RoomEvent"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListRoomIncidents: {
+      items: components["schemas"]["RoomIncident"][];
       page: components["schemas"]["PageInfo"];
     };
     ListRoomProgramVersionAliases: {
@@ -1761,6 +1798,17 @@ export interface components {
       type: string;
       updatedAt: string;
       value: unknown;
+    };
+    RoomIncident: {
+      createdAt: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      sha256: string;
+      sizeBytes: string | number;
+      url: string;
     };
     RoomLaunchConfigField: {
       defaultValue?: string | number | boolean | null;
@@ -6057,6 +6105,129 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["RoomEvent"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiRoomsByIdIncidents: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListRoomIncidents"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiRoomsByIdIncidents: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AddRoomIncidentBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RoomIncident"];
         };
       };
       /** @description Response for status 400 */
