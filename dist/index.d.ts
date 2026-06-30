@@ -530,7 +530,27 @@ declare function createResources(client: HaxFootballApiClient): {
         haxballTokenEnvVar: string;
         id: string;
         integrationMode: "external" | "integrated";
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
         title: (string | null) | null;
@@ -542,7 +562,27 @@ declare function createResources(client: HaxFootballApiClient): {
         haxballTokenEnvVar: string;
         id: string;
         integrationMode: "external" | "integrated";
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
         title: (string | null) | null;
@@ -554,7 +594,27 @@ declare function createResources(client: HaxFootballApiClient): {
         haxballTokenEnvVar: string;
         id: string;
         integrationMode: "external" | "integrated";
-        launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
         name: string;
         releaseSource: components["schemas"]["RoomProgramReleaseSource"];
         title: (string | null) | null;
@@ -2597,15 +2657,18 @@ interface components {
       url: string;
     };
     RoomLaunchConfigField: {
+      /** @enum {string} */
+      category: "room" | "game" | "diagnostics" | "infrastructure";
       defaultValue?: string | number | boolean | null;
       description?: string;
-      displayName: string;
       enumValues?: string[];
       envVar: string;
       key: string;
+      label: string;
       maximum?: number;
       minimum?: number;
       required: boolean;
+      requiredPermission?: string;
       /** @default false */
       secret: boolean;
       /** @enum {string} */
@@ -2619,7 +2682,30 @@ interface components {
       id: string;
       /** @enum {string} */
       integrationMode: "external" | "integrated";
-      launchConfigFields: components["schemas"]["RoomLaunchConfigField"][];
+      launchConfigFields: {
+        /** @enum {string} */
+        category: "room" | "game" | "diagnostics" | "infrastructure";
+        defaultValue?: string | number | boolean | null;
+        description?: {
+          label: string;
+          value: string;
+        };
+        enumValues?: string[];
+        envVar: string;
+        key: string;
+        label: {
+          label: string;
+          value: string;
+        };
+        maximum?: number;
+        minimum?: number;
+        required: boolean;
+        requiredPermission?: string;
+        /** @default false */
+        secret: boolean;
+        /** @enum {string} */
+        valueType: "string" | "number" | "boolean";
+      }[];
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
       title: (string | null) | null;
@@ -5824,6 +5910,7 @@ interface operations {
       query?: {
         limit?: string | number;
         cursor?: string;
+        language?: string;
       };
       header?: never;
       path?: never;
@@ -5922,7 +6009,9 @@ interface operations {
   };
   "getApiRoom-programsById": {
     parameters: {
-      query?: never;
+      query?: {
+        language?: string;
+      };
       header?: never;
       path: {
         id: string;
