@@ -47,6 +47,7 @@ export class HaxFootballApiClient {
   readonly players: HaxFootballApiResources["players"];
   readonly recordings: HaxFootballApiResources["recordings"];
   readonly roles: HaxFootballApiResources["roles"];
+  readonly live: HaxFootballApiResources["live"];
   readonly rooms: HaxFootballApiResources["rooms"];
   readonly sessions: HaxFootballApiResources["sessions"];
   readonly eventSchemas: HaxFootballApiResources["eventSchemas"];
@@ -93,6 +94,7 @@ export class HaxFootballApiClient {
     this.players = resources.players;
     this.recordings = resources.recordings;
     this.roles = resources.roles;
+    this.live = resources.live;
     this.rooms = resources.rooms;
     this.sessions = resources.sessions;
     this.eventSchemas = resources.eventSchemas;
@@ -154,6 +156,16 @@ export class HaxFootballApiClient {
     } finally {
       signal.dispose();
     }
+  }
+
+  async bearerToken(): Promise<string | undefined> {
+    const authResult = await this.resolveBearerToken();
+
+    if (!authResult.ok) {
+      throw new Error(authResult.error.message);
+    }
+
+    return authResult.token;
   }
 
   private async resolveBearerToken(): Promise<

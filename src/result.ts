@@ -46,11 +46,24 @@ export type InvalidResponseFailure = {
   bodyText: string;
 };
 
+export type GraphqlFailure = {
+  kind: "graphql";
+  message: string;
+  errors: Array<{
+    message: string;
+    path?: Array<string | number> | undefined;
+    extensions?: Record<string, unknown> | undefined;
+    [key: string]: unknown;
+  }>;
+  body: unknown;
+};
+
 export type ApiFailure =
   | ApiResponseFailure
   | NetworkFailure
   | AbortedFailure
-  | InvalidResponseFailure;
+  | InvalidResponseFailure
+  | GraphqlFailure;
 
 export type ApiSuccess<T> = {
   ok: true;

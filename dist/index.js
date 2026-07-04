@@ -1,3 +1,5 @@
+import { print } from "graphql";
+
 //#region src/resources/accounts.ts
 function createAccountsResource(client) {
 	return {
@@ -281,6 +283,216 @@ function createRolesResource(client) {
 }
 
 //#endregion
+//#region src/resources/live.ts
+const enqueueLiveRoomCommandDocument = `
+  mutation EnqueueLiveRoomCommand($input: EnqueueLiveRoomCommandInput!) {
+    enqueueLiveRoomCommand(input: $input) {
+      id
+      roomId
+      name
+      payload
+      status
+      result
+      error
+      createdAt
+      updatedAt
+      sentAt
+      completedAt
+    }
+  }
+`;
+function createLiveResource(client) {
+	return {
+		query: (input) => executeLiveGraphql(client, input),
+		enqueueRoomCommand: async (input, config) => {
+			const result = await executeLiveGraphql(client, {
+				document: enqueueLiveRoomCommandDocument,
+				variables: { input },
+				...config
+			});
+			if (!result.ok) return result;
+			return {
+				ok: true,
+				data: result.data.enqueueLiveRoomCommand,
+				response: result.response
+			};
+		}
+	};
+}
+async function executeLiveGraphql(client, input) {
+	const result = await client.request({
+		method: "POST",
+		path: "/graphql",
+		body: {
+			query: documentText(input.document),
+			...input.variables === void 0 ? {} : { variables: input.variables },
+			...input.operationName ? { operationName: input.operationName } : {}
+		},
+		signal: input.signal,
+		timeoutMs: input.timeoutMs
+	});
+	if (!result.ok) return graphQlFailureFromApiFailure(result) ?? result;
+	if (result.data.errors?.length) return {
+		ok: false,
+		error: {
+			kind: "graphql",
+			message: result.data.errors[0]?.message ?? "GraphQL request failed",
+			errors: result.data.errors,
+			body: result.data
+		},
+		response: result.response
+	};
+	return {
+		ok: true,
+		data: result.data.data ?? null,
+		response: result.response
+	};
+}
+function graphQlFailureFromApiFailure(result) {
+	if (result.error.kind !== "api") return null;
+	const errors = graphQlErrorsFromBody(result.error.body);
+	if (!errors.length) return null;
+	return {
+		ok: false,
+		error: {
+			kind: "graphql",
+			message: errors[0]?.message ?? result.error.message,
+			errors,
+			body: result.error.body
+		},
+		...result.response ? { response: result.response } : {}
+	};
+}
+function graphQlErrorsFromBody(body) {
+	const errors = (body && typeof body === "object" && "value" in body ? body.value : body)?.errors;
+	if (!Array.isArray(errors)) return [];
+	return errors.filter(isGraphQlError);
+}
+function isGraphQlError(error) {
+	return !!error && typeof error === "object" && typeof error.message === "string";
+}
+function documentText(document) {
+	return typeof document === "string" ? document : print(document);
+}
+
+//#endregion
+//#region src/resources/room-control.ts
+async function attachLiveRoom(client, input) {
+	const webSocket = input.webSocket ?? globalWebSocket();
+	const token = await client.bearerToken();
+	const options = token ? { headers: { authorization: `Bearer ${token}` } } : void 0;
+	const socket = new webSocket(roomControlUrl(client.apiUrl, input.roomId), options);
+	const connection = {
+		close: () => socket.close(),
+		sendSnapshot: (snapshot = input.snapshotProvider?.()) => {
+			if (snapshot === void 0) return;
+			socket.send(JSON.stringify({
+				type: "room.snapshot",
+				snapshot
+			}));
+		},
+		sendCommandResult: (commandId, outcome) => {
+			socket.send(JSON.stringify({
+				type: "room.command-result",
+				commandId,
+				...outcome
+			}));
+		}
+	};
+	onSocket(socket, "open", () => {
+		socket.send(JSON.stringify({
+			type: "room.ping",
+			protocolVersion: 1,
+			commId: input.commId,
+			snapshotRevision: input.snapshotRevision ?? null
+		}));
+	});
+	onSocket(socket, "message", (raw) => {
+		const message = parseControlMessage(raw);
+		if (!message) return;
+		if (message.type === "api.command") {
+			handleCommand(connection, input, message.command);
+			return;
+		}
+		if (!message.accepted) {
+			input.onRejected?.(message.error ?? null);
+			return;
+		}
+		input.onAccepted?.();
+		if (message.requiresSnapshot) connection.sendSnapshot();
+	});
+	onSocket(socket, "close", () => input.onClose?.());
+	onSocket(socket, "error", (error) => input.onError?.(error));
+	return connection;
+}
+async function handleCommand(connection, input, command) {
+	if (!input.onCommand) {
+		connection.sendCommandResult(command.id, {
+			ok: false,
+			error: `Unsupported live room command '${command.name}'`
+		});
+		return;
+	}
+	try {
+		connection.sendCommandResult(command.id, {
+			ok: true,
+			result: await input.onCommand(command)
+		});
+	} catch (error) {
+		connection.sendCommandResult(command.id, {
+			ok: false,
+			error: error instanceof Error ? error.message : "Live room command failed"
+		});
+	}
+}
+function roomControlUrl(apiUrl, roomId) {
+	const url = new URL(`rooms/${encodeURIComponent(roomId)}/control`, slashTerminated(apiUrl));
+	url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+	return url.toString();
+}
+function slashTerminated(url) {
+	const value = new URL(url);
+	if (!value.pathname.endsWith("/")) value.pathname = `${value.pathname}/`;
+	return value;
+}
+function globalWebSocket() {
+	if (typeof globalThis.WebSocket !== "function") throw new Error("Room control WebSocket requires a WebSocket constructor in this runtime");
+	return globalThis.WebSocket;
+}
+function onSocket(socket, type, listener) {
+	if (socket.on) {
+		socket.on(type, listener);
+		return;
+	}
+	socket.addEventListener?.(type, (event) => listener(event));
+}
+function parseControlMessage(raw) {
+	try {
+		const value = JSON.parse(rawText(raw));
+		if (isApiControlMessage(value)) return value;
+		return null;
+	} catch {
+		return null;
+	}
+}
+function rawText(raw) {
+	if (typeof raw === "string") return raw;
+	if (raw instanceof ArrayBuffer) return Buffer.from(raw).toString("utf8");
+	if (ArrayBuffer.isView(raw)) return Buffer.from(raw.buffer, raw.byteOffset, raw.byteLength).toString("utf8");
+	if (Array.isArray(raw)) return Buffer.concat(raw.map((item) => Buffer.from(item))).toString("utf8");
+	const data = raw?.data;
+	return data === void 0 ? String(raw) : rawText(data);
+}
+function isApiControlMessage(value) {
+	if (!value || typeof value !== "object") return false;
+	const message = value;
+	if (message.type === "api.pong") return true;
+	if (message.type !== "api.command") return false;
+	const command = message.command;
+	return !!command && typeof command.id === "string" && typeof command.roomId === "string" && typeof command.name === "string";
+}
+
+//#endregion
 //#region src/resources/rooms.ts
 function createRoomsResource(client) {
 	return {
@@ -332,6 +544,7 @@ function createRoomsResource(client) {
 			body,
 			...config
 		}),
+		attachLive: (input) => attachLiveRoom(client, input),
 		programs: createRoomProgramsResource(client),
 		proxyEndpoints: createRoomProxyEndpointsResource(client)
 	};
@@ -477,6 +690,7 @@ function createResources(client) {
 		players: createPlayersResource(client),
 		recordings: createRecordingsResource(client),
 		roles: createRolesResource(client),
+		live: createLiveResource(client),
 		rooms: createRoomsResource(client),
 		sessions: createSessionsResource(client),
 		eventSchemas: createEventSchemasResource(client)
@@ -512,6 +726,7 @@ var HaxFootballApiClient = class {
 	players;
 	recordings;
 	roles;
+	live;
 	rooms;
 	sessions;
 	eventSchemas;
@@ -541,6 +756,7 @@ var HaxFootballApiClient = class {
 		this.players = resources.players;
 		this.recordings = resources.recordings;
 		this.roles = resources.roles;
+		this.live = resources.live;
 		this.rooms = resources.rooms;
 		this.sessions = resources.sessions;
 		this.eventSchemas = resources.eventSchemas;
@@ -581,6 +797,11 @@ var HaxFootballApiClient = class {
 		} finally {
 			signal.dispose();
 		}
+	}
+	async bearerToken() {
+		const authResult = await this.resolveBearerToken();
+		if (!authResult.ok) throw new Error(authResult.error.message);
+		return authResult.token;
 	}
 	async resolveBearerToken() {
 		if (typeof this.token === "string") return {
@@ -775,5 +996,1223 @@ function readEnvironment(name) {
 }
 
 //#endregion
-export { HaxFootballApiClient, createHaxFootballApiClient, createHaxFootballRoomApiClient };
+//#region src/live/generated.ts
+const FindPlayersByNameDocument = {
+	kind: "Document",
+	definitions: [{
+		kind: "OperationDefinition",
+		operation: "query",
+		name: {
+			kind: "Name",
+			value: "FindPlayersByName"
+		},
+		variableDefinitions: [{
+			kind: "VariableDefinition",
+			variable: {
+				kind: "Variable",
+				name: {
+					kind: "Name",
+					value: "playerName"
+				}
+			},
+			type: {
+				kind: "NonNullType",
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "String"
+					}
+				}
+			}
+		}, {
+			kind: "VariableDefinition",
+			variable: {
+				kind: "Variable",
+				name: {
+					kind: "Name",
+					value: "connected"
+				}
+			},
+			type: {
+				kind: "NamedType",
+				name: {
+					kind: "Name",
+					value: "Boolean"
+				}
+			},
+			defaultValue: {
+				kind: "BooleanValue",
+				value: true
+			}
+		}],
+		selectionSet: {
+			kind: "SelectionSet",
+			selections: [{
+				kind: "Field",
+				name: {
+					kind: "Name",
+					value: "liveRooms"
+				},
+				arguments: [{
+					kind: "Argument",
+					name: {
+						kind: "Name",
+						value: "where"
+					},
+					value: {
+						kind: "ObjectValue",
+						fields: [{
+							kind: "ObjectField",
+							name: {
+								kind: "Name",
+								value: "connected"
+							},
+							value: {
+								kind: "ObjectValue",
+								fields: [{
+									kind: "ObjectField",
+									name: {
+										kind: "Name",
+										value: "equals"
+									},
+									value: {
+										kind: "Variable",
+										name: {
+											kind: "Name",
+											value: "connected"
+										}
+									}
+								}]
+							}
+						}, {
+							kind: "ObjectField",
+							name: {
+								kind: "Name",
+								value: "players"
+							},
+							value: {
+								kind: "ObjectValue",
+								fields: [{
+									kind: "ObjectField",
+									name: {
+										kind: "Name",
+										value: "some"
+									},
+									value: {
+										kind: "ObjectValue",
+										fields: [{
+											kind: "ObjectField",
+											name: {
+												kind: "Name",
+												value: "name"
+											},
+											value: {
+												kind: "ObjectValue",
+												fields: [{
+													kind: "ObjectField",
+													name: {
+														kind: "Name",
+														value: "equals"
+													},
+													value: {
+														kind: "Variable",
+														name: {
+															kind: "Name",
+															value: "playerName"
+														}
+													}
+												}]
+											}
+										}]
+									}
+								}]
+							}
+						}]
+					}
+				}],
+				selectionSet: {
+					kind: "SelectionSet",
+					selections: [{
+						kind: "Field",
+						name: {
+							kind: "Name",
+							value: "nodes"
+						},
+						selectionSet: {
+							kind: "SelectionSet",
+							selections: [
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "id"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "connected"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "revision"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "lastSeenAt"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "room"
+									},
+									selectionSet: {
+										kind: "SelectionSet",
+										selections: [
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "name"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "teamsLocked"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "gameStatus"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "scores"
+												},
+												selectionSet: {
+													kind: "SelectionSet",
+													selections: [{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "red"
+														}
+													}, {
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "blue"
+														}
+													}]
+												}
+											}
+										]
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "players"
+									},
+									arguments: [{
+										kind: "Argument",
+										name: {
+											kind: "Name",
+											value: "where"
+										},
+										value: {
+											kind: "ObjectValue",
+											fields: [{
+												kind: "ObjectField",
+												name: {
+													kind: "Name",
+													value: "name"
+												},
+												value: {
+													kind: "ObjectValue",
+													fields: [{
+														kind: "ObjectField",
+														name: {
+															kind: "Name",
+															value: "equals"
+														},
+														value: {
+															kind: "Variable",
+															name: {
+																kind: "Name",
+																value: "playerName"
+															}
+														}
+													}]
+												}
+											}]
+										}
+									}],
+									selectionSet: {
+										kind: "SelectionSet",
+										selections: [{
+											kind: "Field",
+											name: {
+												kind: "Name",
+												value: "nodes"
+											},
+											selectionSet: {
+												kind: "SelectionSet",
+												selections: [
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "roomPlayerId"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "name"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "team"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "admin"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "avatar"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "desynced"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "sessionKind"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "playable"
+														}
+													},
+													{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "playBlockedReason"
+														}
+													}
+												]
+											}
+										}]
+									}
+								}
+							]
+						}
+					}]
+				}
+			}]
+		}
+	}]
+};
+const GetRoomDocument = {
+	kind: "Document",
+	definitions: [{
+		kind: "OperationDefinition",
+		operation: "query",
+		name: {
+			kind: "Name",
+			value: "GetRoom"
+		},
+		variableDefinitions: [{
+			kind: "VariableDefinition",
+			variable: {
+				kind: "Variable",
+				name: {
+					kind: "Name",
+					value: "id"
+				}
+			},
+			type: {
+				kind: "NonNullType",
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "ID"
+					}
+				}
+			}
+		}],
+		selectionSet: {
+			kind: "SelectionSet",
+			selections: [{
+				kind: "Field",
+				name: {
+					kind: "Name",
+					value: "liveRoom"
+				},
+				arguments: [{
+					kind: "Argument",
+					name: {
+						kind: "Name",
+						value: "id"
+					},
+					value: {
+						kind: "Variable",
+						name: {
+							kind: "Name",
+							value: "id"
+						}
+					}
+				}],
+				selectionSet: {
+					kind: "SelectionSet",
+					selections: [
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "id"
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "connected"
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "revision"
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "lastSeenAt"
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "room"
+							},
+							selectionSet: {
+								kind: "SelectionSet",
+								selections: [
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "name"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "teamsLocked"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "gameStatus"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "scores"
+										},
+										selectionSet: {
+											kind: "SelectionSet",
+											selections: [{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "red"
+												}
+											}, {
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "blue"
+												}
+											}]
+										}
+									}
+								]
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "players"
+							},
+							selectionSet: {
+								kind: "SelectionSet",
+								selections: [{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "nodes"
+									},
+									selectionSet: {
+										kind: "SelectionSet",
+										selections: [
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "roomPlayerId"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "name"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "team"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "admin"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "avatar"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "desynced"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "sessionKind"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "playable"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "playBlockedReason"
+												}
+											}
+										]
+									}
+								}]
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "stateDocuments"
+							},
+							selectionSet: {
+								kind: "SelectionSet",
+								selections: [
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "namespace"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "name"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "version"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "revision"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "updatedAt"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "payload"
+										}
+									}
+								]
+							}
+						},
+						{
+							kind: "Field",
+							name: {
+								kind: "Name",
+								value: "stateFacts"
+							},
+							selectionSet: {
+								kind: "SelectionSet",
+								selections: [
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "namespace"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "key"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "type"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "stringValue"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "numberValue"
+										}
+									},
+									{
+										kind: "Field",
+										name: {
+											kind: "Name",
+											value: "booleanValue"
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}]
+		}
+	}]
+};
+const ListRoomsDocument = {
+	kind: "Document",
+	definitions: [{
+		kind: "OperationDefinition",
+		operation: "query",
+		name: {
+			kind: "Name",
+			value: "ListRooms"
+		},
+		variableDefinitions: [
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "where"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "LiveRoomWhereInput"
+					}
+				}
+			},
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "first"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "Int"
+					}
+				},
+				defaultValue: {
+					kind: "IntValue",
+					value: "50"
+				}
+			},
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "after"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "String"
+					}
+				}
+			}
+		],
+		selectionSet: {
+			kind: "SelectionSet",
+			selections: [{
+				kind: "Field",
+				name: {
+					kind: "Name",
+					value: "liveRooms"
+				},
+				arguments: [
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "where"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "where"
+							}
+						}
+					},
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "first"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "first"
+							}
+						}
+					},
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "after"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "after"
+							}
+						}
+					}
+				],
+				selectionSet: {
+					kind: "SelectionSet",
+					selections: [{
+						kind: "Field",
+						name: {
+							kind: "Name",
+							value: "nodes"
+						},
+						selectionSet: {
+							kind: "SelectionSet",
+							selections: [
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "id"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "connected"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "revision"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "lastSeenAt"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "room"
+									},
+									selectionSet: {
+										kind: "SelectionSet",
+										selections: [
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "name"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "teamsLocked"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "gameStatus"
+												}
+											},
+											{
+												kind: "Field",
+												name: {
+													kind: "Name",
+													value: "scores"
+												},
+												selectionSet: {
+													kind: "SelectionSet",
+													selections: [{
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "red"
+														}
+													}, {
+														kind: "Field",
+														name: {
+															kind: "Name",
+															value: "blue"
+														}
+													}]
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}, {
+						kind: "Field",
+						name: {
+							kind: "Name",
+							value: "pageInfo"
+						},
+						selectionSet: {
+							kind: "SelectionSet",
+							selections: [{
+								kind: "Field",
+								name: {
+									kind: "Name",
+									value: "hasNextPage"
+								}
+							}, {
+								kind: "Field",
+								name: {
+									kind: "Name",
+									value: "endCursor"
+								}
+							}]
+						}
+					}]
+				}
+			}]
+		}
+	}]
+};
+const ListRoomCommandsDocument = {
+	kind: "Document",
+	definitions: [{
+		kind: "OperationDefinition",
+		operation: "query",
+		name: {
+			kind: "Name",
+			value: "ListRoomCommands"
+		},
+		variableDefinitions: [
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "roomId"
+					}
+				},
+				type: {
+					kind: "NonNullType",
+					type: {
+						kind: "NamedType",
+						name: {
+							kind: "Name",
+							value: "ID"
+						}
+					}
+				}
+			},
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "status"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "LiveRoomCommandStatus"
+					}
+				}
+			},
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "first"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "Int"
+					}
+				},
+				defaultValue: {
+					kind: "IntValue",
+					value: "50"
+				}
+			},
+			{
+				kind: "VariableDefinition",
+				variable: {
+					kind: "Variable",
+					name: {
+						kind: "Name",
+						value: "after"
+					}
+				},
+				type: {
+					kind: "NamedType",
+					name: {
+						kind: "Name",
+						value: "String"
+					}
+				}
+			}
+		],
+		selectionSet: {
+			kind: "SelectionSet",
+			selections: [{
+				kind: "Field",
+				name: {
+					kind: "Name",
+					value: "liveRoomCommands"
+				},
+				arguments: [
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "roomId"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "roomId"
+							}
+						}
+					},
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "status"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "status"
+							}
+						}
+					},
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "first"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "first"
+							}
+						}
+					},
+					{
+						kind: "Argument",
+						name: {
+							kind: "Name",
+							value: "after"
+						},
+						value: {
+							kind: "Variable",
+							name: {
+								kind: "Name",
+								value: "after"
+							}
+						}
+					}
+				],
+				selectionSet: {
+					kind: "SelectionSet",
+					selections: [{
+						kind: "Field",
+						name: {
+							kind: "Name",
+							value: "nodes"
+						},
+						selectionSet: {
+							kind: "SelectionSet",
+							selections: [
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "id"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "roomId"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "name"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "payload"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "status"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "result"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "error"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "createdAt"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "updatedAt"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "sentAt"
+									}
+								},
+								{
+									kind: "Field",
+									name: {
+										kind: "Name",
+										value: "completedAt"
+									}
+								}
+							]
+						}
+					}, {
+						kind: "Field",
+						name: {
+							kind: "Name",
+							value: "pageInfo"
+						},
+						selectionSet: {
+							kind: "SelectionSet",
+							selections: [{
+								kind: "Field",
+								name: {
+									kind: "Name",
+									value: "hasNextPage"
+								}
+							}, {
+								kind: "Field",
+								name: {
+									kind: "Name",
+									value: "endCursor"
+								}
+							}]
+						}
+					}]
+				}
+			}]
+		}
+	}]
+};
+
+//#endregion
+//#region src/live/index.ts
+const queries = {
+	findPlayersByName: FindPlayersByNameDocument,
+	getRoom: GetRoomDocument,
+	listRooms: ListRoomsDocument,
+	listRoomCommands: ListRoomCommandsDocument
+};
+
+//#endregion
+export { HaxFootballApiClient, createHaxFootballApiClient, createHaxFootballRoomApiClient, queries };
 //# sourceMappingURL=index.js.map

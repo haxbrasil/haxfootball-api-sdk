@@ -18,5 +18,11 @@
     "declarationMap": false,
     "sourceMap": true
   },
-  "include": ["src", "test", "tsdown.config.ts", "vitest.config.ts"]
+  "include": [
+    "src",
+    "test",
+    "codegen.ts",
+    "tsdown.config.ts",
+    "vitest.config.ts"
+  ]
 }

@@ -1,0 +1,140 @@
+query FindPlayersByName($playerName: String!, $connected: Boolean = true) {
+  liveRooms(
+    where: {
+      connected: { equals: $connected }
+      players: { some: { name: { equals: $playerName } } }
+    }
+  ) {
+    nodes {
+      id
+      connected
+      revision
+      lastSeenAt
+      room {
+        name
+        teamsLocked
+        gameStatus
+        scores {
+          red
+          blue
+        }
+      }
+      players(where: { name: { equals: $playerName } }) {
+        nodes {
+          roomPlayerId
+          name
+          team
+          admin
+          avatar
+          desynced
+          sessionKind
+          playable
+          playBlockedReason
+        }
+      }
+    }
+  }
+}
+
+query GetRoom($id: ID!) {
+  liveRoom(id: $id) {
+    id
+    connected
+    revision
+    lastSeenAt
+    room {
+      name
+      teamsLocked
+      gameStatus
+      scores {
+        red
+        blue
+      }
+    }
+    players {
+      nodes {
+        roomPlayerId
+        name
+        team
+        admin
+        avatar
+        desynced
+        sessionKind
+        playable
+        playBlockedReason
+      }
+    }
+    stateDocuments {
+      namespace
+      name
+      version
+      revision
+      updatedAt
+      payload
+    }
+    stateFacts {
+      namespace
+      key
+      type
+      stringValue
+      numberValue
+      booleanValue
+    }
+  }
+}
+
+query ListRooms($where: LiveRoomWhereInput, $first: Int = 50, $after: String) {
+  liveRooms(where: $where, first: $first, after: $after) {
+    nodes {
+      id
+      connected
+      revision
+      lastSeenAt
+      room {
+        name
+        teamsLocked
+        gameStatus
+        scores {
+          red
+          blue
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+query ListRoomCommands(
+  $roomId: ID!
+  $status: LiveRoomCommandStatus
+  $first: Int = 50
+  $after: String
+) {
+  liveRoomCommands(
+    roomId: $roomId
+    status: $status
+    first: $first
+    after: $after
+  ) {
+    nodes {
+      id
+      roomId
+      name
+      payload
+      status
+      result
+      error
+      createdAt
+      updatedAt
+      sentAt
+      completedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

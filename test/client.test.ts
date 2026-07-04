@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createHaxFootballApiClient,
   createHaxFootballRoomApiClient,
+  queries,
   type FetchLike
 } from "../src";
 
@@ -380,6 +381,236 @@ describe("HaxFootballApiClient", () => {
     );
   });
 
+  it("sends live GraphQL queries with reusable typed documents", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse({
+        data: {
+          liveRooms: {
+            nodes: []
+          }
+        }
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    const result = await client.live.query({
+      document: queries.findPlayersByName,
+      variables: { playerName: "Gabriel", connected: true }
+    });
+
+    expect(result.ok).toBe(true);
+
+    const [url, init] = fetcher.mock.calls[0] ?? [];
+    const body = JSON.parse(String(init?.body));
+
+    expect(url?.toString()).toBe("https://api.example.com/api/graphql");
+    expect(init?.method).toBe("POST");
+    expect(body.query).toContain("query FindPlayersByName");
+    expect(body.variables).toEqual({
+      playerName: "Gabriel",
+      connected: true
+    });
+  });
+
+  it("returns GraphQL failures for live query errors", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse({
+        errors: [
+          {
+            message: "Live room command name is invalid",
+            extensions: { code: "BAD_REQUEST" }
+          }
+        ]
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    const result = await client.live.query<{ liveRooms: { nodes: [] } }>({
+      document: "{ liveRooms { nodes { id } } }"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(!result.ok && result.error).toMatchObject({
+      kind: "graphql",
+      message: "Live room command name is invalid",
+      errors: [
+        {
+          message: "Live room command name is invalid",
+          extensions: { code: "BAD_REQUEST" }
+        }
+      ]
+    });
+  });
+
+  it("returns GraphQL failures for non-2xx live GraphQL responses", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse(
+        {
+          errors: [
+            {
+              message: "Live room commands are not available for terminal rooms"
+            }
+          ]
+        },
+        { status: 400, statusText: "Bad Request" }
+      )
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    const result = await client.live.query<{ liveRooms: { nodes: [] } }>({
+      document: "{ liveRooms { nodes { id } } }"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(!result.ok && result.error).toMatchObject({
+      kind: "graphql",
+      message: "Live room commands are not available for terminal rooms"
+    });
+  });
+
+  it("enqueues live room commands through the live resource", async () => {
+    const fetcher = vi.fn<FetchLike>().mockResolvedValue(
+      jsonResponse({
+        data: {
+          enqueueLiveRoomCommand: {
+            id: "command-1",
+            roomId: "room-1",
+            name: "ping",
+            payload: { nonce: "abc" },
+            status: "QUEUED",
+            result: null,
+            error: null,
+            createdAt: "2026-01-01T00:00:00.000Z",
+            updatedAt: "2026-01-01T00:00:00.000Z",
+            sentAt: null,
+            completedAt: null
+          }
+        }
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    const result = await client.live.enqueueRoomCommand({
+      roomId: "room-1",
+      name: "ping",
+      payload: { nonce: "abc" }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.ok && result.data).toMatchObject({
+      id: "command-1",
+      roomId: "room-1",
+      name: "ping"
+    });
+
+    const body = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+
+    expect(body.query).toContain("mutation EnqueueLiveRoomCommand");
+    expect(body.variables).toEqual({
+      input: {
+        roomId: "room-1",
+        name: "ping",
+        payload: { nonce: "abc" }
+      }
+    });
+  });
+
+  it("attaches live rooms over the control WebSocket", async () => {
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: vi.fn<FetchLike>()
+    });
+    const commands: unknown[] = [];
+
+    const attachment = await client.rooms.attachLive({
+      roomId: "room-1",
+      commId: "comm-1",
+      snapshotRevision: 3,
+      snapshotProvider: () => ({ revision: 4 }),
+      webSocket: FakeWebSocket,
+      onCommand: (command) => {
+        commands.push(command);
+        return { handled: true };
+      }
+    });
+    const socket = FakeWebSocket.last();
+
+    expect(socket.url).toBe("wss://api.example.com/api/rooms/room-1/control");
+    expect(socket.options).toEqual({
+      headers: { authorization: "Bearer api-token" }
+    });
+
+    socket.emit("open");
+    expect(JSON.parse(socket.sent[0] ?? "{}")).toEqual({
+      type: "room.ping",
+      protocolVersion: 1,
+      commId: "comm-1",
+      snapshotRevision: 3
+    });
+
+    socket.emit(
+      "message",
+      JSON.stringify({
+        type: "api.pong",
+        accepted: true,
+        requiresSnapshot: true
+      })
+    );
+    expect(JSON.parse(socket.sent[1] ?? "{}")).toEqual({
+      type: "room.snapshot",
+      snapshot: { revision: 4 }
+    });
+
+    socket.emit(
+      "message",
+      JSON.stringify({
+        type: "api.command",
+        command: {
+          id: "command-1",
+          roomId: "room-1",
+          name: "ping",
+          payload: null
+        }
+      })
+    );
+    await Promise.resolve();
+
+    expect(commands).toEqual([
+      {
+        id: "command-1",
+        roomId: "room-1",
+        name: "ping",
+        payload: null
+      }
+    ]);
+    expect(JSON.parse(socket.sent[2] ?? "{}")).toEqual({
+      type: "room.command-result",
+      commandId: "command-1",
+      ok: true,
+      result: { handled: true }
+    });
+
+    attachment.close();
+    expect(socket.closed).toBe(true);
+  });
+
   it("throws for missing client configuration", () => {
     expect(() =>
       createHaxFootballApiClient({
@@ -480,6 +711,49 @@ async function withEnvironment<T>(
       } else {
         process.env[key] = value;
       }
+    }
+  }
+}
+
+class FakeWebSocket {
+  static instances: FakeWebSocket[] = [];
+
+  readonly listeners = new Map<string, Array<(...args: unknown[]) => void>>();
+  readonly sent: string[] = [];
+  closed = false;
+
+  constructor(
+    readonly url: string,
+    readonly options?: { headers?: HeadersInit }
+  ) {
+    FakeWebSocket.instances.push(this);
+  }
+
+  static last(): FakeWebSocket {
+    const socket = FakeWebSocket.instances.at(-1);
+
+    if (!socket) {
+      throw new Error("Fake WebSocket was not created");
+    }
+
+    return socket;
+  }
+
+  send(data: string): void {
+    this.sent.push(data);
+  }
+
+  close(): void {
+    this.closed = true;
+  }
+
+  on(type: string, listener: (...args: unknown[]) => void): void {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
+  }
+
+  emit(type: string, ...args: unknown[]): void {
+    for (const listener of this.listeners.get(type) ?? []) {
+      listener(...args);
     }
   }
 }

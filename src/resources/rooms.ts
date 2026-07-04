@@ -1,4 +1,5 @@
 import type { HaxFootballApiClient } from "../client";
+import { attachLiveRoom, type AttachLiveRoomInput } from "./room-control";
 import type {
   AddRoomEventInput,
   AddRoomIncidentInput,
@@ -99,6 +100,7 @@ export function createRoomsResource(client: HaxFootballApiClient) {
         body,
         ...config
       }),
+    attachLive: (input: AttachLiveRoomInput) => attachLiveRoom(client, input),
     programs: createRoomProgramsResource(client),
     proxyEndpoints: createRoomProxyEndpointsResource(client)
   };
