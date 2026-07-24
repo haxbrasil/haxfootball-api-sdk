@@ -62,7 +62,10 @@ export type Recording = Schema<"Recording">;
 export type ListRecordingsResponse = PaginatedResponse<Recording>;
 
 export type Match = Schema<"Match">;
+export type PhysicalMatch = Schema<"PhysicalMatch">;
+export type ComposedMatch = Schema<"ComposedMatch">;
 export type MatchSummary = Schema<"MatchSummary">;
+export type MatchRound = Schema<"MatchRound">;
 export type MatchEvent = Schema<"MatchEvent">;
 export type MatchEventInput = Schema<"MatchEventInput">;
 export type MatchMetrics = Schema<"MatchMetrics">;
@@ -72,6 +75,7 @@ export type MatchScore = Schema<"MatchScore">;
 export type MatchStint = Schema<"MatchStint">;
 export type CreateMatchInput = Schema<"CreateMatchBody">;
 export type UpdateMatchInput = Schema<"UpdateMatchBody">;
+export type MatchCompositionInput = Schema<"MatchCompositionBody">;
 export type AddMatchEventInput = Schema<"AddMatchEventBody">;
 export type DisableMatchEventInput = Schema<"DisableMatchEventBody">;
 export type AssociateMatchRecordingInput =
@@ -79,7 +83,7 @@ export type AssociateMatchRecordingInput =
 export type ListMatchesQuery =
   operations["getApiMatches"]["parameters"]["query"];
 export type ListMatchesResponse = PaginatedResponse<MatchSummary>;
-export type ListMatchEventsResponse = PaginatedResponse<MatchEvent>;
+export type ListMatchEventsResponse = Schema<"ListMatchEvents">;
 
 export type CreateTokenInput = Schema<"CreateTokenBody">;
 export type CreateTokenResponse = Schema<"CreateTokenResponse">;

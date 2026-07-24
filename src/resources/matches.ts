@@ -2,15 +2,19 @@ import type { HaxFootballApiClient } from "../client";
 import type {
   AddMatchEventInput,
   AssociateMatchRecordingInput,
+  ComposedMatch,
   CreateMatchInput,
   DisableMatchEventInput,
   ListMatchesQuery,
   ListMatchesResponse,
   ListMatchEventsResponse,
   Match,
+  MatchCompositionInput,
   MatchEvent,
   MatchMetrics,
+  MatchRound,
   PaginationQuery,
+  PhysicalMatch,
   QueryMatchMetricsInput,
   QueryMatchMetricsResponse,
   UpdateMatchInput
@@ -31,14 +35,14 @@ export function createMatchesResource(client: HaxFootballApiClient) {
         ...config
       }),
     create: (body: CreateMatchInput, config?: RequestConfig) =>
-      client.request<Match>({
+      client.request<PhysicalMatch>({
         method: "POST",
         path: "/matches",
         body,
         ...config
       }),
     update: (id: string, body: UpdateMatchInput, config?: RequestConfig) =>
-      client.request<Match>({
+      client.request<PhysicalMatch>({
         method: "PATCH",
         path: `/matches/${encodeURIComponent(id)}`,
         body,
@@ -61,10 +65,46 @@ export function createMatchesResource(client: HaxFootballApiClient) {
       body: AssociateMatchRecordingInput,
       config?: RequestConfig
     ) =>
-      client.request<Match>({
+      client.request<PhysicalMatch>({
         method: "PATCH",
         path: `/matches/${encodeURIComponent(id)}/recording`,
         body,
+        ...config
+      }),
+    createComposition: (body: MatchCompositionInput, config?: RequestConfig) =>
+      client.request<ComposedMatch>({
+        method: "POST",
+        path: "/matches/compositions",
+        body,
+        ...config
+      }),
+    updateComposition: (
+      id: string,
+      body: MatchCompositionInput,
+      config?: RequestConfig
+    ) =>
+      client.request<ComposedMatch>({
+        method: "PUT",
+        path: `/matches/${encodeURIComponent(id)}/rounds`,
+        body,
+        ...config
+      }),
+    deleteComposition: (id: string, config?: RequestConfig) =>
+      client.request<void>({
+        method: "DELETE",
+        path: `/matches/${encodeURIComponent(id)}/rounds`,
+        ...config
+      }),
+    getRound: (id: string, roundNumber: number, config?: RequestConfig) =>
+      client.request<MatchRound>({
+        path: `/matches/${encodeURIComponent(id)}/rounds/${encodeURIComponent(
+          String(roundNumber)
+        )}`,
+        ...config
+      }),
+    getExtraTime: (id: string, config?: RequestConfig) =>
+      client.request<MatchRound>({
+        path: `/matches/${encodeURIComponent(id)}/extra-time`,
         ...config
       }),
     listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) =>

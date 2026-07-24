@@ -363,6 +363,174 @@ components:
         - failedAt
         - failureReason
       type: object
+    ComposedMatch:
+      properties:
+        createdAt:
+          type: string
+        endedAt:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
+        eventSchema:
+          anyOf:
+            - $ref: "#/components/schemas/EventSchemaReference"
+            - type: "null"
+          nullable: true
+        gameMode:
+          anyOf:
+            - $ref: "#/components/schemas/GameMode"
+            - type: "null"
+          nullable: true
+        id:
+          maxLength: 9
+          minLength: 9
+          pattern: ^c[a-z2-9]{8}$
+          type: string
+        initiatedAt:
+          anyOf:
+            - type: string
+            - type: "null"
+          nullable: true
+        kind:
+          const: composed
+          type: string
+        rounds:
+          items:
+            allOf:
+              - anyOf:
+                  - properties:
+                      kind:
+                        const: sequential
+                        type: string
+                      matchId:
+                        maxLength: 8
+                        minLength: 8
+                        pattern: ^[a-z2-9]{8}$
+                        type: string
+                      number:
+                        anyOf:
+                          - default: 0
+                            format: integer
+                            type: string
+                          - minimum: 1
+                            type: integer
+                        minimum: 1
+                    required:
+                      - kind
+                      - number
+                      - matchId
+                    type: object
+                  - properties:
+                      kind:
+                        const: extra-time
+                        type: string
+                      matchId:
+                        maxLength: 8
+                        minLength: 8
+                        pattern: ^[a-z2-9]{8}$
+                        type: string
+                      number:
+                        type: "null"
+                    required:
+                      - kind
+                      - number
+                      - matchId
+                    type: object
+              - properties:
+                  match:
+                    properties:
+                      createdAt:
+                        type: string
+                      endedAt:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                        nullable: true
+                      eventSchema:
+                        anyOf:
+                          - $ref: "#/components/schemas/EventSchemaReference"
+                          - type: "null"
+                        nullable: true
+                      gameMode:
+                        anyOf:
+                          - $ref: "#/components/schemas/GameMode"
+                          - type: "null"
+                        nullable: true
+                      id:
+                        maxLength: 8
+                        minLength: 8
+                        pattern: ^[a-z2-9]{8}$
+                        type: string
+                      initiatedAt:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                        nullable: true
+                      kind:
+                        const: single
+                        type: string
+                      recording:
+                        anyOf:
+                          - $ref: "#/components/schemas/Recording"
+                          - type: "null"
+                        nullable: true
+                      score:
+                        anyOf:
+                          - $ref: "#/components/schemas/MatchScore"
+                          - type: "null"
+                        nullable: true
+                      status:
+                        anyOf:
+                          - const: ongoing
+                            type: string
+                          - const: completed
+                            type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - kind
+                      - id
+                      - status
+                      - initiatedAt
+                      - endedAt
+                      - score
+                      - recording
+                      - gameMode
+                      - eventSchema
+                      - createdAt
+                      - updatedAt
+                    type: object
+                required:
+                  - match
+                type: object
+          minItems: 2
+          type: array
+        score:
+          anyOf:
+            - $ref: "#/components/schemas/MatchScore"
+            - type: "null"
+          nullable: true
+        status:
+          enum:
+            - ongoing
+            - completed
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - kind
+        - id
+        - status
+        - initiatedAt
+        - endedAt
+        - score
+        - gameMode
+        - eventSchema
+        - rounds
+        - createdAt
+        - updatedAt
+      type: object
     ConfirmAccountBody:
       properties:
         name:
@@ -672,6 +840,75 @@ components:
           items:
             $ref: "#/components/schemas/RoomLaunchConfigField"
           type: array
+        liveStateContract:
+          anyOf:
+            - properties:
+                documents:
+                  items:
+                    properties:
+                      name:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      schema: {}
+                      version:
+                        anyOf:
+                          - default: 0
+                            format: integer
+                            type: string
+                          - minimum: 1
+                            type: integer
+                        minimum: 1
+                    required:
+                      - name
+                      - version
+                      - schema
+                    type: object
+                  type: array
+                facts:
+                  items:
+                    properties:
+                      document:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      key:
+                        maxLength: 128
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9.-]{0,127}$
+                        type: string
+                      pointer:
+                        maxLength: 240
+                        type: string
+                      type:
+                        anyOf:
+                          - const: string
+                            type: string
+                          - const: number
+                            type: string
+                          - const: boolean
+                            type: string
+                    required:
+                      - key
+                      - type
+                      - document
+                      - pointer
+                    type: object
+                  type: array
+                namespace:
+                  maxLength: 80
+                  minLength: 1
+                  pattern: ^[a-z][a-z0-9.-]{0,79}$
+                  type: string
+              required:
+                - namespace
+                - documents
+                - facts
+              type: object
+            - type: "null"
+          nullable: true
         name:
           maxLength: 64
           minLength: 1
@@ -1135,17 +1372,75 @@ components:
         - page
       type: object
     ListMatchEvents:
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/MatchEvent"
-          type: array
-        page:
-          $ref: "#/components/schemas/PageInfo"
-      required:
-        - items
-        - page
-      type: object
+      anyOf:
+        - properties:
+            items:
+              items:
+                $ref: "#/components/schemas/MatchEvent"
+              type: array
+            page:
+              $ref: "#/components/schemas/PageInfo"
+          required:
+            - items
+            - page
+          type: object
+        - properties:
+            items:
+              items:
+                properties:
+                  event:
+                    $ref: "#/components/schemas/MatchEvent"
+                  round:
+                    anyOf:
+                      - properties:
+                          kind:
+                            const: sequential
+                            type: string
+                          matchId:
+                            maxLength: 8
+                            minLength: 8
+                            pattern: ^[a-z2-9]{8}$
+                            type: string
+                          number:
+                            anyOf:
+                              - default: 0
+                                format: integer
+                                type: string
+                              - minimum: 1
+                                type: integer
+                            minimum: 1
+                        required:
+                          - kind
+                          - number
+                          - matchId
+                        type: object
+                      - properties:
+                          kind:
+                            const: extra-time
+                            type: string
+                          matchId:
+                            maxLength: 8
+                            minLength: 8
+                            pattern: ^[a-z2-9]{8}$
+                            type: string
+                          number:
+                            type: "null"
+                        required:
+                          - kind
+                          - number
+                          - matchId
+                        type: object
+                required:
+                  - round
+                  - event
+                type: object
+              type: array
+            page:
+              $ref: "#/components/schemas/PageInfo"
+          required:
+            - items
+            - page
+          type: object
     ListMatches:
       properties:
         items:
@@ -1303,21 +1598,66 @@ components:
         - page
       type: object
     Match:
-      allOf:
-        - $ref: "#/components/schemas/MatchSummary"
-        - properties:
-            events:
-              items:
-                $ref: "#/components/schemas/MatchEvent"
-              type: array
-            participations:
-              items:
-                $ref: "#/components/schemas/MatchStint"
-              type: array
-          required:
-            - events
-            - participations
-          type: object
+      anyOf:
+        - $ref: "#/components/schemas/PhysicalMatch"
+        - $ref: "#/components/schemas/ComposedMatch"
+    MatchCompositionBody:
+      properties:
+        rounds:
+          items:
+            anyOf:
+              - properties:
+                  kind:
+                    const: sequential
+                    type: string
+                  matchId:
+                    anyOf:
+                      - maxLength: 8
+                        minLength: 8
+                        pattern: ^[a-z2-9]{8}$
+                        type: string
+                      - maxLength: 9
+                        minLength: 9
+                        pattern: ^c[a-z2-9]{8}$
+                        type: string
+                  number:
+                    anyOf:
+                      - default: 0
+                        format: integer
+                        type: string
+                      - minimum: 1
+                        type: integer
+                    minimum: 1
+                required:
+                  - kind
+                  - number
+                  - matchId
+                type: object
+              - properties:
+                  kind:
+                    const: extra-time
+                    type: string
+                  matchId:
+                    anyOf:
+                      - maxLength: 8
+                        minLength: 8
+                        pattern: ^[a-z2-9]{8}$
+                        type: string
+                      - maxLength: 9
+                        minLength: 9
+                        pattern: ^c[a-z2-9]{8}$
+                        type: string
+                  number:
+                    type: "null"
+                required:
+                  - kind
+                  - number
+                  - matchId
+                type: object
+          minItems: 2
+          type: array
+      required:
+        - rounds
       type: object
     MatchEvent:
       properties:
@@ -1498,19 +1838,148 @@ components:
         - value
       type: object
     MatchMetrics:
-      items:
-        properties:
-          metrics:
-            patternProperties:
-              ^(.*)$: {}
+      anyOf:
+        - items:
+            properties:
+              metrics:
+                patternProperties:
+                  ^(.*)$: {}
+                type: object
+              player:
+                $ref: "#/components/schemas/Player"
+            required:
+              - player
+              - metrics
             type: object
-          player:
-            $ref: "#/components/schemas/Player"
-        required:
-          - player
-          - metrics
-        type: object
-      type: array
+          type: array
+        - properties:
+            overall:
+              items:
+                properties:
+                  metrics:
+                    patternProperties:
+                      ^(.*)$: {}
+                    type: object
+                  player:
+                    $ref: "#/components/schemas/Player"
+                required:
+                  - player
+                  - metrics
+                type: object
+              type: array
+            rounds:
+              items:
+                properties:
+                  metrics:
+                    items:
+                      properties:
+                        metrics:
+                          patternProperties:
+                            ^(.*)$: {}
+                          type: object
+                        player:
+                          $ref: "#/components/schemas/Player"
+                      required:
+                        - player
+                        - metrics
+                      type: object
+                    type: array
+                  round:
+                    anyOf:
+                      - properties:
+                          kind:
+                            const: sequential
+                            type: string
+                          matchId:
+                            maxLength: 8
+                            minLength: 8
+                            pattern: ^[a-z2-9]{8}$
+                            type: string
+                          number:
+                            anyOf:
+                              - default: 0
+                                format: integer
+                                type: string
+                              - minimum: 1
+                                type: integer
+                            minimum: 1
+                        required:
+                          - kind
+                          - number
+                          - matchId
+                        type: object
+                      - properties:
+                          kind:
+                            const: extra-time
+                            type: string
+                          matchId:
+                            maxLength: 8
+                            minLength: 8
+                            pattern: ^[a-z2-9]{8}$
+                            type: string
+                          number:
+                            type: "null"
+                        required:
+                          - kind
+                          - number
+                          - matchId
+                        type: object
+                required:
+                  - round
+                  - metrics
+                type: object
+              type: array
+          required:
+            - overall
+            - rounds
+          type: object
+    MatchRound:
+      allOf:
+        - anyOf:
+            - properties:
+                kind:
+                  const: sequential
+                  type: string
+                matchId:
+                  maxLength: 8
+                  minLength: 8
+                  pattern: ^[a-z2-9]{8}$
+                  type: string
+                number:
+                  anyOf:
+                    - default: 0
+                      format: integer
+                      type: string
+                    - minimum: 1
+                      type: integer
+                  minimum: 1
+              required:
+                - kind
+                - number
+                - matchId
+              type: object
+            - properties:
+                kind:
+                  const: extra-time
+                  type: string
+                matchId:
+                  maxLength: 8
+                  minLength: 8
+                  pattern: ^[a-z2-9]{8}$
+                  type: string
+                number:
+                  type: "null"
+              required:
+                - kind
+                - number
+                - matchId
+              type: object
+        - properties:
+            match:
+              $ref: "#/components/schemas/PhysicalMatch"
+          required:
+            - match
+          type: object
     MatchScore:
       properties:
         blue:
@@ -1577,63 +2046,70 @@ components:
         - leftElapsedSeconds
       type: object
     MatchSummary:
-      properties:
-        createdAt:
-          type: string
-        endedAt:
-          anyOf:
-            - type: string
-            - type: "null"
-          nullable: true
-        eventSchema:
-          anyOf:
-            - $ref: "#/components/schemas/EventSchemaReference"
-            - type: "null"
-          nullable: true
-        gameMode:
-          anyOf:
-            - $ref: "#/components/schemas/GameMode"
-            - type: "null"
-          nullable: true
-        id:
-          maxLength: 8
-          minLength: 8
-          pattern: ^[a-z2-9]{8}$
-          type: string
-        initiatedAt:
-          anyOf:
-            - type: string
-            - type: "null"
-          nullable: true
-        recording:
-          anyOf:
-            - $ref: "#/components/schemas/Recording"
-            - type: "null"
-          nullable: true
-        score:
-          anyOf:
-            - $ref: "#/components/schemas/MatchScore"
-            - type: "null"
-          nullable: true
-        status:
-          enum:
-            - ongoing
-            - completed
-          type: string
-        updatedAt:
-          type: string
-      required:
-        - id
-        - status
-        - initiatedAt
-        - endedAt
-        - score
-        - recording
-        - gameMode
-        - eventSchema
-        - createdAt
-        - updatedAt
-      type: object
+      anyOf:
+        - properties:
+            createdAt:
+              type: string
+            endedAt:
+              anyOf:
+                - type: string
+                - type: "null"
+              nullable: true
+            eventSchema:
+              anyOf:
+                - $ref: "#/components/schemas/EventSchemaReference"
+                - type: "null"
+              nullable: true
+            gameMode:
+              anyOf:
+                - $ref: "#/components/schemas/GameMode"
+                - type: "null"
+              nullable: true
+            id:
+              maxLength: 8
+              minLength: 8
+              pattern: ^[a-z2-9]{8}$
+              type: string
+            initiatedAt:
+              anyOf:
+                - type: string
+                - type: "null"
+              nullable: true
+            kind:
+              const: single
+              type: string
+            recording:
+              anyOf:
+                - $ref: "#/components/schemas/Recording"
+                - type: "null"
+              nullable: true
+            score:
+              anyOf:
+                - $ref: "#/components/schemas/MatchScore"
+                - type: "null"
+              nullable: true
+            status:
+              anyOf:
+                - const: ongoing
+                  type: string
+                - const: completed
+                  type: string
+            updatedAt:
+              type: string
+          required:
+            - kind
+            - id
+            - status
+            - initiatedAt
+            - endedAt
+            - score
+            - recording
+            - gameMode
+            - eventSchema
+            - createdAt
+            - updatedAt
+          type: object
+        - $ref: "#/components/schemas/ComposedMatch"
     NotFoundError:
       properties:
         error:
@@ -1692,6 +2168,84 @@ components:
         - title
         - createdAt
         - updatedAt
+      type: object
+    PhysicalMatch:
+      allOf:
+        - properties:
+            createdAt:
+              type: string
+            endedAt:
+              anyOf:
+                - type: string
+                - type: "null"
+              nullable: true
+            eventSchema:
+              anyOf:
+                - $ref: "#/components/schemas/EventSchemaReference"
+                - type: "null"
+              nullable: true
+            gameMode:
+              anyOf:
+                - $ref: "#/components/schemas/GameMode"
+                - type: "null"
+              nullable: true
+            id:
+              maxLength: 8
+              minLength: 8
+              pattern: ^[a-z2-9]{8}$
+              type: string
+            initiatedAt:
+              anyOf:
+                - type: string
+                - type: "null"
+              nullable: true
+            kind:
+              const: single
+              type: string
+            recording:
+              anyOf:
+                - $ref: "#/components/schemas/Recording"
+                - type: "null"
+              nullable: true
+            score:
+              anyOf:
+                - $ref: "#/components/schemas/MatchScore"
+                - type: "null"
+              nullable: true
+            status:
+              anyOf:
+                - const: ongoing
+                  type: string
+                - const: completed
+                  type: string
+            updatedAt:
+              type: string
+          required:
+            - kind
+            - id
+            - status
+            - initiatedAt
+            - endedAt
+            - score
+            - recording
+            - gameMode
+            - eventSchema
+            - createdAt
+            - updatedAt
+          type: object
+        - properties:
+            events:
+              items:
+                $ref: "#/components/schemas/MatchEvent"
+              type: array
+            participations:
+              items:
+                $ref: "#/components/schemas/MatchStint"
+              type: array
+          required:
+            - events
+            - participations
+          type: object
       type: object
     Player:
       properties:
@@ -1772,8 +2326,17 @@ components:
                       - minimum: 0
                         type: integer
                     minimum: 0
+                  roundsCount:
+                    anyOf:
+                      - default: 0
+                        format: integer
+                        type: string
+                      - minimum: 0
+                        type: integer
+                    minimum: 0
                 required:
                   - matchesCount
+                  - roundsCount
                   - eventsCount
                   - playersCount
                 type: object
@@ -1997,9 +2560,18 @@ components:
                     - minimum: 0
                       type: integer
                   minimum: 0
+                roundsCount:
+                  anyOf:
+                    - default: 0
+                      format: integer
+                      type: string
+                    - minimum: 0
+                      type: integer
+                  minimum: 0
               required:
                 - groupsCount
                 - matchesCount
+                - roundsCount
                 - eventsCount
               type: object
           required:
@@ -2059,9 +2631,15 @@ components:
               uniqueItems: true
             matchIds:
               items:
-                maxLength: 8
-                minLength: 8
-                type: string
+                anyOf:
+                  - maxLength: 8
+                    minLength: 8
+                    pattern: ^[a-z2-9]{8}$
+                    type: string
+                  - maxLength: 9
+                    minLength: 9
+                    pattern: ^c[a-z2-9]{8}$
+                    type: string
               minItems: 1
               type: array
               uniqueItems: true
@@ -2836,6 +3414,75 @@ components:
               - envVar
             type: object
           type: array
+        liveStateContract:
+          anyOf:
+            - properties:
+                documents:
+                  items:
+                    properties:
+                      name:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      schema: {}
+                      version:
+                        anyOf:
+                          - default: 0
+                            format: integer
+                            type: string
+                          - minimum: 1
+                            type: integer
+                        minimum: 1
+                    required:
+                      - name
+                      - version
+                      - schema
+                    type: object
+                  type: array
+                facts:
+                  items:
+                    properties:
+                      document:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      key:
+                        maxLength: 128
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9.-]{0,127}$
+                        type: string
+                      pointer:
+                        maxLength: 240
+                        type: string
+                      type:
+                        anyOf:
+                          - const: string
+                            type: string
+                          - const: number
+                            type: string
+                          - const: boolean
+                            type: string
+                    required:
+                      - key
+                      - type
+                      - document
+                      - pointer
+                    type: object
+                  type: array
+                namespace:
+                  maxLength: 80
+                  minLength: 1
+                  pattern: ^[a-z][a-z0-9.-]{0,79}$
+                  type: string
+              required:
+                - namespace
+                - documents
+                - facts
+              type: object
+            - type: "null"
+          nullable: true
         name:
           maxLength: 64
           minLength: 1
@@ -2857,6 +3504,7 @@ components:
         - description
         - releaseSource
         - launchConfigFields
+        - liveStateContract
         - integrationMode
         - haxballTokenEnvVar
         - createdAt
@@ -3266,6 +3914,75 @@ components:
           items:
             $ref: "#/components/schemas/RoomLaunchConfigField"
           type: array
+        liveStateContract:
+          anyOf:
+            - properties:
+                documents:
+                  items:
+                    properties:
+                      name:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      schema: {}
+                      version:
+                        anyOf:
+                          - default: 0
+                            format: integer
+                            type: string
+                          - minimum: 1
+                            type: integer
+                        minimum: 1
+                    required:
+                      - name
+                      - version
+                      - schema
+                    type: object
+                  type: array
+                facts:
+                  items:
+                    properties:
+                      document:
+                        maxLength: 64
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9-]{0,63}$
+                        type: string
+                      key:
+                        maxLength: 128
+                        minLength: 1
+                        pattern: ^[a-z][a-z0-9.-]{0,127}$
+                        type: string
+                      pointer:
+                        maxLength: 240
+                        type: string
+                      type:
+                        anyOf:
+                          - const: string
+                            type: string
+                          - const: number
+                            type: string
+                          - const: boolean
+                            type: string
+                    required:
+                      - key
+                      - type
+                      - document
+                      - pointer
+                    type: object
+                  type: array
+                namespace:
+                  maxLength: 80
+                  minLength: 1
+                  pattern: ^[a-z][a-z0-9.-]{0,79}$
+                  type: string
+              required:
+                - namespace
+                - documents
+                - facts
+              type: object
+            - type: "null"
+          nullable: true
         releaseSource:
           properties:
             assetPattern:
@@ -4388,6 +5105,175 @@ paths:
       summary: Update a game mode
       tags:
         - Game Modes
+  /api/graphql:
+    delete:
+      operationId: deleteApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    get:
+      operationId: getApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    head:
+      operationId: headApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    options:
+      operationId: optionsApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    patch:
+      operationId: patchApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    post:
+      operationId: postApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    put:
+      operationId: putApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+    trace:
+      operationId: traceApiGraphql
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
   /api/job-schedules:
     get:
       operationId: getApiJob-schedules
@@ -4701,7 +5587,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Match"
+                $ref: "#/components/schemas/PhysicalMatch"
           description: Response for status 201
         "400":
           content:
@@ -4728,6 +5614,49 @@ paths:
                 $ref: "#/components/schemas/InternalServerError"
           description: Response for status 500
       summary: Create a match
+      tags:
+        - Matches
+  /api/matches/compositions:
+    post:
+      operationId: postApiMatchesCompositions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatchCompositionBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComposedMatch"
+          description: Response for status 201
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Compose matches into rounds
       tags:
         - Matches
   /api/matches/metrics/query:
@@ -4781,10 +5710,15 @@ paths:
           name: id
           required: true
           schema:
-            maxLength: 8
-            minLength: 8
-            pattern: ^[a-z2-9]{8}$
-            type: string
+            anyOf:
+              - maxLength: 8
+                minLength: 8
+                pattern: ^[a-z2-9]{8}$
+                type: string
+              - maxLength: 9
+                minLength: 9
+                pattern: ^c[a-z2-9]{8}$
+                type: string
       responses:
         "200":
           content:
@@ -4841,7 +5775,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Match"
+                $ref: "#/components/schemas/PhysicalMatch"
           description: Response for status 200
         "400":
           content:
@@ -4878,10 +5812,15 @@ paths:
           name: id
           required: true
           schema:
-            maxLength: 8
-            minLength: 8
-            pattern: ^[a-z2-9]{8}$
-            type: string
+            anyOf:
+              - maxLength: 8
+                minLength: 8
+                pattern: ^[a-z2-9]{8}$
+                type: string
+              - maxLength: 9
+                minLength: 9
+                pattern: ^c[a-z2-9]{8}$
+                type: string
         - in: query
           name: limit
           required: false
@@ -5044,6 +5983,52 @@ paths:
       summary: Disable match event
       tags:
         - Match Events
+  /api/matches/{id}/extra-time:
+    get:
+      operationId: getApiMatchesByIdExtra-time
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            maxLength: 9
+            minLength: 9
+            pattern: ^c[a-z2-9]{8}$
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchRound"
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Get match extra time
+      tags:
+        - Matches
   /api/matches/{id}/metrics:
     get:
       operationId: getApiMatchesByIdMetrics
@@ -5052,10 +6037,15 @@ paths:
           name: id
           required: true
           schema:
-            maxLength: 8
-            minLength: 8
-            pattern: ^[a-z2-9]{8}$
-            type: string
+            anyOf:
+              - maxLength: 8
+                minLength: 8
+                pattern: ^[a-z2-9]{8}$
+                type: string
+              - maxLength: 9
+                minLength: 9
+                pattern: ^c[a-z2-9]{8}$
+                type: string
       responses:
         "200":
           content:
@@ -5113,7 +6103,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Match"
+                $ref: "#/components/schemas/PhysicalMatch"
           description: Response for status 200
         "400":
           content:
@@ -5140,6 +6130,157 @@ paths:
                 $ref: "#/components/schemas/InternalServerError"
           description: Response for status 500
       summary: Associate a match recording
+      tags:
+        - Matches
+  /api/matches/{id}/rounds:
+    delete:
+      operationId: deleteApiMatchesByIdRounds
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            maxLength: 9
+            minLength: 9
+            pattern: ^c[a-z2-9]{8}$
+            type: string
+      responses:
+        "204":
+          content: {}
+          description: Response for status 204
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Unbind a composed match
+      tags:
+        - Matches
+    put:
+      operationId: putApiMatchesByIdRounds
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            maxLength: 9
+            minLength: 9
+            pattern: ^c[a-z2-9]{8}$
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatchCompositionBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComposedMatch"
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Replace composed match rounds
+      tags:
+        - Matches
+  /api/matches/{id}/rounds/{roundNumber}:
+    get:
+      operationId: getApiMatchesByIdRoundsByRoundNumber
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            maxLength: 9
+            minLength: 9
+            pattern: ^c[a-z2-9]{8}$
+            type: string
+        - in: path
+          name: roundNumber
+          required: true
+          schema:
+            anyOf:
+              - default: 0
+                format: numeric
+                type: string
+              - minimum: 1
+                type: number
+            minimum: 1
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchRound"
+          description: Response for status 200
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+          description: Response for status 404
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
+      summary: Get a sequential match round
       tags:
         - Matches
   /api/permissions:
@@ -6866,6 +8007,35 @@ paths:
       summary: Close room instance
       tags:
         - Rooms
+  /api/rooms/{id}/control:
+    ws:
+      operationId: wsApiRoomsByIdControl
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestOrValidationError"
+          description: Response for status 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+          description: Response for status 401
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Response for status 500
   /api/rooms/{id}/events:
     get:
       operationId: getApiRoomsByIdEvents

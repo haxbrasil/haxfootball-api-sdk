@@ -242,6 +242,69 @@ describe("HaxFootballApiClient", () => {
     );
   });
 
+  it("supports creating, updating, reading, and deleting match compositions", async () => {
+    const fetcher = vi
+      .fn<FetchLike>()
+      .mockImplementation(async (_url, init) => {
+        if (init?.method === "DELETE") {
+          return new Response(null, { status: 204 });
+        }
+
+        return jsonResponse({ kind: "composed" });
+      });
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.matches.createComposition({
+      rounds: [
+        { kind: "sequential", number: 1, matchId: "match001" },
+        { kind: "sequential", number: 2, matchId: "match002" },
+        { kind: "extra-time", number: null, matchId: "match003" }
+      ]
+    });
+    await client.matches.updateComposition("ccomposed", {
+      rounds: [
+        { kind: "sequential", number: 1, matchId: "match001" },
+        { kind: "extra-time", number: null, matchId: "match003" }
+      ]
+    });
+    await client.matches.getRound("ccomposed", 1);
+    await client.matches.getExtraTime("ccomposed");
+    const deleted = await client.matches.deleteComposition("ccomposed");
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/compositions"
+    );
+    expect(fetcher.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[0]?.[1]?.body).toBe(
+      JSON.stringify({
+        rounds: [
+          { kind: "sequential", number: 1, matchId: "match001" },
+          { kind: "sequential", number: 2, matchId: "match002" },
+          { kind: "extra-time", number: null, matchId: "match003" }
+        ]
+      })
+    );
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/ccomposed/rounds"
+    );
+    expect(fetcher.mock.calls[1]?.[1]?.method).toBe("PUT");
+    expect(fetcher.mock.calls[2]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/ccomposed/rounds/1"
+    );
+    expect(fetcher.mock.calls[3]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/ccomposed/extra-time"
+    );
+    expect(fetcher.mock.calls[4]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/ccomposed/rounds"
+    );
+    expect(fetcher.mock.calls[4]?.[1]?.method).toBe("DELETE");
+    expect(deleted).toMatchObject({ ok: true, data: undefined });
+  });
+
   it("supports event schema lookup by name", async () => {
     const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
       jsonResponse({

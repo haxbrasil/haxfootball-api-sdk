@@ -248,6 +248,22 @@ export interface paths {
     patch: operations["patchApiGame-modesById"];
     trace?: never;
   };
+  "/api/graphql": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getApiGraphql"];
+    put: operations["putApiGraphql"];
+    post: operations["postApiGraphql"];
+    delete: operations["deleteApiGraphql"];
+    options: operations["optionsApiGraphql"];
+    head: operations["headApiGraphql"];
+    patch: operations["patchApiGraphql"];
+    trace: operations["traceApiGraphql"];
+  };
   "/api/job-schedules": {
     parameters: {
       query?: never;
@@ -351,6 +367,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/matches/compositions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Compose matches into rounds */
+    post: operations["postApiMatchesCompositions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/metrics/query": {
     parameters: {
       query?: never;
@@ -421,6 +454,23 @@ export interface paths {
     patch: operations["patchApiMatchesByIdEventsByEventId"];
     trace?: never;
   };
+  "/api/matches/{id}/extra-time": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get match extra time */
+    get: operations["getApiMatchesByIdExtra-time"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/{id}/metrics": {
     parameters: {
       query?: never;
@@ -453,6 +503,41 @@ export interface paths {
     head?: never;
     /** Associate a match recording */
     patch: operations["patchApiMatchesByIdRecording"];
+    trace?: never;
+  };
+  "/api/matches/{id}/rounds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Replace composed match rounds */
+    put: operations["putApiMatchesByIdRounds"];
+    post?: never;
+    /** Unbind a composed match */
+    delete: operations["deleteApiMatchesByIdRounds"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/matches/{id}/rounds/{roundNumber}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a sequential match round */
+    get: operations["getApiMatchesByIdRoundsByRoundNumber"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/permissions": {
@@ -842,6 +927,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/rooms/{id}/control": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/rooms/{id}/events": {
     parameters: {
       query?: never;
@@ -1129,6 +1230,53 @@ export interface components {
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     };
+    ComposedMatch: {
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema:
+        | (components["schemas"]["EventSchemaReference"] | null)
+        | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      /** @constant */
+      kind: "composed";
+      rounds: ((
+        | {
+            /** @constant */
+            kind: "sequential";
+            matchId: string;
+            number: string | number;
+          }
+        | {
+            /** @constant */
+            kind: "extra-time";
+            matchId: string;
+            number: null;
+          }
+      ) & {
+        match: {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema:
+            | (components["schemas"]["EventSchemaReference"] | null)
+            | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          /** @constant */
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        };
+      })[];
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      /** @enum {string} */
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    };
     ConfirmAccountBody: {
       name: string;
       password: string;
@@ -1225,6 +1373,22 @@ export interface components {
       /** @enum {string} */
       integrationMode: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
+      liveStateContract?:
+        | ({
+            documents: {
+              name: string;
+              schema: unknown;
+              version: string | number;
+            }[];
+            facts: {
+              document: string;
+              key: string;
+              pointer: string;
+              type: "string" | "number" | "boolean";
+            }[];
+            namespace: string;
+          } | null)
+        | null;
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
       title?: string;
@@ -1374,10 +1538,30 @@ export interface components {
       }[];
       page: components["schemas"]["PageInfo"];
     };
-    ListMatchEvents: {
-      items: components["schemas"]["MatchEvent"][];
-      page: components["schemas"]["PageInfo"];
-    };
+    ListMatchEvents:
+      | {
+          items: components["schemas"]["MatchEvent"][];
+          page: components["schemas"]["PageInfo"];
+        }
+      | {
+          items: {
+            event: components["schemas"]["MatchEvent"];
+            round:
+              | {
+                  /** @constant */
+                  kind: "sequential";
+                  matchId: string;
+                  number: string | number;
+                }
+              | {
+                  /** @constant */
+                  kind: "extra-time";
+                  matchId: string;
+                  number: null;
+                };
+          }[];
+          page: components["schemas"]["PageInfo"];
+        };
     ListMatches: {
       items: components["schemas"]["MatchSummary"][];
       page: components["schemas"]["PageInfo"];
@@ -1430,9 +1614,24 @@ export interface components {
       items: components["schemas"]["CloseRoomResponse"][];
       page: components["schemas"]["PageInfo"];
     };
-    Match: components["schemas"]["MatchSummary"] & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
+    Match:
+      | components["schemas"]["PhysicalMatch"]
+      | components["schemas"]["ComposedMatch"];
+    MatchCompositionBody: {
+      rounds: (
+        | {
+            /** @constant */
+            kind: "sequential";
+            matchId: string;
+            number: string | number;
+          }
+        | {
+            /** @constant */
+            kind: "extra-time";
+            matchId: string;
+            number: null;
+          }
+      )[];
     };
     MatchEvent: {
       actorPlayer: (components["schemas"]["Player"] | null) | null;
@@ -1476,12 +1675,58 @@ export interface components {
       type: string;
       value: unknown;
     };
-    MatchMetrics: {
-      metrics: {
-        [key: string]: unknown;
-      };
-      player: components["schemas"]["Player"];
-    }[];
+    MatchMetrics:
+      | {
+          metrics: {
+            [key: string]: unknown;
+          };
+          player: components["schemas"]["Player"];
+        }[]
+      | {
+          overall: {
+            metrics: {
+              [key: string]: unknown;
+            };
+            player: components["schemas"]["Player"];
+          }[];
+          rounds: {
+            metrics: {
+              metrics: {
+                [key: string]: unknown;
+              };
+              player: components["schemas"]["Player"];
+            }[];
+            round:
+              | {
+                  /** @constant */
+                  kind: "sequential";
+                  matchId: string;
+                  number: string | number;
+                }
+              | {
+                  /** @constant */
+                  kind: "extra-time";
+                  matchId: string;
+                  number: null;
+                };
+          }[];
+        };
+    MatchRound: (
+      | {
+          /** @constant */
+          kind: "sequential";
+          matchId: string;
+          number: string | number;
+        }
+      | {
+          /** @constant */
+          kind: "extra-time";
+          matchId: string;
+          number: null;
+        }
+    ) & {
+      match: components["schemas"]["PhysicalMatch"];
+    };
     MatchScore: {
       blue: string | number;
       red: string | number;
@@ -1496,21 +1741,24 @@ export interface components {
       /** @enum {string} */
       team: "red" | "blue";
     };
-    MatchSummary: {
-      createdAt: string;
-      endedAt: (string | null) | null;
-      eventSchema:
-        | (components["schemas"]["EventSchemaReference"] | null)
-        | null;
-      gameMode: (components["schemas"]["GameMode"] | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      /** @enum {string} */
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    };
+    MatchSummary:
+      | {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema:
+            | (components["schemas"]["EventSchemaReference"] | null)
+            | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          /** @constant */
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        }
+      | components["schemas"]["ComposedMatch"];
     NotFoundError: {
       error: {
         /** @constant */
@@ -1529,6 +1777,25 @@ export interface components {
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
+    };
+    PhysicalMatch: {
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema:
+        | (components["schemas"]["EventSchemaReference"] | null)
+        | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      /** @constant */
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
     };
     Player: {
       account: (components["schemas"]["PlayerAccount"] | null) | null;
@@ -1553,6 +1820,7 @@ export interface components {
           eventsCount: string | number;
           matchesCount: string | number;
           playersCount: string | number;
+          roundsCount: string | number;
         };
         group:
           | {
@@ -1628,6 +1896,7 @@ export interface components {
           eventsCount: string | number;
           groupsCount: string | number;
           matchesCount: string | number;
+          roundsCount: string | number;
         };
       };
       page: components["schemas"]["PageInfo"];
@@ -1860,6 +2129,22 @@ export interface components {
         /** @enum {string} */
         valueType: "string" | "number" | "boolean";
       }[];
+      liveStateContract:
+        | ({
+            documents: {
+              name: string;
+              schema: unknown;
+              version: string | number;
+            }[];
+            facts: {
+              document: string;
+              key: string;
+              pointer: string;
+              type: "string" | "number" | "boolean";
+            }[];
+            namespace: string;
+          } | null)
+        | null;
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
       title: (string | null) | null;
@@ -1999,6 +2284,22 @@ export interface components {
       /** @enum {string} */
       integrationMode?: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
+      liveStateContract?:
+        | ({
+            documents: {
+              name: string;
+              schema: unknown;
+              version: string | number;
+            }[];
+            facts: {
+              document: string;
+              key: string;
+              pointer: string;
+              type: "string" | "number" | "boolean";
+            }[];
+            namespace: string;
+          } | null)
+        | null;
       releaseSource?: {
         assetPattern: string;
         owner: string;
@@ -3183,6 +3484,310 @@ export interface operations {
       };
     };
   };
+  getApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  putApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  deleteApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  optionsApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  headApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  patchApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  traceApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiJob-schedules": {
     parameters: {
       query?: {
@@ -3519,7 +4124,67 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiMatchesCompositions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MatchCompositionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ComposedMatch"];
         };
       };
       /** @description Response for status 400 */
@@ -3699,7 +4364,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
         };
       };
       /** @description Response for status 400 */
@@ -3926,6 +4591,64 @@ export interface operations {
       };
     };
   };
+  "getApiMatchesByIdExtra-time": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MatchRound"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   getApiMatchesByIdMetrics: {
     parameters: {
       query?: never;
@@ -4005,7 +4728,184 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  putApiMatchesByIdRounds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MatchCompositionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ComposedMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  deleteApiMatchesByIdRounds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 204 */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiMatchesByIdRoundsByRoundNumber: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        roundNumber: string | number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MatchRound"];
         };
       };
       /** @description Response for status 400 */
