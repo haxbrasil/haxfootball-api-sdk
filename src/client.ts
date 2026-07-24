@@ -27,7 +27,7 @@ export type HaxFootballApiClientOptions = {
 };
 
 export type RequestOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   query?: Record<string, unknown> | undefined;
   body?: unknown | undefined;

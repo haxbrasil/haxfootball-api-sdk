@@ -124,6 +124,31 @@ function createMatchesResource(client) {
 			body,
 			...config
 		}),
+		createComposition: (body, config) => client.request({
+			method: "POST",
+			path: "/matches/compositions",
+			body,
+			...config
+		}),
+		updateComposition: (id, body, config) => client.request({
+			method: "PUT",
+			path: `/matches/${encodeURIComponent(id)}/rounds`,
+			body,
+			...config
+		}),
+		deleteComposition: (id, config) => client.request({
+			method: "DELETE",
+			path: `/matches/${encodeURIComponent(id)}/rounds`,
+			...config
+		}),
+		getRound: (id, roundNumber, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/rounds/${encodeURIComponent(String(roundNumber))}`,
+			...config
+		}),
+		getExtraTime: (id, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/extra-time`,
+			...config
+		}),
 		listEvents: (id, query, config) => client.request({
 			path: `/matches/${encodeURIComponent(id)}/events`,
 			query,

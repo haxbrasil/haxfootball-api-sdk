@@ -26,7 +26,7 @@ export {
   type GetRoomQueryVariables,
   type ListRoomCommandsQuery,
   type ListRoomCommandsQueryVariables,
-  type ListRoomsQuery,
+  type ListRoomsQuery as LiveListRoomsQuery,
   type ListRoomsQueryVariables
 } from "./live";
 export type {

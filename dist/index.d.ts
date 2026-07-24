@@ -92,6 +92,1338 @@ type LiveRoomCommand = {
   completedAt: string | null;
 };
 //#endregion
+//#region src/resources/room-control.d.ts
+type LiveRoomControlCommand = {
+  id: string;
+  roomId: string;
+  name: string;
+  payload: unknown;
+};
+type LiveRoomControlCommandHandler = (command: LiveRoomControlCommand) => unknown | Promise<unknown>;
+type LiveRoomSnapshotProvider = () => unknown;
+type LiveRoomAttachment = {
+  close(): void;
+  sendSnapshot(snapshot?: unknown): void;
+  sendCommandResult(commandId: string, outcome: {
+    ok: true;
+    result: unknown;
+  } | {
+    ok: false;
+    error: string;
+  }): void;
+};
+type LiveRoomControlSocket = {
+  close(): void;
+  send(data: string): void;
+  addEventListener?(type: "open" | "message" | "close" | "error", listener: (event: unknown) => void): void;
+  on?(type: "open" | "message" | "close" | "error", listener: (...args: unknown[]) => void): void;
+};
+type LiveRoomControlWebSocketConstructor = new (url: string, options?: {
+  headers?: HeadersInit;
+}) => LiveRoomControlSocket;
+type AttachLiveRoomInput = {
+  roomId: string;
+  commId: string;
+  webSocket?: LiveRoomControlWebSocketConstructor | undefined;
+  snapshotProvider?: LiveRoomSnapshotProvider | undefined;
+  snapshotRevision?: number | null | undefined;
+  onAccepted?: (() => void) | undefined;
+  onRejected?: ((error: string | null) => void) | undefined;
+  onCommand?: LiveRoomControlCommandHandler | undefined;
+  onClose?: (() => void) | undefined;
+  onError?: ((error: unknown) => void) | undefined;
+};
+//#endregion
+//#region src/resources/index.d.ts
+type HaxFootballApiResources = ReturnType<typeof createResources>;
+declare function createResources(client: HaxFootballApiClient): {
+  accounts: {
+    list: (query?: ListAccountsQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    getByExternalId: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    confirm: (body: ConfirmAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      valid: boolean;
+    }>>;
+    update: (uuid: string, body: UpdateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      externalId: string;
+      name: string;
+      role: components["schemas"]["Role"];
+      updatedAt: string;
+      uuid: string;
+    }>>;
+  };
+  auth: {
+    createToken: (body: CreateTokenInput, config?: RequestConfig) => Promise<ApiResult<CreateTokenResponse>>;
+  };
+  gameModes: {
+    list: (query?: ListGameModesQuery, config?: RequestConfig) => Promise<ApiResult<ListGameModesResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    create: (body: CreateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+    update: (id: string, body: UpdateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      description: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      id: string;
+      name: string;
+      rank: string | number;
+      title: ({
+        label: string;
+        value: string;
+      } | null) | null;
+      updatedAt: string;
+      visibility: "visible" | "hidden";
+    }>>;
+  };
+  matches: {
+    list: (query?: ListMatchesQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "composed";
+      rounds: (({
+        kind: "sequential";
+        matchId: string;
+        number: string | number;
+      } | {
+        kind: "extra-time";
+        matchId: string;
+        number: null;
+      }) & {
+        match: {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        };
+      })[];
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } | ({
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    })>>;
+    create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    getMetrics: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      metrics: {
+        [key: string]: unknown;
+      };
+      player: components["schemas"]["Player"];
+    }[] | {
+      overall: {
+        metrics: {
+          [key: string]: unknown;
+        };
+        player: components["schemas"]["Player"];
+      }[];
+      rounds: {
+        metrics: {
+          metrics: {
+            [key: string]: unknown;
+          };
+          player: components["schemas"]["Player"];
+        }[];
+        round: {
+          kind: "sequential";
+          matchId: string;
+          number: string | number;
+        } | {
+          kind: "extra-time";
+          matchId: string;
+          number: null;
+        };
+      }[];
+    }>>;
+    queryMetrics: (body: QueryMatchMetricsInput, config?: RequestConfig) => Promise<ApiResult<{
+      items: {
+        contribution: {
+          eventsCount: string | number;
+          matchesCount: string | number;
+          playersCount: string | number;
+          roundsCount: string | number;
+        };
+        group: {
+          externalId: string;
+          id: string;
+          name: string;
+          type: "account";
+        } | {
+          account: (components["schemas"]["PlayerAccount"] | null) | null;
+          country: (string | null) | null;
+          id: string;
+          name: string;
+          type: "player";
+        } | {
+          id: string;
+          name: string;
+          type: "team";
+        } | {
+          id: string;
+          name: string;
+          type: "match";
+        };
+        metrics: {
+          [key: string]: unknown;
+        };
+        rank: string | number;
+      }[];
+      meta: {
+        availableMetrics: {
+          category: ({
+            description: (string | null) | null;
+            key: string;
+            label: string;
+            primaryMetric: (string | null) | null;
+          } | null) | null;
+          description: (string | null) | null;
+          format?: string;
+          hidden?: boolean;
+          key: string;
+          label: string;
+          precision?: number;
+          valueType?: string;
+        }[];
+        featuredMetrics: {
+          points?: string;
+        };
+        group: {
+          by: string;
+          identityMode: "current";
+        };
+        schema: {
+          id: string;
+          isLatest: boolean;
+          name: string;
+          version: string | number;
+        };
+        sort: unknown[];
+        target: "player" | "team" | "match";
+        totals: {
+          eventsCount: string | number;
+          groupsCount: string | number;
+          matchesCount: string | number;
+          roundsCount: string | number;
+        };
+      };
+      page: components["schemas"]["PageInfo"];
+    }>>;
+    associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
+    }>>;
+    createComposition: (body: MatchCompositionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "composed";
+      rounds: (({
+        kind: "sequential";
+        matchId: string;
+        number: string | number;
+      } | {
+        kind: "extra-time";
+        matchId: string;
+        number: null;
+      }) & {
+        match: {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        };
+      })[];
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    }>>;
+    updateComposition: (id: string, body: MatchCompositionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      kind: "composed";
+      rounds: (({
+        kind: "sequential";
+        matchId: string;
+        number: string | number;
+      } | {
+        kind: "extra-time";
+        matchId: string;
+        number: null;
+      }) & {
+        match: {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        };
+      })[];
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    }>>;
+    deleteComposition: (id: string, config?: RequestConfig) => Promise<ApiResult<void>>;
+    getRound: (id: string, roundNumber: number, config?: RequestConfig) => Promise<ApiResult<({
+      kind: "sequential";
+      matchId: string;
+      number: string | number;
+    } | {
+      kind: "extra-time";
+      matchId: string;
+      number: null;
+    }) & {
+      match: components["schemas"]["PhysicalMatch"];
+    }>>;
+    getExtraTime: (id: string, config?: RequestConfig) => Promise<ApiResult<({
+      kind: "sequential";
+      matchId: string;
+      number: string | number;
+    } | {
+      kind: "extra-time";
+      matchId: string;
+      number: null;
+    }) & {
+      match: components["schemas"]["PhysicalMatch"];
+    }>>;
+    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<{
+      items: components["schemas"]["MatchEvent"][];
+      page: components["schemas"]["PageInfo"];
+    } | {
+      items: {
+        event: components["schemas"]["MatchEvent"];
+        round: {
+          kind: "sequential";
+          matchId: string;
+          number: string | number;
+        } | {
+          kind: "extra-time";
+          matchId: string;
+          number: null;
+        };
+      }[];
+      page: components["schemas"]["PageInfo"];
+    }>>;
+    addEvent: (id: string, body: AddMatchEventInput, config?: RequestConfig) => Promise<ApiResult<{
+      actorPlayer: (components["schemas"]["Player"] | null) | null;
+      createdAt: string;
+      disabled: boolean;
+      disabledAt: (string | null) | null;
+      domain: "room" | "game" | "agent" | "system";
+      elapsedSeconds: (number | null) | null;
+      id: string;
+      occurredAt: (string | null) | null;
+      playId: (string | null) | null;
+      roomPlayerId: (number | null) | null;
+      scope: "player" | "team" | "match";
+      sequence: string | number;
+      sourceState: (string | null) | null;
+      subjectPlayer: (components["schemas"]["Player"] | null) | null;
+      team: (("spectators" | "red" | "blue") | null) | null;
+      tick: (number | null) | null;
+      type: string;
+      updatedAt: string;
+      value: unknown;
+    }>>;
+    disableEvent: (id: string, eventId: string, body?: DisableMatchEventInput, config?: RequestConfig) => Promise<ApiResult<{
+      actorPlayer: (components["schemas"]["Player"] | null) | null;
+      createdAt: string;
+      disabled: boolean;
+      disabledAt: (string | null) | null;
+      domain: "room" | "game" | "agent" | "system";
+      elapsedSeconds: (number | null) | null;
+      id: string;
+      occurredAt: (string | null) | null;
+      playId: (string | null) | null;
+      roomPlayerId: (number | null) | null;
+      scope: "player" | "team" | "match";
+      sequence: string | number;
+      sourceState: (string | null) | null;
+      subjectPlayer: (components["schemas"]["Player"] | null) | null;
+      team: (("spectators" | "red" | "blue") | null) | null;
+      tick: (number | null) | null;
+      type: string;
+      updatedAt: string;
+      value: unknown;
+    }>>;
+  };
+  permissions: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPermissionsResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    update: (uuid: string, body: UpdatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      key: string;
+      title: string | null;
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      deleted: boolean;
+    }>>;
+  };
+  players: {
+    list: (query?: ListPlayersQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
+    get: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+    listMatches: (externalId: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayerMatchesResponse>>;
+    create: (body: CreatePlayerInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+    associateAccount: (externalId: string, body: AssociatePlayerAccountInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: (components["schemas"]["PlayerAccount"] | null) | null;
+      country: (string | null) | null;
+      createdAt: string;
+      id: string;
+      name: string;
+      updatedAt: string;
+    }>>;
+  };
+  recordings: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRecordingsResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      sizeBytes: number;
+      url: string;
+    }>>;
+    create: (input: CreateRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      sizeBytes: number;
+      url: string;
+    }>>;
+  };
+  roles: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRolesResponse>>;
+    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      bypassAllPermissions: boolean;
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: {
+        label: string;
+        value: string;
+      };
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    create: (body: CreateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
+      bypassAllPermissions: boolean;
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: {
+        label: string;
+        value: string;
+      };
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    update: (uuid: string, body: UpdateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
+      bypassAllPermissions: boolean;
+      createdAt: string;
+      isDefault: boolean;
+      name: string;
+      permissions: string[];
+      title: {
+        label: string;
+        value: string;
+      };
+      updatedAt: string;
+      uuid: string;
+    }>>;
+    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
+      deleted: boolean;
+    }>>;
+  };
+  live: {
+    query: <TResult, TVariables = Record<string, never>>(input: LiveQueryInput<TResult, TVariables>) => Promise<ApiResult<TResult>>;
+    enqueueRoomCommand: (input: EnqueueLiveRoomCommandInput, config?: RequestConfig) => Promise<ApiResult<LiveRoomCommand>>;
+  };
+  rooms: {
+    list: (query?: ListRoomsQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomsResponse>>;
+    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed" | "failed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    create: (body: CreateRoomInput, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed" | "failed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    close: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed" | "failed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomEventsResponse>>;
+    addEvent: (id: string, body: AddRoomEventInput, config?: RequestConfig) => Promise<ApiResult<{
+      actorPlayer: (components["schemas"]["Player"] | null) | null;
+      createdAt: string;
+      domain: "room" | "game" | "agent" | "system";
+      elapsedSeconds: (number | null) | null;
+      id: string;
+      matchId: (string | null) | null;
+      occurredAt: (string | null) | null;
+      playId: (string | null) | null;
+      roomPlayerId: (number | null) | null;
+      scope: "player" | "team" | "match";
+      sequence: string | number;
+      sourceState: (string | null) | null;
+      subjectPlayer: (components["schemas"]["Player"] | null) | null;
+      team: (("spectators" | "red" | "blue") | null) | null;
+      tick: (number | null) | null;
+      type: string;
+      updatedAt: string;
+      value: unknown;
+    }>>;
+    listIncidents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomIncidentsResponse>>;
+    addIncident: (id: string, body: AddRoomIncidentInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      id: string;
+      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
+      occurredAt: string;
+      sha256: string;
+      sizeBytes: string | number;
+      url: string;
+    }>>;
+    reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
+      closedAt: (string | null) | null;
+      createdAt: string;
+      failedAt: (string | null) | null;
+      failureReason: (string | null) | null;
+      id: string;
+      launchConfig: {
+        [key: string]: string | number | boolean | null;
+      };
+      program: components["schemas"]["RoomResponseProgramSummary"];
+      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
+      public: boolean;
+      roomLink: (string | null) | null;
+      state: "provisioning" | "running" | "closed" | "failed";
+      updatedAt: string;
+      version: components["schemas"]["RoomResponseVersionSummary"];
+    }>>;
+    attachLive: (input: AttachLiveRoomInput) => Promise<LiveRoomAttachment>;
+    programs: {
+      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramsResponse>>;
+      get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        integrationMode: "external" | "integrated";
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
+        liveStateContract: ({
+          documents: {
+            name: string;
+            schema: unknown;
+            version: string | number;
+          }[];
+          facts: {
+            document: string;
+            key: string;
+            pointer: string;
+            type: "string" | "number" | "boolean";
+          }[];
+          namespace: string;
+        } | null) | null;
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      create: (body: CreateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        integrationMode: "external" | "integrated";
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
+        liveStateContract: ({
+          documents: {
+            name: string;
+            schema: unknown;
+            version: string | number;
+          }[];
+          facts: {
+            document: string;
+            key: string;
+            pointer: string;
+            type: "string" | "number" | "boolean";
+          }[];
+          namespace: string;
+        } | null) | null;
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      update: (id: string, body: UpdateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        description: (string | null) | null;
+        haxballTokenEnvVar: string;
+        id: string;
+        integrationMode: "external" | "integrated";
+        launchConfigFields: {
+          category: "room" | "game" | "diagnostics" | "infrastructure";
+          defaultValue?: string | number | boolean | null;
+          description?: {
+            label: string;
+            value: string;
+          };
+          enumValues?: string[];
+          envVar: string;
+          key: string;
+          label: {
+            label: string;
+            value: string;
+          };
+          maximum?: number;
+          minimum?: number;
+          required: boolean;
+          requiredPermission?: string;
+          secret: boolean;
+          valueType: "string" | "number" | "boolean";
+        }[];
+        liveStateContract: ({
+          documents: {
+            name: string;
+            schema: unknown;
+            version: string | number;
+          }[];
+          facts: {
+            document: string;
+            key: string;
+            pointer: string;
+            type: "string" | "number" | "boolean";
+          }[];
+          namespace: string;
+        } | null) | null;
+        name: string;
+        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
+        title: (string | null) | null;
+        updatedAt: string;
+      }>>;
+      listVersions: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramVersionsResponse>>;
+      createVersion: (id: string, body: CreateRoomProgramVersionInput, config?: RequestConfig) => Promise<ApiResult<{
+        artifact: components["schemas"]["RoomProgramVersionArtifact"];
+        createdAt: string;
+        entrypoint: string;
+        id: string;
+        installStrategy: "none" | "npm-ci" | "npm-install";
+        programId: string;
+        updatedAt: string;
+        version: string;
+      }>>;
+      discoverVersions: (id: string, body: DiscoverRoomProgramVersionsInput, config?: RequestConfig) => Promise<ApiResult<{
+        artifact: components["schemas"]["RoomProgramVersionArtifact"];
+        createdAt: string;
+        entrypoint: string;
+        id: string;
+        installStrategy: "none" | "npm-ci" | "npm-install";
+        programId: string;
+        updatedAt: string;
+        version: string;
+      }[]>>;
+    };
+    proxyEndpoints: {
+      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProxyEndpointsResponse>>;
+      create: (body: CreateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        displayName: string;
+        enabled: boolean;
+        id: string;
+        key: string;
+        outboundIp: string;
+        proxyUrl: string;
+        updatedAt: string;
+      }>>;
+      update: (id: string, body: UpdateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        displayName: string;
+        enabled: boolean;
+        id: string;
+        key: string;
+        outboundIp: string;
+        proxyUrl: string;
+        updatedAt: string;
+      }>>;
+    };
+  };
+  sessions: {
+    resolve: (body: ResolveSessionInput, config?: RequestConfig) => Promise<ApiResult<{
+      account: null;
+      playerId: string;
+      status: "guest";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      status: "signed_in";
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      playerId: string;
+      status: "password_required";
+    }>>;
+    confirm: (body: ConfirmSessionInput, config?: RequestConfig) => Promise<ApiResult<{
+      valid: false;
+    } | {
+      account: components["schemas"]["SessionAccount"];
+      canonicalName: string;
+      playerId: string;
+      valid: true;
+    }>>;
+  };
+  eventSchemas: {
+    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListEventSchemasResponse>>;
+    getLatest: (id: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    getLatestByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    getVersion: (id: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    getVersionByName: (name: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    create: (body: CreateEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    publishVersion: (id: string, body: PublishEventSchemaVersionInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+    updateVersion: (id: string, version: number, body: UpdateEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
+      createdAt: string;
+      definition: unknown;
+      description: (string | null) | null;
+      id: string;
+      isLatest: boolean;
+      name: string;
+      title: (string | null) | null;
+      updatedAt: string;
+      version: string | number;
+    }>>;
+  };
+};
+//#endregion
+//#region src/client.d.ts
+type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+type MaybePromise<T> = T | Promise<T>;
+type TokenProvider = () => MaybePromise<string | undefined>;
+type HeadersProvider = () => MaybePromise<HeadersInit | undefined>;
+type HaxFootballApiClientOptions = {
+  apiUrl?: string | URL | undefined;
+  authUrl?: string | URL | undefined;
+  token?: string | TokenProvider | undefined;
+  apiKey?: string | undefined;
+  fetch?: FetchLike | undefined;
+  headers?: HeadersInit | HeadersProvider | undefined;
+  timeoutMs?: number | undefined;
+};
+type RequestOptions = {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  path: string;
+  query?: Record<string, unknown> | undefined;
+  body?: unknown | undefined;
+  formData?: FormData | undefined;
+  auth?: "bearer" | "none";
+  headers?: HeadersInit | undefined;
+  signal?: AbortSignal | undefined;
+  timeoutMs?: number | undefined;
+};
+declare class HaxFootballApiClient {
+  readonly accounts: HaxFootballApiResources["accounts"];
+  readonly auth: HaxFootballApiResources["auth"];
+  readonly gameModes: HaxFootballApiResources["gameModes"];
+  readonly matches: HaxFootballApiResources["matches"];
+  readonly permissions: HaxFootballApiResources["permissions"];
+  readonly players: HaxFootballApiResources["players"];
+  readonly recordings: HaxFootballApiResources["recordings"];
+  readonly roles: HaxFootballApiResources["roles"];
+  readonly live: HaxFootballApiResources["live"];
+  readonly rooms: HaxFootballApiResources["rooms"];
+  readonly sessions: HaxFootballApiResources["sessions"];
+  readonly eventSchemas: HaxFootballApiResources["eventSchemas"];
+  readonly apiUrl: URL;
+  readonly authUrl: URL;
+  private readonly fetcher;
+  private readonly token;
+  private readonly apiKey;
+  private readonly headers;
+  private readonly timeoutMs;
+  private cachedApiKeyToken;
+  constructor(options?: HaxFootballApiClientOptions);
+  request<T>(options: RequestOptions): Promise<ApiResult<T>>;
+  requestAuth<T>(options: Omit<RequestOptions, "path">): Promise<ApiResult<T>>;
+  bearerToken(): Promise<string | undefined>;
+  private resolveBearerToken;
+  private buildHeaders;
+}
+declare function createHaxFootballApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
+declare function createHaxFootballRoomApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
+//#endregion
+//#region src/live/generated.d.ts
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends {
+  [key: string]: unknown;
+}> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
+
+type BooleanFilter = {
+  equals?: boolean | null | undefined;
+};
+type FloatFilter = {
+  equals?: number | null | undefined;
+};
+type IntFilter = {
+  equals?: number | null | undefined;
+};
+type LiveGameStatus = "PAUSED" | "RESUMING" | "RUNNING" | "STOPPED";
+type LivePlayerListRelationFilter = {
+  every?: LivePlayerWhereInput | null | undefined;
+  none?: LivePlayerWhereInput | null | undefined;
+  some?: LivePlayerWhereInput | null | undefined;
+};
+type LivePlayerSessionKind = "GUEST" | "RESOLVING" | "SIGNED_IN" | "SIGNING_IN";
+type LivePlayerWhereInput = {
+  AND?: Array<LivePlayerWhereInput> | null | undefined;
+  NOT?: Array<LivePlayerWhereInput> | null | undefined;
+  OR?: Array<LivePlayerWhereInput> | null | undefined;
+  admin?: BooleanFilter | null | undefined;
+  desynced?: BooleanFilter | null | undefined;
+  name?: StringFilter | null | undefined;
+  playable?: BooleanFilter | null | undefined;
+  roomPlayerId?: IntFilter | null | undefined;
+  sessionKind?: StringFilter | null | undefined;
+  team?: StringFilter | null | undefined;
+};
+type LiveRoomCommandStatus = "ACKNOWLEDGED" | "FAILED" | "QUEUED" | "SENT";
+type LiveRoomWhereInput = {
+  AND?: Array<LiveRoomWhereInput> | null | undefined;
+  NOT?: Array<LiveRoomWhereInput> | null | undefined;
+  OR?: Array<LiveRoomWhereInput> | null | undefined;
+  connected?: BooleanFilter | null | undefined;
+  id?: StringFilter | null | undefined;
+  players?: LivePlayerListRelationFilter | null | undefined;
+  stateDocuments?: LiveStateDocumentListRelationFilter | null | undefined;
+  stateFacts?: LiveStateFactListRelationFilter | null | undefined;
+};
+type LiveStateDocumentListRelationFilter = {
+  every?: LiveStateDocumentWhereInput | null | undefined;
+  none?: LiveStateDocumentWhereInput | null | undefined;
+  some?: LiveStateDocumentWhereInput | null | undefined;
+};
+type LiveStateDocumentWhereInput = {
+  AND?: Array<LiveStateDocumentWhereInput> | null | undefined;
+  NOT?: Array<LiveStateDocumentWhereInput> | null | undefined;
+  OR?: Array<LiveStateDocumentWhereInput> | null | undefined;
+  name?: StringFilter | null | undefined;
+  namespace?: StringFilter | null | undefined;
+  version?: IntFilter | null | undefined;
+};
+type LiveStateFactListRelationFilter = {
+  every?: LiveStateFactWhereInput | null | undefined;
+  none?: LiveStateFactWhereInput | null | undefined;
+  some?: LiveStateFactWhereInput | null | undefined;
+};
+type LiveStateFactType = "BOOLEAN" | "NUMBER" | "STRING";
+type LiveStateFactWhereInput = {
+  AND?: Array<LiveStateFactWhereInput> | null | undefined;
+  NOT?: Array<LiveStateFactWhereInput> | null | undefined;
+  OR?: Array<LiveStateFactWhereInput> | null | undefined;
+  booleanValue?: BooleanFilter | null | undefined;
+  key?: StringFilter | null | undefined;
+  namespace?: StringFilter | null | undefined;
+  numberValue?: FloatFilter | null | undefined;
+  stringValue?: StringFilter | null | undefined;
+  type?: StringFilter | null | undefined;
+};
+type LiveTeam = "BLUE" | "RED" | "SPECTATORS";
+type StringFilter = {
+  contains?: string | null | undefined;
+  equals?: string | null | undefined;
+  startsWith?: string | null | undefined;
+};
+type FindPlayersByNameQueryVariables = Exact<{
+  playerName: string;
+  connected?: boolean | null | undefined;
+}>;
+type FindPlayersByNameQuery = {
+  liveRooms: {
+    nodes: Array<{
+      id: string;
+      connected: boolean;
+      revision: number;
+      lastSeenAt: string;
+      room: {
+        name: string | null;
+        teamsLocked: boolean | null;
+        gameStatus: LiveGameStatus;
+        scores: {
+          red: number;
+          blue: number;
+        } | null;
+      };
+      players: {
+        nodes: Array<{
+          roomPlayerId: number;
+          name: string;
+          team: LiveTeam;
+          admin: boolean;
+          avatar: string | null;
+          desynced: boolean | null;
+          sessionKind: LivePlayerSessionKind | null;
+          playable: boolean | null;
+          playBlockedReason: string | null;
+        }>;
+      };
+    }>;
+  };
+};
+type GetRoomQueryVariables = Exact<{
+  id: string | number;
+}>;
+type GetRoomQuery = {
+  liveRoom: {
+    id: string;
+    connected: boolean;
+    revision: number;
+    lastSeenAt: string;
+    room: {
+      name: string | null;
+      teamsLocked: boolean | null;
+      gameStatus: LiveGameStatus;
+      scores: {
+        red: number;
+        blue: number;
+      } | null;
+    };
+    players: {
+      nodes: Array<{
+        roomPlayerId: number;
+        name: string;
+        team: LiveTeam;
+        admin: boolean;
+        avatar: string | null;
+        desynced: boolean | null;
+        sessionKind: LivePlayerSessionKind | null;
+        playable: boolean | null;
+        playBlockedReason: string | null;
+      }>;
+    };
+    stateDocuments: Array<{
+      namespace: string;
+      name: string;
+      version: number;
+      revision: number;
+      updatedAt: string;
+      payload: unknown;
+    }>;
+    stateFacts: Array<{
+      namespace: string;
+      key: string;
+      type: LiveStateFactType;
+      stringValue: string | null;
+      numberValue: number | null;
+      booleanValue: boolean | null;
+    }>;
+  } | null;
+};
+type ListRoomsQueryVariables = Exact<{
+  where?: LiveRoomWhereInput | null | undefined;
+  first?: number | null | undefined;
+  after?: string | null | undefined;
+}>;
+type ListRoomsQuery$1 = {
+  liveRooms: {
+    nodes: Array<{
+      id: string;
+      connected: boolean;
+      revision: number;
+      lastSeenAt: string;
+      room: {
+        name: string | null;
+        teamsLocked: boolean | null;
+        gameStatus: LiveGameStatus;
+        scores: {
+          red: number;
+          blue: number;
+        } | null;
+      };
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+};
+type ListRoomCommandsQueryVariables = Exact<{
+  roomId: string | number;
+  status?: LiveRoomCommandStatus | null | undefined;
+  first?: number | null | undefined;
+  after?: string | null | undefined;
+}>;
+type ListRoomCommandsQuery = {
+  liveRoomCommands: {
+    nodes: Array<{
+      id: string;
+      roomId: string;
+      name: string;
+      payload: unknown;
+      status: LiveRoomCommandStatus;
+      result: unknown;
+      error: string | null;
+      createdAt: string;
+      updatedAt: string;
+      sentAt: string | null;
+      completedAt: string | null;
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+};
+//#endregion
+//#region src/live/index.d.ts
+declare const queries: {
+  findPlayersByName: _graphql_typed_document_node_core0.TypedDocumentNode<FindPlayersByNameQuery, {
+    playerName: string;
+    connected?: boolean | null | undefined | undefined;
+  }>;
+  getRoom: _graphql_typed_document_node_core0.TypedDocumentNode<GetRoomQuery, {
+    id: string | number;
+  }>;
+  listRooms: _graphql_typed_document_node_core0.TypedDocumentNode<ListRoomsQuery$1, {
+    where?: LiveRoomWhereInput | null | undefined;
+    first?: number | null | undefined | undefined;
+    after?: string | null | undefined | undefined;
+  }>;
+  listRoomCommands: _graphql_typed_document_node_core0.TypedDocumentNode<ListRoomCommandsQuery, {
+    roomId: string | number;
+    status?: LiveRoomCommandStatus | null | undefined;
+    first?: number | null | undefined | undefined;
+    after?: string | null | undefined | undefined;
+  }>;
+};
+//#endregion
 //#region src/generated/openapi.d.ts
 /**
  * This file was auto-generated by openapi-typescript.
@@ -342,6 +1674,22 @@ interface paths {
     patch: operations["patchApiGame-modesById"];
     trace?: never;
   };
+  "/api/graphql": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getApiGraphql"];
+    put: operations["putApiGraphql"];
+    post: operations["postApiGraphql"];
+    delete: operations["deleteApiGraphql"];
+    options: operations["optionsApiGraphql"];
+    head: operations["headApiGraphql"];
+    patch: operations["patchApiGraphql"];
+    trace: operations["traceApiGraphql"];
+  };
   "/api/job-schedules": {
     parameters: {
       query?: never;
@@ -445,6 +1793,23 @@ interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/matches/compositions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Compose matches into rounds */
+    post: operations["postApiMatchesCompositions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/metrics/query": {
     parameters: {
       query?: never;
@@ -515,6 +1880,23 @@ interface paths {
     patch: operations["patchApiMatchesByIdEventsByEventId"];
     trace?: never;
   };
+  "/api/matches/{id}/extra-time": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get match extra time */
+    get: operations["getApiMatchesByIdExtra-time"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/{id}/metrics": {
     parameters: {
       query?: never;
@@ -547,6 +1929,41 @@ interface paths {
     head?: never;
     /** Associate a match recording */
     patch: operations["patchApiMatchesByIdRecording"];
+    trace?: never;
+  };
+  "/api/matches/{id}/rounds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Replace composed match rounds */
+    put: operations["putApiMatchesByIdRounds"];
+    post?: never;
+    /** Unbind a composed match */
+    delete: operations["deleteApiMatchesByIdRounds"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/matches/{id}/rounds/{roundNumber}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a sequential match round */
+    get: operations["getApiMatchesByIdRoundsByRoundNumber"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/permissions": {
@@ -936,6 +2353,22 @@ interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/rooms/{id}/control": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/rooms/{id}/events": {
     parameters: {
       query?: never;
@@ -1218,6 +2651,46 @@ interface components {
       updatedAt: string;
       version: components["schemas"]["RoomResponseVersionSummary"];
     };
+    ComposedMatch: {
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      /** @constant */
+      kind: "composed";
+      rounds: (({
+        /** @constant */
+        kind: "sequential";
+        matchId: string;
+        number: string | number;
+      } | {
+        /** @constant */
+        kind: "extra-time";
+        matchId: string;
+        number: null;
+      }) & {
+        match: {
+          createdAt: string;
+          endedAt: (string | null) | null;
+          eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+          gameMode: (components["schemas"]["GameMode"] | null) | null;
+          id: string;
+          initiatedAt: (string | null) | null;
+          /** @constant */
+          kind: "single";
+          recording: (components["schemas"]["Recording"] | null) | null;
+          score: (components["schemas"]["MatchScore"] | null) | null;
+          status: "ongoing" | "completed";
+          updatedAt: string;
+        };
+      })[];
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      /** @enum {string} */
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    };
     ConfirmAccountBody: {
       name: string;
       password: string;
@@ -1312,6 +2785,20 @@ interface components {
       /** @enum {string} */
       integrationMode: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
+      liveStateContract?: ({
+        documents: {
+          name: string;
+          schema: unknown;
+          version: string | number;
+        }[];
+        facts: {
+          document: string;
+          key: string;
+          pointer: string;
+          type: "string" | "number" | "boolean";
+        }[];
+        namespace: string;
+      } | null) | null;
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
       title?: string;
@@ -1458,6 +2945,22 @@ interface components {
     ListMatchEvents: {
       items: components["schemas"]["MatchEvent"][];
       page: components["schemas"]["PageInfo"];
+    } | {
+      items: {
+        event: components["schemas"]["MatchEvent"];
+        round: {
+          /** @constant */
+          kind: "sequential";
+          matchId: string;
+          number: string | number;
+        } | {
+          /** @constant */
+          kind: "extra-time";
+          matchId: string;
+          number: null;
+        };
+      }[];
+      page: components["schemas"]["PageInfo"];
     };
     ListMatches: {
       items: components["schemas"]["MatchSummary"][];
@@ -1511,9 +3014,19 @@ interface components {
       items: components["schemas"]["CloseRoomResponse"][];
       page: components["schemas"]["PageInfo"];
     };
-    Match: components["schemas"]["MatchSummary"] & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
+    Match: components["schemas"]["PhysicalMatch"] | components["schemas"]["ComposedMatch"];
+    MatchCompositionBody: {
+      rounds: ({
+        /** @constant */
+        kind: "sequential";
+        matchId: string;
+        number: string | number;
+      } | {
+        /** @constant */
+        kind: "extra-time";
+        matchId: string;
+        number: null;
+      })[];
     };
     MatchEvent: {
       actorPlayer: (components["schemas"]["Player"] | null) | null;
@@ -1562,7 +3075,46 @@ interface components {
         [key: string]: unknown;
       };
       player: components["schemas"]["Player"];
-    }[];
+    }[] | {
+      overall: {
+        metrics: {
+          [key: string]: unknown;
+        };
+        player: components["schemas"]["Player"];
+      }[];
+      rounds: {
+        metrics: {
+          metrics: {
+            [key: string]: unknown;
+          };
+          player: components["schemas"]["Player"];
+        }[];
+        round: {
+          /** @constant */
+          kind: "sequential";
+          matchId: string;
+          number: string | number;
+        } | {
+          /** @constant */
+          kind: "extra-time";
+          matchId: string;
+          number: null;
+        };
+      }[];
+    };
+    MatchRound: ({
+      /** @constant */
+      kind: "sequential";
+      matchId: string;
+      number: string | number;
+    } | {
+      /** @constant */
+      kind: "extra-time";
+      matchId: string;
+      number: null;
+    }) & {
+      match: components["schemas"]["PhysicalMatch"];
+    };
     MatchScore: {
       blue: string | number;
       red: string | number;
@@ -1584,12 +3136,13 @@ interface components {
       gameMode: (components["schemas"]["GameMode"] | null) | null;
       id: string;
       initiatedAt: (string | null) | null;
+      /** @constant */
+      kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      /** @enum {string} */
       status: "ongoing" | "completed";
       updatedAt: string;
-    };
+    } | components["schemas"]["ComposedMatch"];
     NotFoundError: {
       error: {
         /** @constant */
@@ -1608,6 +3161,23 @@ interface components {
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
+    };
+    PhysicalMatch: {
+      createdAt: string;
+      endedAt: (string | null) | null;
+      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
+      gameMode: (components["schemas"]["GameMode"] | null) | null;
+      id: string;
+      initiatedAt: (string | null) | null;
+      /** @constant */
+      kind: "single";
+      recording: (components["schemas"]["Recording"] | null) | null;
+      score: (components["schemas"]["MatchScore"] | null) | null;
+      status: "ongoing" | "completed";
+      updatedAt: string;
+    } & {
+      events: components["schemas"]["MatchEvent"][];
+      participations: components["schemas"]["MatchStint"][];
     };
     Player: {
       account: (components["schemas"]["PlayerAccount"] | null) | null;
@@ -1632,6 +3202,7 @@ interface components {
           eventsCount: string | number;
           matchesCount: string | number;
           playersCount: string | number;
+          roundsCount: string | number;
         };
         group: {
           externalId: string;
@@ -1701,6 +3272,7 @@ interface components {
           eventsCount: string | number;
           groupsCount: string | number;
           matchesCount: string | number;
+          roundsCount: string | number;
         };
       };
       page: components["schemas"]["PageInfo"];
@@ -1923,6 +3495,20 @@ interface components {
         /** @enum {string} */
         valueType: "string" | "number" | "boolean";
       }[];
+      liveStateContract: ({
+        documents: {
+          name: string;
+          schema: unknown;
+          version: string | number;
+        }[];
+        facts: {
+          document: string;
+          key: string;
+          pointer: string;
+          type: "string" | "number" | "boolean";
+        }[];
+        namespace: string;
+      } | null) | null;
       name: string;
       releaseSource: components["schemas"]["RoomProgramReleaseSource"];
       title: (string | null) | null;
@@ -2062,6 +3648,20 @@ interface components {
       /** @enum {string} */
       integrationMode?: "external" | "integrated";
       launchConfigFields?: components["schemas"]["RoomLaunchConfigField"][];
+      liveStateContract?: ({
+        documents: {
+          name: string;
+          schema: unknown;
+          version: string | number;
+        }[];
+        facts: {
+          document: string;
+          key: string;
+          pointer: string;
+          type: "string" | "number" | "boolean";
+        }[];
+        namespace: string;
+      } | null) | null;
       releaseSource?: {
         assetPattern: string;
         owner: string;
@@ -3245,6 +4845,310 @@ interface operations {
       };
     };
   };
+  getApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  putApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  deleteApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  optionsApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  headApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  patchApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  traceApiGraphql: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   "getApiJob-schedules": {
     parameters: {
       query?: {
@@ -3581,7 +5485,67 @@ interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiMatchesCompositions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MatchCompositionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ComposedMatch"];
         };
       };
       /** @description Response for status 400 */
@@ -3761,7 +5725,7 @@ interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
         };
       };
       /** @description Response for status 400 */
@@ -3988,6 +5952,64 @@ interface operations {
       };
     };
   };
+  "getApiMatchesByIdExtra-time": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MatchRound"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   getApiMatchesByIdMetrics: {
     parameters: {
       query?: never;
@@ -4067,7 +6089,184 @@ interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["Match"];
+          "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  putApiMatchesByIdRounds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MatchCompositionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ComposedMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  deleteApiMatchesByIdRounds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 204 */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiMatchesByIdRoundsByRoundNumber: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        roundNumber: string | number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MatchRound"];
         };
       };
       /** @description Response for status 400 */
@@ -6787,7 +8986,10 @@ type ListPlayerMatchesResponse = PaginatedResponse<MatchSummary>;
 type Recording = Schema<"Recording">;
 type ListRecordingsResponse = PaginatedResponse<Recording>;
 type Match = Schema<"Match">;
+type PhysicalMatch = Schema<"PhysicalMatch">;
+type ComposedMatch = Schema<"ComposedMatch">;
 type MatchSummary = Schema<"MatchSummary">;
+type MatchRound = Schema<"MatchRound">;
 type MatchEvent = Schema<"MatchEvent">;
 type MatchEventInput = Schema<"MatchEventInput">;
 type MatchMetrics = Schema<"MatchMetrics">;
@@ -6797,12 +8999,13 @@ type MatchScore = Schema<"MatchScore">;
 type MatchStint = Schema<"MatchStint">;
 type CreateMatchInput = Schema<"CreateMatchBody">;
 type UpdateMatchInput = Schema<"UpdateMatchBody">;
+type MatchCompositionInput = Schema<"MatchCompositionBody">;
 type AddMatchEventInput = Schema<"AddMatchEventBody">;
 type DisableMatchEventInput = Schema<"DisableMatchEventBody">;
 type AssociateMatchRecordingInput = Schema<"AssociateMatchRecordingBody">;
 type ListMatchesQuery = operations["getApiMatches"]["parameters"]["query"];
 type ListMatchesResponse = PaginatedResponse<MatchSummary>;
-type ListMatchEventsResponse = PaginatedResponse<MatchEvent>;
+type ListMatchEventsResponse = Schema<"ListMatchEvents">;
 type CreateTokenInput = Schema<"CreateTokenBody">;
 type CreateTokenResponse = Schema<"CreateTokenResponse">;
 type SessionAccount = Schema<"SessionAccount">;
@@ -6816,8 +9019,8 @@ type LaunchConfig = {
 type Room = Schema<"Room">;
 type RoomEvent = Schema<"RoomEvent">;
 type RoomIncident = Schema<"RoomIncident">;
-type RoomLaunchConfigField = Schema<"RoomLaunchConfigField">;
 type RoomProgram = Schema<"RoomProgram">;
+type RoomLaunchConfigField = RoomProgram["launchConfigFields"][number];
 type RoomProgramReleaseSource = Schema<"RoomProgramReleaseSource">;
 type RoomProgramVersion = Schema<"RoomProgramVersion">;
 type RoomProgramVersionArtifact = Schema<"RoomProgramVersionArtifact">;
@@ -6836,7 +9039,7 @@ type DiscoverRoomProgramVersionsInput = Schema<"DiscoverRoomProgramVersionsBody"
 type DiscoverRoomProgramVersionsResponse = Schema<"DiscoverRoomProgramVersionsResponse">;
 type CreateRoomProxyEndpointInput = Schema<"CreateRoomProxyEndpointBody">;
 type UpdateRoomProxyEndpointInput = Schema<"UpdateRoomProxyEndpointBody">;
-type ListRoomsQuery$1 = PaginationQuery & {
+type ListRoomsQuery = PaginationQuery & {
   state?: "open" | "provisioning" | "running" | "closed" | "all";
 };
 type ListRoomsResponse = PaginatedResponse<Room>;
@@ -6857,1121 +9060,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-//#region src/resources/room-control.d.ts
-type LiveRoomControlCommand = {
-  id: string;
-  roomId: string;
-  name: string;
-  payload: unknown;
-};
-type LiveRoomControlCommandHandler = (command: LiveRoomControlCommand) => unknown | Promise<unknown>;
-type LiveRoomSnapshotProvider = () => unknown;
-type LiveRoomAttachment = {
-  close(): void;
-  sendSnapshot(snapshot?: unknown): void;
-  sendCommandResult(commandId: string, outcome: {
-    ok: true;
-    result: unknown;
-  } | {
-    ok: false;
-    error: string;
-  }): void;
-};
-type LiveRoomControlSocket = {
-  close(): void;
-  send(data: string): void;
-  addEventListener?(type: "open" | "message" | "close" | "error", listener: (event: unknown) => void): void;
-  on?(type: "open" | "message" | "close" | "error", listener: (...args: unknown[]) => void): void;
-};
-type LiveRoomControlWebSocketConstructor = new (url: string, options?: {
-  headers?: HeadersInit;
-}) => LiveRoomControlSocket;
-type AttachLiveRoomInput = {
-  roomId: string;
-  commId: string;
-  webSocket?: LiveRoomControlWebSocketConstructor | undefined;
-  snapshotProvider?: LiveRoomSnapshotProvider | undefined;
-  snapshotRevision?: number | null | undefined;
-  onAccepted?: (() => void) | undefined;
-  onRejected?: ((error: string | null) => void) | undefined;
-  onCommand?: LiveRoomControlCommandHandler | undefined;
-  onClose?: (() => void) | undefined;
-  onError?: ((error: unknown) => void) | undefined;
-};
-//#endregion
-//#region src/resources/index.d.ts
-type HaxFootballApiResources = ReturnType<typeof createResources>;
-declare function createResources(client: HaxFootballApiClient): {
-  accounts: {
-    list: (query?: ListAccountsQuery, config?: RequestConfig) => Promise<ApiResult<ListAccountsResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    getByExternalId: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    confirm: (body: ConfirmAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      valid: boolean;
-    }>>;
-    update: (uuid: string, body: UpdateAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      externalId: string;
-      name: string;
-      role: components["schemas"]["Role"];
-      updatedAt: string;
-      uuid: string;
-    }>>;
-  };
-  auth: {
-    createToken: (body: CreateTokenInput, config?: RequestConfig) => Promise<ApiResult<CreateTokenResponse>>;
-  };
-  gameModes: {
-    list: (query?: ListGameModesQuery, config?: RequestConfig) => Promise<ApiResult<ListGameModesResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      description: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      id: string;
-      name: string;
-      rank: string | number;
-      title: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      updatedAt: string;
-      visibility: "visible" | "hidden";
-    }>>;
-    getByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      description: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      id: string;
-      name: string;
-      rank: string | number;
-      title: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      updatedAt: string;
-      visibility: "visible" | "hidden";
-    }>>;
-    create: (body: CreateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      description: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      id: string;
-      name: string;
-      rank: string | number;
-      title: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      updatedAt: string;
-      visibility: "visible" | "hidden";
-    }>>;
-    update: (id: string, body: UpdateGameModeInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      description: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      id: string;
-      name: string;
-      rank: string | number;
-      title: ({
-        label: string;
-        value: string;
-      } | null) | null;
-      updatedAt: string;
-      visibility: "visible" | "hidden";
-    }>>;
-  };
-  matches: {
-    list: (query?: ListMatchesQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchesResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
-      gameMode: (components["schemas"]["GameMode"] | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
-      gameMode: (components["schemas"]["GameMode"] | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
-      gameMode: (components["schemas"]["GameMode"] | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    getMetrics: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      metrics: {
-        [key: string]: unknown;
-      };
-      player: components["schemas"]["Player"];
-    }[]>>;
-    queryMetrics: (body: QueryMatchMetricsInput, config?: RequestConfig) => Promise<ApiResult<{
-      items: {
-        contribution: {
-          eventsCount: string | number;
-          matchesCount: string | number;
-          playersCount: string | number;
-        };
-        group: {
-          externalId: string;
-          id: string;
-          name: string;
-          type: "account";
-        } | {
-          account: (components["schemas"]["PlayerAccount"] | null) | null;
-          country: (string | null) | null;
-          id: string;
-          name: string;
-          type: "player";
-        } | {
-          id: string;
-          name: string;
-          type: "team";
-        } | {
-          id: string;
-          name: string;
-          type: "match";
-        };
-        metrics: {
-          [key: string]: unknown;
-        };
-        rank: string | number;
-      }[];
-      meta: {
-        availableMetrics: {
-          category: ({
-            description: (string | null) | null;
-            key: string;
-            label: string;
-            primaryMetric: (string | null) | null;
-          } | null) | null;
-          description: (string | null) | null;
-          format?: string;
-          hidden?: boolean;
-          key: string;
-          label: string;
-          precision?: number;
-          valueType?: string;
-        }[];
-        featuredMetrics: {
-          points?: string;
-        };
-        group: {
-          by: string;
-          identityMode: "current";
-        };
-        schema: {
-          id: string;
-          isLatest: boolean;
-          name: string;
-          version: string | number;
-        };
-        sort: unknown[];
-        target: "player" | "team" | "match";
-        totals: {
-          eventsCount: string | number;
-          groupsCount: string | number;
-          matchesCount: string | number;
-        };
-      };
-      page: components["schemas"]["PageInfo"];
-    }>>;
-    associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      endedAt: (string | null) | null;
-      eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
-      gameMode: (components["schemas"]["GameMode"] | null) | null;
-      id: string;
-      initiatedAt: (string | null) | null;
-      recording: (components["schemas"]["Recording"] | null) | null;
-      score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
-      updatedAt: string;
-    } & {
-      events: components["schemas"]["MatchEvent"][];
-      participations: components["schemas"]["MatchStint"][];
-    }>>;
-    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListMatchEventsResponse>>;
-    addEvent: (id: string, body: AddMatchEventInput, config?: RequestConfig) => Promise<ApiResult<{
-      actorPlayer: (components["schemas"]["Player"] | null) | null;
-      createdAt: string;
-      disabled: boolean;
-      disabledAt: (string | null) | null;
-      domain: "room" | "game" | "agent" | "system";
-      elapsedSeconds: (number | null) | null;
-      id: string;
-      occurredAt: (string | null) | null;
-      playId: (string | null) | null;
-      roomPlayerId: (number | null) | null;
-      scope: "player" | "team" | "match";
-      sequence: string | number;
-      sourceState: (string | null) | null;
-      subjectPlayer: (components["schemas"]["Player"] | null) | null;
-      team: (("spectators" | "red" | "blue") | null) | null;
-      tick: (number | null) | null;
-      type: string;
-      updatedAt: string;
-      value: unknown;
-    }>>;
-    disableEvent: (id: string, eventId: string, body?: DisableMatchEventInput, config?: RequestConfig) => Promise<ApiResult<{
-      actorPlayer: (components["schemas"]["Player"] | null) | null;
-      createdAt: string;
-      disabled: boolean;
-      disabledAt: (string | null) | null;
-      domain: "room" | "game" | "agent" | "system";
-      elapsedSeconds: (number | null) | null;
-      id: string;
-      occurredAt: (string | null) | null;
-      playId: (string | null) | null;
-      roomPlayerId: (number | null) | null;
-      scope: "player" | "team" | "match";
-      sequence: string | number;
-      sourceState: (string | null) | null;
-      subjectPlayer: (components["schemas"]["Player"] | null) | null;
-      team: (("spectators" | "red" | "blue") | null) | null;
-      tick: (number | null) | null;
-      type: string;
-      updatedAt: string;
-      value: unknown;
-    }>>;
-  };
-  permissions: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPermissionsResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    update: (uuid: string, body: UpdatePermissionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      key: string;
-      title: string | null;
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      deleted: boolean;
-    }>>;
-  };
-  players: {
-    list: (query?: ListPlayersQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayersResponse>>;
-    get: (externalId: string, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-    listMatches: (externalId: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListPlayerMatchesResponse>>;
-    create: (body: CreatePlayerInput, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-    associateAccount: (externalId: string, body: AssociatePlayerAccountInput, config?: RequestConfig) => Promise<ApiResult<{
-      account: (components["schemas"]["PlayerAccount"] | null) | null;
-      country: (string | null) | null;
-      createdAt: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    }>>;
-  };
-  recordings: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRecordingsResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      id: string;
-      sizeBytes: number;
-      url: string;
-    }>>;
-    create: (input: CreateRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      id: string;
-      sizeBytes: number;
-      url: string;
-    }>>;
-  };
-  roles: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRolesResponse>>;
-    get: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      bypassAllPermissions: boolean;
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: {
-        label: string;
-        value: string;
-      };
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    create: (body: CreateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
-      bypassAllPermissions: boolean;
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: {
-        label: string;
-        value: string;
-      };
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    update: (uuid: string, body: UpdateRoleInput, config?: RequestConfig) => Promise<ApiResult<{
-      bypassAllPermissions: boolean;
-      createdAt: string;
-      isDefault: boolean;
-      name: string;
-      permissions: string[];
-      title: {
-        label: string;
-        value: string;
-      };
-      updatedAt: string;
-      uuid: string;
-    }>>;
-    remove: (uuid: string, config?: RequestConfig) => Promise<ApiResult<{
-      deleted: boolean;
-    }>>;
-  };
-  live: {
-    query: <TResult, TVariables = Record<string, never>>(input: LiveQueryInput<TResult, TVariables>) => Promise<ApiResult<TResult>>;
-    enqueueRoomCommand: (input: EnqueueLiveRoomCommandInput, config?: RequestConfig) => Promise<ApiResult<LiveRoomCommand>>;
-  };
-  rooms: {
-    list: (query?: ListRoomsQuery$1, config?: RequestConfig) => Promise<ApiResult<ListRoomsResponse>>;
-    get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      failedAt: (string | null) | null;
-      failureReason: (string | null) | null;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed" | "failed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    create: (body: CreateRoomInput, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      failedAt: (string | null) | null;
-      failureReason: (string | null) | null;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed" | "failed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    close: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      failedAt: (string | null) | null;
-      failureReason: (string | null) | null;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed" | "failed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    listEvents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomEventsResponse>>;
-    addEvent: (id: string, body: AddRoomEventInput, config?: RequestConfig) => Promise<ApiResult<{
-      actorPlayer: (components["schemas"]["Player"] | null) | null;
-      createdAt: string;
-      domain: "room" | "game" | "agent" | "system";
-      elapsedSeconds: (number | null) | null;
-      id: string;
-      matchId: (string | null) | null;
-      occurredAt: (string | null) | null;
-      playId: (string | null) | null;
-      roomPlayerId: (number | null) | null;
-      scope: "player" | "team" | "match";
-      sequence: string | number;
-      sourceState: (string | null) | null;
-      subjectPlayer: (components["schemas"]["Player"] | null) | null;
-      team: (("spectators" | "red" | "blue") | null) | null;
-      tick: (number | null) | null;
-      type: string;
-      updatedAt: string;
-      value: unknown;
-    }>>;
-    listIncidents: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomIncidentsResponse>>;
-    addIncident: (id: string, body: AddRoomIncidentInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      id: string;
-      kind: "desync" | "uncaught-exception" | "unhandled-rejection";
-      occurredAt: string;
-      sha256: string;
-      sizeBytes: string | number;
-      url: string;
-    }>>;
-    reportReady: (id: string, body: ReportRoomReadyInput, config?: RequestConfig) => Promise<ApiResult<{
-      closedAt: (string | null) | null;
-      createdAt: string;
-      failedAt: (string | null) | null;
-      failureReason: (string | null) | null;
-      id: string;
-      launchConfig: {
-        [key: string]: string | number | boolean | null;
-      };
-      program: components["schemas"]["RoomResponseProgramSummary"];
-      proxyEndpoint: (components["schemas"]["RoomResponseProxyEndpointSummary"] | null) | null;
-      public: boolean;
-      roomLink: (string | null) | null;
-      state: "provisioning" | "running" | "closed" | "failed";
-      updatedAt: string;
-      version: components["schemas"]["RoomResponseVersionSummary"];
-    }>>;
-    attachLive: (input: AttachLiveRoomInput) => Promise<LiveRoomAttachment>;
-    programs: {
-      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramsResponse>>;
-      get: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        integrationMode: "external" | "integrated";
-        launchConfigFields: {
-          category: "room" | "game" | "diagnostics" | "infrastructure";
-          defaultValue?: string | number | boolean | null;
-          description?: {
-            label: string;
-            value: string;
-          };
-          enumValues?: string[];
-          envVar: string;
-          key: string;
-          label: {
-            label: string;
-            value: string;
-          };
-          maximum?: number;
-          minimum?: number;
-          required: boolean;
-          requiredPermission?: string;
-          secret: boolean;
-          valueType: "string" | "number" | "boolean";
-        }[];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      create: (body: CreateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        integrationMode: "external" | "integrated";
-        launchConfigFields: {
-          category: "room" | "game" | "diagnostics" | "infrastructure";
-          defaultValue?: string | number | boolean | null;
-          description?: {
-            label: string;
-            value: string;
-          };
-          enumValues?: string[];
-          envVar: string;
-          key: string;
-          label: {
-            label: string;
-            value: string;
-          };
-          maximum?: number;
-          minimum?: number;
-          required: boolean;
-          requiredPermission?: string;
-          secret: boolean;
-          valueType: "string" | "number" | "boolean";
-        }[];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      update: (id: string, body: UpdateRoomProgramInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        description: (string | null) | null;
-        haxballTokenEnvVar: string;
-        id: string;
-        integrationMode: "external" | "integrated";
-        launchConfigFields: {
-          category: "room" | "game" | "diagnostics" | "infrastructure";
-          defaultValue?: string | number | boolean | null;
-          description?: {
-            label: string;
-            value: string;
-          };
-          enumValues?: string[];
-          envVar: string;
-          key: string;
-          label: {
-            label: string;
-            value: string;
-          };
-          maximum?: number;
-          minimum?: number;
-          required: boolean;
-          requiredPermission?: string;
-          secret: boolean;
-          valueType: "string" | "number" | "boolean";
-        }[];
-        name: string;
-        releaseSource: components["schemas"]["RoomProgramReleaseSource"];
-        title: (string | null) | null;
-        updatedAt: string;
-      }>>;
-      listVersions: (id: string, query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProgramVersionsResponse>>;
-      createVersion: (id: string, body: CreateRoomProgramVersionInput, config?: RequestConfig) => Promise<ApiResult<{
-        artifact: components["schemas"]["RoomProgramVersionArtifact"];
-        createdAt: string;
-        entrypoint: string;
-        id: string;
-        installStrategy: "none" | "npm-ci" | "npm-install";
-        programId: string;
-        updatedAt: string;
-        version: string;
-      }>>;
-      discoverVersions: (id: string, body: DiscoverRoomProgramVersionsInput, config?: RequestConfig) => Promise<ApiResult<{
-        artifact: components["schemas"]["RoomProgramVersionArtifact"];
-        createdAt: string;
-        entrypoint: string;
-        id: string;
-        installStrategy: "none" | "npm-ci" | "npm-install";
-        programId: string;
-        updatedAt: string;
-        version: string;
-      }[]>>;
-    };
-    proxyEndpoints: {
-      list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListRoomProxyEndpointsResponse>>;
-      create: (body: CreateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        displayName: string;
-        enabled: boolean;
-        id: string;
-        key: string;
-        outboundIp: string;
-        proxyUrl: string;
-        updatedAt: string;
-      }>>;
-      update: (id: string, body: UpdateRoomProxyEndpointInput, config?: RequestConfig) => Promise<ApiResult<{
-        createdAt: string;
-        displayName: string;
-        enabled: boolean;
-        id: string;
-        key: string;
-        outboundIp: string;
-        proxyUrl: string;
-        updatedAt: string;
-      }>>;
-    };
-  };
-  sessions: {
-    resolve: (body: ResolveSessionInput, config?: RequestConfig) => Promise<ApiResult<{
-      account: null;
-      playerId: string;
-      status: "guest";
-    } | {
-      account: components["schemas"]["SessionAccount"];
-      canonicalName: string;
-      playerId: string;
-      status: "signed_in";
-    } | {
-      account: components["schemas"]["SessionAccount"];
-      playerId: string;
-      status: "password_required";
-    }>>;
-    confirm: (body: ConfirmSessionInput, config?: RequestConfig) => Promise<ApiResult<{
-      valid: false;
-    } | {
-      account: components["schemas"]["SessionAccount"];
-      canonicalName: string;
-      playerId: string;
-      valid: true;
-    }>>;
-  };
-  eventSchemas: {
-    list: (query?: PaginationQuery, config?: RequestConfig) => Promise<ApiResult<ListEventSchemasResponse>>;
-    getLatest: (id: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    getLatestByName: (name: string, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    getVersion: (id: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    getVersionByName: (name: string, version: number, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    create: (body: CreateEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    publishVersion: (id: string, body: PublishEventSchemaVersionInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-    updateVersion: (id: string, version: number, body: UpdateEventSchemaInput, config?: RequestConfig) => Promise<ApiResult<{
-      createdAt: string;
-      definition: unknown;
-      description: (string | null) | null;
-      id: string;
-      isLatest: boolean;
-      name: string;
-      title: (string | null) | null;
-      updatedAt: string;
-      version: string | number;
-    }>>;
-  };
-};
-//#endregion
-//#region src/client.d.ts
-type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
-type MaybePromise<T> = T | Promise<T>;
-type TokenProvider = () => MaybePromise<string | undefined>;
-type HeadersProvider = () => MaybePromise<HeadersInit | undefined>;
-type HaxFootballApiClientOptions = {
-  apiUrl?: string | URL | undefined;
-  authUrl?: string | URL | undefined;
-  token?: string | TokenProvider | undefined;
-  apiKey?: string | undefined;
-  fetch?: FetchLike | undefined;
-  headers?: HeadersInit | HeadersProvider | undefined;
-  timeoutMs?: number | undefined;
-};
-type RequestOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
-  path: string;
-  query?: Record<string, unknown> | undefined;
-  body?: unknown | undefined;
-  formData?: FormData | undefined;
-  auth?: "bearer" | "none";
-  headers?: HeadersInit | undefined;
-  signal?: AbortSignal | undefined;
-  timeoutMs?: number | undefined;
-};
-declare class HaxFootballApiClient {
-  readonly accounts: HaxFootballApiResources["accounts"];
-  readonly auth: HaxFootballApiResources["auth"];
-  readonly gameModes: HaxFootballApiResources["gameModes"];
-  readonly matches: HaxFootballApiResources["matches"];
-  readonly permissions: HaxFootballApiResources["permissions"];
-  readonly players: HaxFootballApiResources["players"];
-  readonly recordings: HaxFootballApiResources["recordings"];
-  readonly roles: HaxFootballApiResources["roles"];
-  readonly live: HaxFootballApiResources["live"];
-  readonly rooms: HaxFootballApiResources["rooms"];
-  readonly sessions: HaxFootballApiResources["sessions"];
-  readonly eventSchemas: HaxFootballApiResources["eventSchemas"];
-  readonly apiUrl: URL;
-  readonly authUrl: URL;
-  private readonly fetcher;
-  private readonly token;
-  private readonly apiKey;
-  private readonly headers;
-  private readonly timeoutMs;
-  private cachedApiKeyToken;
-  constructor(options?: HaxFootballApiClientOptions);
-  request<T>(options: RequestOptions): Promise<ApiResult<T>>;
-  requestAuth<T>(options: Omit<RequestOptions, "path">): Promise<ApiResult<T>>;
-  bearerToken(): Promise<string | undefined>;
-  private resolveBearerToken;
-  private buildHeaders;
-}
-declare function createHaxFootballApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
-declare function createHaxFootballRoomApiClient(options?: HaxFootballApiClientOptions): HaxFootballApiClient;
-//#endregion
-//#region src/live/generated.d.ts
-/** Internal type. DO NOT USE DIRECTLY. */
-type Exact<T extends {
-  [key: string]: unknown;
-}> = { [K in keyof T]: T[K] };
-/** Internal type. DO NOT USE DIRECTLY. */
-
-type BooleanFilter = {
-  equals?: boolean | null | undefined;
-};
-type FloatFilter = {
-  equals?: number | null | undefined;
-};
-type IntFilter = {
-  equals?: number | null | undefined;
-};
-type LiveGameStatus = "PAUSED" | "RESUMING" | "RUNNING" | "STOPPED";
-type LivePlayerListRelationFilter = {
-  every?: LivePlayerWhereInput | null | undefined;
-  none?: LivePlayerWhereInput | null | undefined;
-  some?: LivePlayerWhereInput | null | undefined;
-};
-type LivePlayerSessionKind = "GUEST" | "RESOLVING" | "SIGNED_IN" | "SIGNING_IN";
-type LivePlayerWhereInput = {
-  AND?: Array<LivePlayerWhereInput> | null | undefined;
-  NOT?: Array<LivePlayerWhereInput> | null | undefined;
-  OR?: Array<LivePlayerWhereInput> | null | undefined;
-  admin?: BooleanFilter | null | undefined;
-  desynced?: BooleanFilter | null | undefined;
-  name?: StringFilter | null | undefined;
-  playable?: BooleanFilter | null | undefined;
-  roomPlayerId?: IntFilter | null | undefined;
-  sessionKind?: StringFilter | null | undefined;
-  team?: StringFilter | null | undefined;
-};
-type LiveRoomCommandStatus = "ACKNOWLEDGED" | "FAILED" | "QUEUED" | "SENT";
-type LiveRoomWhereInput = {
-  AND?: Array<LiveRoomWhereInput> | null | undefined;
-  NOT?: Array<LiveRoomWhereInput> | null | undefined;
-  OR?: Array<LiveRoomWhereInput> | null | undefined;
-  connected?: BooleanFilter | null | undefined;
-  id?: StringFilter | null | undefined;
-  players?: LivePlayerListRelationFilter | null | undefined;
-  stateDocuments?: LiveStateDocumentListRelationFilter | null | undefined;
-  stateFacts?: LiveStateFactListRelationFilter | null | undefined;
-};
-type LiveStateDocumentListRelationFilter = {
-  every?: LiveStateDocumentWhereInput | null | undefined;
-  none?: LiveStateDocumentWhereInput | null | undefined;
-  some?: LiveStateDocumentWhereInput | null | undefined;
-};
-type LiveStateDocumentWhereInput = {
-  AND?: Array<LiveStateDocumentWhereInput> | null | undefined;
-  NOT?: Array<LiveStateDocumentWhereInput> | null | undefined;
-  OR?: Array<LiveStateDocumentWhereInput> | null | undefined;
-  name?: StringFilter | null | undefined;
-  namespace?: StringFilter | null | undefined;
-  version?: IntFilter | null | undefined;
-};
-type LiveStateFactListRelationFilter = {
-  every?: LiveStateFactWhereInput | null | undefined;
-  none?: LiveStateFactWhereInput | null | undefined;
-  some?: LiveStateFactWhereInput | null | undefined;
-};
-type LiveStateFactType = "BOOLEAN" | "NUMBER" | "STRING";
-type LiveStateFactWhereInput = {
-  AND?: Array<LiveStateFactWhereInput> | null | undefined;
-  NOT?: Array<LiveStateFactWhereInput> | null | undefined;
-  OR?: Array<LiveStateFactWhereInput> | null | undefined;
-  booleanValue?: BooleanFilter | null | undefined;
-  key?: StringFilter | null | undefined;
-  namespace?: StringFilter | null | undefined;
-  numberValue?: FloatFilter | null | undefined;
-  stringValue?: StringFilter | null | undefined;
-  type?: StringFilter | null | undefined;
-};
-type LiveTeam = "BLUE" | "RED" | "SPECTATORS";
-type StringFilter = {
-  contains?: string | null | undefined;
-  equals?: string | null | undefined;
-  startsWith?: string | null | undefined;
-};
-type FindPlayersByNameQueryVariables = Exact<{
-  playerName: string;
-  connected?: boolean | null | undefined;
-}>;
-type FindPlayersByNameQuery = {
-  liveRooms: {
-    nodes: Array<{
-      id: string;
-      connected: boolean;
-      revision: number;
-      lastSeenAt: string;
-      room: {
-        name: string | null;
-        teamsLocked: boolean | null;
-        gameStatus: LiveGameStatus;
-        scores: {
-          red: number;
-          blue: number;
-        } | null;
-      };
-      players: {
-        nodes: Array<{
-          roomPlayerId: number;
-          name: string;
-          team: LiveTeam;
-          admin: boolean;
-          avatar: string | null;
-          desynced: boolean | null;
-          sessionKind: LivePlayerSessionKind | null;
-          playable: boolean | null;
-          playBlockedReason: string | null;
-        }>;
-      };
-    }>;
-  };
-};
-type GetRoomQueryVariables = Exact<{
-  id: string | number;
-}>;
-type GetRoomQuery = {
-  liveRoom: {
-    id: string;
-    connected: boolean;
-    revision: number;
-    lastSeenAt: string;
-    room: {
-      name: string | null;
-      teamsLocked: boolean | null;
-      gameStatus: LiveGameStatus;
-      scores: {
-        red: number;
-        blue: number;
-      } | null;
-    };
-    players: {
-      nodes: Array<{
-        roomPlayerId: number;
-        name: string;
-        team: LiveTeam;
-        admin: boolean;
-        avatar: string | null;
-        desynced: boolean | null;
-        sessionKind: LivePlayerSessionKind | null;
-        playable: boolean | null;
-        playBlockedReason: string | null;
-      }>;
-    };
-    stateDocuments: Array<{
-      namespace: string;
-      name: string;
-      version: number;
-      revision: number;
-      updatedAt: string;
-      payload: unknown;
-    }>;
-    stateFacts: Array<{
-      namespace: string;
-      key: string;
-      type: LiveStateFactType;
-      stringValue: string | null;
-      numberValue: number | null;
-      booleanValue: boolean | null;
-    }>;
-  } | null;
-};
-type ListRoomsQueryVariables = Exact<{
-  where?: LiveRoomWhereInput | null | undefined;
-  first?: number | null | undefined;
-  after?: string | null | undefined;
-}>;
-type ListRoomsQuery = {
-  liveRooms: {
-    nodes: Array<{
-      id: string;
-      connected: boolean;
-      revision: number;
-      lastSeenAt: string;
-      room: {
-        name: string | null;
-        teamsLocked: boolean | null;
-        gameStatus: LiveGameStatus;
-        scores: {
-          red: number;
-          blue: number;
-        } | null;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string | null;
-    };
-  };
-};
-type ListRoomCommandsQueryVariables = Exact<{
-  roomId: string | number;
-  status?: LiveRoomCommandStatus | null | undefined;
-  first?: number | null | undefined;
-  after?: string | null | undefined;
-}>;
-type ListRoomCommandsQuery = {
-  liveRoomCommands: {
-    nodes: Array<{
-      id: string;
-      roomId: string;
-      name: string;
-      payload: unknown;
-      status: LiveRoomCommandStatus;
-      result: unknown;
-      error: string | null;
-      createdAt: string;
-      updatedAt: string;
-      sentAt: string | null;
-      completedAt: string | null;
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string | null;
-    };
-  };
-};
-//#endregion
-//#region src/live/index.d.ts
-declare const queries: {
-  findPlayersByName: _graphql_typed_document_node_core0.TypedDocumentNode<FindPlayersByNameQuery, {
-    playerName: string;
-    connected?: boolean | null | undefined | undefined;
-  }>;
-  getRoom: _graphql_typed_document_node_core0.TypedDocumentNode<GetRoomQuery, {
-    id: string | number;
-  }>;
-  listRooms: _graphql_typed_document_node_core0.TypedDocumentNode<ListRoomsQuery, {
-    where?: LiveRoomWhereInput | null | undefined;
-    first?: number | null | undefined | undefined;
-    after?: string | null | undefined | undefined;
-  }>;
-  listRoomCommands: _graphql_typed_document_node_core0.TypedDocumentNode<ListRoomCommandsQuery, {
-    roomId: string | number;
-    status?: LiveRoomCommandStatus | null | undefined;
-    first?: number | null | undefined | undefined;
-    after?: string | null | undefined | undefined;
-  }>;
-};
-//#endregion
-export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchEvent, MatchEventInput, MatchMetrics, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
+export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, ComposedMatch, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
 //# sourceMappingURL=index.d.ts.map
