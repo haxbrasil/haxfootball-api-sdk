@@ -1247,12 +1247,14 @@ export interface components {
             kind: "sequential";
             matchId: string;
             number: string | number;
+            orientation: "aligned" | "swapped";
           }
         | {
             /** @constant */
             kind: "extra-time";
             matchId: string;
             number: null;
+            orientation: "aligned" | "swapped";
           }
       ) & {
         match: {
@@ -1552,12 +1554,14 @@ export interface components {
                   kind: "sequential";
                   matchId: string;
                   number: string | number;
+                  orientation: "aligned" | "swapped";
                 }
               | {
                   /** @constant */
                   kind: "extra-time";
                   matchId: string;
                   number: null;
+                  orientation: "aligned" | "swapped";
                 };
           }[];
           page: components["schemas"]["PageInfo"];
@@ -1624,12 +1628,14 @@ export interface components {
             kind: "sequential";
             matchId: string;
             number: string | number;
+            orientation?: "auto" | "aligned" | "swapped";
           }
         | {
             /** @constant */
             kind: "extra-time";
             matchId: string;
             number: null;
+            orientation?: "auto" | "aligned" | "swapped";
           }
       )[];
     };
@@ -1702,12 +1708,14 @@ export interface components {
                   kind: "sequential";
                   matchId: string;
                   number: string | number;
+                  orientation: "aligned" | "swapped";
                 }
               | {
                   /** @constant */
                   kind: "extra-time";
                   matchId: string;
                   number: null;
+                  orientation: "aligned" | "swapped";
                 };
           }[];
         };
@@ -1717,12 +1725,14 @@ export interface components {
           kind: "sequential";
           matchId: string;
           number: string | number;
+          orientation: "aligned" | "swapped";
         }
       | {
           /** @constant */
           kind: "extra-time";
           matchId: string;
           number: null;
+          orientation: "aligned" | "swapped";
         }
     ) & {
       match: components["schemas"]["PhysicalMatch"];

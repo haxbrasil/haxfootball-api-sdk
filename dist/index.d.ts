@@ -267,10 +267,12 @@ declare function createResources(client: HaxFootballApiClient): {
         kind: "sequential";
         matchId: string;
         number: string | number;
+        orientation: "aligned" | "swapped";
       } | {
         kind: "extra-time";
         matchId: string;
         number: null;
+        orientation: "aligned" | "swapped";
       }) & {
         match: {
           createdAt: string;
@@ -360,10 +362,12 @@ declare function createResources(client: HaxFootballApiClient): {
           kind: "sequential";
           matchId: string;
           number: string | number;
+          orientation: "aligned" | "swapped";
         } | {
           kind: "extra-time";
           matchId: string;
           number: null;
+          orientation: "aligned" | "swapped";
         };
       }[];
     }>>;
@@ -468,10 +472,12 @@ declare function createResources(client: HaxFootballApiClient): {
         kind: "sequential";
         matchId: string;
         number: string | number;
+        orientation: "aligned" | "swapped";
       } | {
         kind: "extra-time";
         matchId: string;
         number: null;
+        orientation: "aligned" | "swapped";
       }) & {
         match: {
           createdAt: string;
@@ -503,10 +509,12 @@ declare function createResources(client: HaxFootballApiClient): {
         kind: "sequential";
         matchId: string;
         number: string | number;
+        orientation: "aligned" | "swapped";
       } | {
         kind: "extra-time";
         matchId: string;
         number: null;
+        orientation: "aligned" | "swapped";
       }) & {
         match: {
           createdAt: string;
@@ -531,10 +539,12 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "sequential";
       matchId: string;
       number: string | number;
+      orientation: "aligned" | "swapped";
     } | {
       kind: "extra-time";
       matchId: string;
       number: null;
+      orientation: "aligned" | "swapped";
     }) & {
       match: components["schemas"]["PhysicalMatch"];
     }>>;
@@ -542,10 +552,12 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "sequential";
       matchId: string;
       number: string | number;
+      orientation: "aligned" | "swapped";
     } | {
       kind: "extra-time";
       matchId: string;
       number: null;
+      orientation: "aligned" | "swapped";
     }) & {
       match: components["schemas"]["PhysicalMatch"];
     }>>;
@@ -559,10 +571,12 @@ declare function createResources(client: HaxFootballApiClient): {
           kind: "sequential";
           matchId: string;
           number: string | number;
+          orientation: "aligned" | "swapped";
         } | {
           kind: "extra-time";
           matchId: string;
           number: null;
+          orientation: "aligned" | "swapped";
         };
       }[];
       page: components["schemas"]["PageInfo"];
@@ -2665,11 +2679,13 @@ interface components {
         kind: "sequential";
         matchId: string;
         number: string | number;
+        orientation: "aligned" | "swapped";
       } | {
         /** @constant */
         kind: "extra-time";
         matchId: string;
         number: null;
+        orientation: "aligned" | "swapped";
       }) & {
         match: {
           createdAt: string;
@@ -2953,11 +2969,13 @@ interface components {
           kind: "sequential";
           matchId: string;
           number: string | number;
+          orientation: "aligned" | "swapped";
         } | {
           /** @constant */
           kind: "extra-time";
           matchId: string;
           number: null;
+          orientation: "aligned" | "swapped";
         };
       }[];
       page: components["schemas"]["PageInfo"];
@@ -3021,11 +3039,13 @@ interface components {
         kind: "sequential";
         matchId: string;
         number: string | number;
+        orientation?: "auto" | "aligned" | "swapped";
       } | {
         /** @constant */
         kind: "extra-time";
         matchId: string;
         number: null;
+        orientation?: "auto" | "aligned" | "swapped";
       })[];
     };
     MatchEvent: {
@@ -3094,11 +3114,13 @@ interface components {
           kind: "sequential";
           matchId: string;
           number: string | number;
+          orientation: "aligned" | "swapped";
         } | {
           /** @constant */
           kind: "extra-time";
           matchId: string;
           number: null;
+          orientation: "aligned" | "swapped";
         };
       }[];
     };
@@ -3107,11 +3129,13 @@ interface components {
       kind: "sequential";
       matchId: string;
       number: string | number;
+      orientation: "aligned" | "swapped";
     } | {
       /** @constant */
       kind: "extra-time";
       matchId: string;
       number: null;
+      orientation: "aligned" | "swapped";
     }) & {
       match: components["schemas"]["PhysicalMatch"];
     };
@@ -8990,6 +9014,7 @@ type PhysicalMatch = Schema<"PhysicalMatch">;
 type ComposedMatch = Schema<"ComposedMatch">;
 type MatchSummary = Schema<"MatchSummary">;
 type MatchRound = Schema<"MatchRound">;
+type MatchRoundOrientation = MatchRound["orientation"];
 type MatchEvent = Schema<"MatchEvent">;
 type MatchEventInput = Schema<"MatchEventInput">;
 type MatchMetrics = Schema<"MatchMetrics">;
@@ -9000,6 +9025,7 @@ type MatchStint = Schema<"MatchStint">;
 type CreateMatchInput = Schema<"CreateMatchBody">;
 type UpdateMatchInput = Schema<"UpdateMatchBody">;
 type MatchCompositionInput = Schema<"MatchCompositionBody">;
+type MatchRoundOrientationInput = NonNullable<MatchCompositionInput["rounds"][number]["orientation"]>;
 type AddMatchEventInput = Schema<"AddMatchEventBody">;
 type DisableMatchEventInput = Schema<"DisableMatchEventBody">;
 type AssociateMatchRecordingInput = Schema<"AssociateMatchRecordingBody">;
@@ -9060,5 +9086,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, ComposedMatch, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
+export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, ComposedMatch, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
 //# sourceMappingURL=index.d.ts.map
