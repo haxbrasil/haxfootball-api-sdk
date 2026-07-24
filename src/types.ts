@@ -66,6 +66,7 @@ export type PhysicalMatch = Schema<"PhysicalMatch">;
 export type ComposedMatch = Schema<"ComposedMatch">;
 export type MatchSummary = Schema<"MatchSummary">;
 export type MatchRound = Schema<"MatchRound">;
+export type MatchRoundOrientation = MatchRound["orientation"];
 export type MatchEvent = Schema<"MatchEvent">;
 export type MatchEventInput = Schema<"MatchEventInput">;
 export type MatchMetrics = Schema<"MatchMetrics">;
@@ -76,6 +77,9 @@ export type MatchStint = Schema<"MatchStint">;
 export type CreateMatchInput = Schema<"CreateMatchBody">;
 export type UpdateMatchInput = Schema<"UpdateMatchBody">;
 export type MatchCompositionInput = Schema<"MatchCompositionBody">;
+export type MatchRoundOrientationInput = NonNullable<
+  MatchCompositionInput["rounds"][number]["orientation"]
+>;
 export type AddMatchEventInput = Schema<"AddMatchEventBody">;
 export type DisableMatchEventInput = Schema<"DisableMatchEventBody">;
 export type AssociateMatchRecordingInput =

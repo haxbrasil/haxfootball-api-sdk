@@ -260,9 +260,24 @@ describe("HaxFootballApiClient", () => {
 
     await client.matches.createComposition({
       rounds: [
-        { kind: "sequential", number: 1, matchId: "match001" },
-        { kind: "sequential", number: 2, matchId: "match002" },
-        { kind: "extra-time", number: null, matchId: "match003" }
+        {
+          kind: "sequential",
+          number: 1,
+          matchId: "match001",
+          orientation: "auto"
+        },
+        {
+          kind: "sequential",
+          number: 2,
+          matchId: "match002",
+          orientation: "swapped"
+        },
+        {
+          kind: "extra-time",
+          number: null,
+          matchId: "match003",
+          orientation: "aligned"
+        }
       ]
     });
     await client.matches.updateComposition("ccomposed", {
@@ -282,9 +297,24 @@ describe("HaxFootballApiClient", () => {
     expect(fetcher.mock.calls[0]?.[1]?.body).toBe(
       JSON.stringify({
         rounds: [
-          { kind: "sequential", number: 1, matchId: "match001" },
-          { kind: "sequential", number: 2, matchId: "match002" },
-          { kind: "extra-time", number: null, matchId: "match003" }
+          {
+            kind: "sequential",
+            number: 1,
+            matchId: "match001",
+            orientation: "auto"
+          },
+          {
+            kind: "sequential",
+            number: 2,
+            matchId: "match002",
+            orientation: "swapped"
+          },
+          {
+            kind: "extra-time",
+            number: null,
+            matchId: "match003",
+            orientation: "aligned"
+          }
         ]
       })
     );
