@@ -275,6 +275,7 @@ declare function createResources(client: HaxFootballApiClient): {
         orientation: "aligned" | "swapped";
       }) & {
         match: {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -284,14 +285,15 @@ declare function createResources(client: HaxFootballApiClient): {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } | ({
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -301,13 +303,14 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
       participations: components["schemas"]["MatchStint"][];
     })>>;
     create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -317,13 +320,14 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
       participations: components["schemas"]["MatchStint"][];
     }>>;
     update: (id: string, body: UpdateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -333,11 +337,19 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
       participations: components["schemas"]["MatchStint"][];
+    }>>;
+    checkpoint: (id: string, body: CheckpointMatchInput, config?: RequestConfig) => Promise<ApiResult<{
+      acknowledgedProducerSequence: string | number;
+      match: components["schemas"]["PhysicalMatch"];
+    }>>;
+    checkpointRecording: (id: string, input: CheckpointMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      revision: string | number;
+      sizeBytes: string | number;
     }>>;
     getMetrics: (id: string, config?: RequestConfig) => Promise<ApiResult<{
       metrics: {
@@ -445,6 +457,7 @@ declare function createResources(client: HaxFootballApiClient): {
       page: components["schemas"]["PageInfo"];
     }>>;
     associateRecording: (id: string, body: AssociateMatchRecordingInput, config?: RequestConfig) => Promise<ApiResult<{
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -454,7 +467,7 @@ declare function createResources(client: HaxFootballApiClient): {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
@@ -480,6 +493,7 @@ declare function createResources(client: HaxFootballApiClient): {
         orientation: "aligned" | "swapped";
       }) & {
         match: {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -489,12 +503,12 @@ declare function createResources(client: HaxFootballApiClient): {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     }>>;
     updateComposition: (id: string, body: MatchCompositionInput, config?: RequestConfig) => Promise<ApiResult<{
@@ -517,6 +531,7 @@ declare function createResources(client: HaxFootballApiClient): {
         orientation: "aligned" | "swapped";
       }) & {
         match: {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -526,12 +541,12 @@ declare function createResources(client: HaxFootballApiClient): {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     }>>;
     deleteComposition: (id: string, config?: RequestConfig) => Promise<ApiResult<void>>;
@@ -591,6 +606,7 @@ declare function createResources(client: HaxFootballApiClient): {
       id: string;
       occurredAt: (string | null) | null;
       playId: (string | null) | null;
+      producerSequence: ((string | number) | null) | null;
       roomPlayerId: (number | null) | null;
       scope: "player" | "team" | "match";
       sequence: string | number;
@@ -612,6 +628,7 @@ declare function createResources(client: HaxFootballApiClient): {
       id: string;
       occurredAt: (string | null) | null;
       playId: (string | null) | null;
+      producerSequence: ((string | number) | null) | null;
       roomPlayerId: (number | null) | null;
       scope: "player" | "team" | "match";
       sequence: string | number;
@@ -1859,6 +1876,23 @@ interface paths {
     patch: operations["patchApiMatchesById"];
     trace?: never;
   };
+  "/api/matches/{id}/checkpoints": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Checkpoint an active match */
+    post: operations["postApiMatchesByIdCheckpoints"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/{id}/events": {
     parameters: {
       query?: never;
@@ -1943,6 +1977,23 @@ interface paths {
     head?: never;
     /** Associate a match recording */
     patch: operations["patchApiMatchesByIdRecording"];
+    trace?: never;
+  };
+  "/api/matches/{id}/recording-checkpoint": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Checkpoint an active match recording */
+    post: operations["postApiMatchesByIdRecording-checkpoint"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/matches/{id}/rounds": {
@@ -2571,8 +2622,11 @@ interface components {
       /** @enum {string} */
       domain: "room" | "game" | "agent" | "system";
       elapsedSeconds?: number;
+      /** Format: uuid */
+      id?: string;
       occurredAt?: string;
       playId?: string;
+      producerSequence?: string | number;
       roomPlayerId?: string | number;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -2646,6 +2700,33 @@ interface components {
         value: string;
       }[];
     };
+    CheckpointMatchBody: {
+      /** @enum {string} */
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
+      elapsedSeconds: number;
+      events: components["schemas"]["MatchEventInput"][];
+      observedAt: string;
+      revision: string | number;
+      score: components["schemas"]["MatchScore"];
+      /** @enum {string} */
+      status?: "pending" | "ongoing" | "completed" | "discarded";
+    };
+    CheckpointMatchRecordingBody: {
+      /**
+       * Format: binary
+       * @default File
+       */
+      file: string;
+      revision: string | number;
+    };
+    CheckpointMatchRecordingResponse: {
+      revision: string | number;
+      sizeBytes: string | number;
+    };
+    CheckpointMatchResponse: {
+      acknowledgedProducerSequence: string | number;
+      match: components["schemas"]["PhysicalMatch"];
+    };
     CloseRoomResponse: {
       closedAt: (string | null) | null;
       createdAt: string;
@@ -2688,6 +2769,7 @@ interface components {
         orientation: "aligned" | "swapped";
       }) & {
         match: {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -2698,13 +2780,13 @@ interface components {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     };
     ConfirmAccountBody: {
@@ -2757,12 +2839,16 @@ interface components {
       gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       recordingId?: string;
+      /** Format: uuid */
+      roomId?: string;
       score?: {
         blue: string | number;
         red: string | number;
       };
+      /** Format: uuid */
+      sessionId?: string;
       /** @enum {string} */
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
     };
     CreatePermissionBody: {
       key: string;
@@ -3060,6 +3146,7 @@ interface components {
       id: string;
       occurredAt: (string | null) | null;
       playId: (string | null) | null;
+      producerSequence: ((string | number) | null) | null;
       roomPlayerId: (number | null) | null;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -3077,8 +3164,11 @@ interface components {
       /** @enum {string} */
       domain: "room" | "game" | "agent" | "system";
       elapsedSeconds?: number;
+      /** Format: uuid */
+      id?: string;
       occurredAt?: string;
       playId?: string;
+      producerSequence?: string | number;
       roomPlayerId?: string | number;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -3154,6 +3244,7 @@ interface components {
       team: "red" | "blue";
     };
     MatchSummary: {
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -3164,7 +3255,7 @@ interface components {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } | components["schemas"]["ComposedMatch"];
     NotFoundError: {
@@ -3187,6 +3278,7 @@ interface components {
       uuid: string;
     };
     PhysicalMatch: {
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema: (components["schemas"]["EventSchemaReference"] | null) | null;
@@ -3197,7 +3289,7 @@ interface components {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
@@ -3654,7 +3746,7 @@ interface components {
         red: string | number;
       };
       /** @enum {string} */
-      status?: "ongoing" | "completed";
+      status?: "pending" | "ongoing" | "completed" | "discarded";
     };
     UpdatePermissionBody: {
       key?: string;
@@ -5790,6 +5882,68 @@ interface operations {
       };
     };
   };
+  postApiMatchesByIdCheckpoints: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CheckpointMatchBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CheckpointMatchResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   getApiMatchesByIdEvents: {
     parameters: {
       query?: {
@@ -6114,6 +6268,68 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiMatchesByIdRecording-checkpoint": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["CheckpointMatchRecordingBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CheckpointMatchRecordingResponse"];
         };
       };
       /** @description Response for status 400 */
@@ -9023,6 +9239,15 @@ type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 type MatchScore = Schema<"MatchScore">;
 type MatchStint = Schema<"MatchStint">;
 type CreateMatchInput = Schema<"CreateMatchBody">;
+type CheckpointMatchInput = Schema<"CheckpointMatchBody">;
+type CheckpointMatchResponse = Schema<"CheckpointMatchResponse">;
+type CheckpointMatchRecordingResponse = Schema<"CheckpointMatchRecordingResponse">;
+type CheckpointMatchRecordingInput = {
+  revision: number;
+  file: Blob | ArrayBuffer | ArrayBufferView;
+  filename?: string;
+  contentType?: string;
+};
 type UpdateMatchInput = Schema<"UpdateMatchBody">;
 type MatchCompositionInput = Schema<"MatchCompositionBody">;
 type MatchRoundOrientationInput = NonNullable<MatchCompositionInput["rounds"][number]["orientation"]>;
@@ -9086,5 +9311,5 @@ type CreateRecordingInput = {
   contentType?: string;
 };
 //#endregion
-export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, ComposedMatch, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
+export { type AbortedFailure, Account, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, AssociateMatchRecordingInput, AssociatePlayerAccountInput, type AttachLiveRoomInput, CheckpointMatchInput, CheckpointMatchRecordingInput, CheckpointMatchRecordingResponse, CheckpointMatchResponse, ComposedMatch, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTokenInput, CreateTokenResponse, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EventSchema, EventSchemaReference, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, GameMode, GameModeReference, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, ListAccountsQuery, ListAccountsResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, Player, PlayerAccount, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RemovePermissionResponse, RemoveRoleResponse, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, Role, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, Schema, SessionAccount, type TokenProvider, UpdateAccountInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
 //# sourceMappingURL=index.d.cts.map

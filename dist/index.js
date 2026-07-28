@@ -108,6 +108,18 @@ function createMatchesResource(client) {
 			body,
 			...config
 		}),
+		checkpoint: (id, body, config) => client.request({
+			method: "POST",
+			path: `/matches/${encodeURIComponent(id)}/checkpoints`,
+			body,
+			...config
+		}),
+		checkpointRecording: (id, input, config) => client.request({
+			method: "POST",
+			path: `/matches/${encodeURIComponent(id)}/recording-checkpoint`,
+			formData: recordingCheckpointFormData(input),
+			...config
+		}),
 		getMetrics: (id, config) => client.request({
 			path: `/matches/${encodeURIComponent(id)}/metrics`,
 			...config
@@ -167,6 +179,24 @@ function createMatchesResource(client) {
 			...config
 		})
 	};
+}
+function recordingCheckpointFormData(input) {
+	const formData = new FormData();
+	const filename = input.filename ?? "match-checkpoint.hbr2";
+	const blob = toBlob$1(input.file, input.contentType);
+	formData.set("revision", String(input.revision));
+	formData.set("file", blob, filename);
+	return formData;
+}
+function toBlob$1(input, contentType = "application/octet-stream") {
+	if (input instanceof Blob) return input;
+	if (ArrayBuffer.isView(input)) {
+		const bytes = new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+		const copy = new Uint8Array(bytes.byteLength);
+		copy.set(bytes);
+		return new Blob([copy], { type: contentType });
+	}
+	return new Blob([input], { type: contentType });
 }
 
 //#endregion

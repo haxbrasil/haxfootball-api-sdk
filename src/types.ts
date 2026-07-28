@@ -75,6 +75,16 @@ export type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 export type MatchScore = Schema<"MatchScore">;
 export type MatchStint = Schema<"MatchStint">;
 export type CreateMatchInput = Schema<"CreateMatchBody">;
+export type CheckpointMatchInput = Schema<"CheckpointMatchBody">;
+export type CheckpointMatchResponse = Schema<"CheckpointMatchResponse">;
+export type CheckpointMatchRecordingResponse =
+  Schema<"CheckpointMatchRecordingResponse">;
+export type CheckpointMatchRecordingInput = {
+  revision: number;
+  file: Blob | ArrayBuffer | ArrayBufferView;
+  filename?: string;
+  contentType?: string;
+};
 export type UpdateMatchInput = Schema<"UpdateMatchBody">;
 export type MatchCompositionInput = Schema<"MatchCompositionBody">;
 export type MatchRoundOrientationInput = NonNullable<

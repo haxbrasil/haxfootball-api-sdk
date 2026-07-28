@@ -2,6 +2,10 @@ import type { HaxFootballApiClient } from "../client";
 import type {
   AddMatchEventInput,
   AssociateMatchRecordingInput,
+  CheckpointMatchInput,
+  CheckpointMatchRecordingInput,
+  CheckpointMatchRecordingResponse,
+  CheckpointMatchResponse,
   ComposedMatch,
   CreateMatchInput,
   DisableMatchEventInput,
@@ -46,6 +50,28 @@ export function createMatchesResource(client: HaxFootballApiClient) {
         method: "PATCH",
         path: `/matches/${encodeURIComponent(id)}`,
         body,
+        ...config
+      }),
+    checkpoint: (
+      id: string,
+      body: CheckpointMatchInput,
+      config?: RequestConfig
+    ) =>
+      client.request<CheckpointMatchResponse>({
+        method: "POST",
+        path: `/matches/${encodeURIComponent(id)}/checkpoints`,
+        body,
+        ...config
+      }),
+    checkpointRecording: (
+      id: string,
+      input: CheckpointMatchRecordingInput,
+      config?: RequestConfig
+    ) =>
+      client.request<CheckpointMatchRecordingResponse>({
+        method: "POST",
+        path: `/matches/${encodeURIComponent(id)}/recording-checkpoint`,
+        formData: recordingCheckpointFormData(input),
         ...config
       }),
     getMetrics: (id: string, config?: RequestConfig) =>
@@ -135,4 +161,41 @@ export function createMatchesResource(client: HaxFootballApiClient) {
         ...config
       })
   };
+}
+
+function recordingCheckpointFormData(
+  input: CheckpointMatchRecordingInput
+): FormData {
+  const formData = new FormData();
+  const filename = input.filename ?? "match-checkpoint.hbr2";
+  const blob = toBlob(input.file, input.contentType);
+
+  formData.set("revision", String(input.revision));
+  formData.set("file", blob, filename);
+
+  return formData;
+}
+
+function toBlob(
+  input: Blob | ArrayBuffer | ArrayBufferView,
+  contentType = "application/octet-stream"
+): Blob {
+  if (input instanceof Blob) {
+    return input;
+  }
+
+  if (ArrayBuffer.isView(input)) {
+    const bytes = new Uint8Array(
+      input.buffer,
+      input.byteOffset,
+      input.byteLength
+    );
+    const copy = new Uint8Array(bytes.byteLength);
+
+    copy.set(bytes);
+
+    return new Blob([copy], { type: contentType });
+  }
+
+  return new Blob([input], { type: contentType });
 }

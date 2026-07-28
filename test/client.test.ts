@@ -242,6 +242,45 @@ describe("HaxFootballApiClient", () => {
     );
   });
 
+  it("supports match and recording checkpoints", async () => {
+    const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
+      jsonResponse({
+        acknowledgedProducerSequence: 1,
+        match: {},
+        revision: 1,
+        sizeBytes: 3
+      })
+    );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.matches.checkpoint("match-1", {
+      revision: 1,
+      observedAt: "2026-07-28T12:00:02.000Z",
+      elapsedSeconds: 2,
+      score: { red: 0, blue: 0 },
+      events: [],
+      status: "pending"
+    });
+    await client.matches.checkpointRecording("match-1", {
+      revision: 1,
+      file: Uint8Array.from([1, 2, 3])
+    });
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/match-1/checkpoints"
+    );
+    expect(fetcher.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      "https://api.example.com/api/matches/match-1/recording-checkpoint"
+    );
+    expect(fetcher.mock.calls[1]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[1]?.[1]?.body).toBeInstanceOf(FormData);
+  });
+
   it("supports creating, updating, reading, and deleting match compositions", async () => {
     const fetcher = vi
       .fn<FetchLike>()

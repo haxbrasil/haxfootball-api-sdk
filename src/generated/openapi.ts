@@ -419,6 +419,23 @@ export interface paths {
     patch: operations["patchApiMatchesById"];
     trace?: never;
   };
+  "/api/matches/{id}/checkpoints": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Checkpoint an active match */
+    post: operations["postApiMatchesByIdCheckpoints"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/{id}/events": {
     parameters: {
       query?: never;
@@ -503,6 +520,23 @@ export interface paths {
     head?: never;
     /** Associate a match recording */
     patch: operations["patchApiMatchesByIdRecording"];
+    trace?: never;
+  };
+  "/api/matches/{id}/recording-checkpoint": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Checkpoint an active match recording */
+    post: operations["postApiMatchesByIdRecording-checkpoint"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/matches/{id}/rounds": {
@@ -1132,8 +1166,11 @@ export interface components {
       /** @enum {string} */
       domain: "room" | "game" | "agent" | "system";
       elapsedSeconds?: number;
+      /** Format: uuid */
+      id?: string;
       occurredAt?: string;
       playId?: string;
+      producerSequence?: string | number;
       roomPlayerId?: string | number;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -1209,6 +1246,33 @@ export interface components {
         value: string;
       }[];
     };
+    CheckpointMatchBody: {
+      /** @enum {string} */
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
+      elapsedSeconds: number;
+      events: components["schemas"]["MatchEventInput"][];
+      observedAt: string;
+      revision: string | number;
+      score: components["schemas"]["MatchScore"];
+      /** @enum {string} */
+      status?: "pending" | "ongoing" | "completed" | "discarded";
+    };
+    CheckpointMatchRecordingBody: {
+      /**
+       * Format: binary
+       * @default File
+       */
+      file: string;
+      revision: string | number;
+    };
+    CheckpointMatchRecordingResponse: {
+      revision: string | number;
+      sizeBytes: string | number;
+    };
+    CheckpointMatchResponse: {
+      acknowledgedProducerSequence: string | number;
+      match: components["schemas"]["PhysicalMatch"];
+    };
     CloseRoomResponse: {
       closedAt: (string | null) | null;
       createdAt: string;
@@ -1258,6 +1322,7 @@ export interface components {
           }
       ) & {
         match: {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema:
@@ -1270,13 +1335,13 @@ export interface components {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     };
     ConfirmAccountBody: {
@@ -1331,12 +1396,16 @@ export interface components {
       gameMode?: components["schemas"]["GameModeReference"];
       initiatedAt?: string;
       recordingId?: string;
+      /** Format: uuid */
+      roomId?: string;
       score?: {
         blue: string | number;
         red: string | number;
       };
+      /** Format: uuid */
+      sessionId?: string;
       /** @enum {string} */
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
     };
     CreatePermissionBody: {
       key: string;
@@ -1651,6 +1720,7 @@ export interface components {
       id: string;
       occurredAt: (string | null) | null;
       playId: (string | null) | null;
+      producerSequence: ((string | number) | null) | null;
       roomPlayerId: (number | null) | null;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -1668,8 +1738,11 @@ export interface components {
       /** @enum {string} */
       domain: "room" | "game" | "agent" | "system";
       elapsedSeconds?: number;
+      /** Format: uuid */
+      id?: string;
       occurredAt?: string;
       playId?: string;
+      producerSequence?: string | number;
       roomPlayerId?: string | number;
       /** @enum {string} */
       scope: "player" | "team" | "match";
@@ -1753,6 +1826,7 @@ export interface components {
     };
     MatchSummary:
       | {
+          completionReason?: "normal" | "room-process-exit" | "room-closed";
           createdAt: string;
           endedAt: (string | null) | null;
           eventSchema:
@@ -1765,7 +1839,7 @@ export interface components {
           kind: "single";
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
-          status: "ongoing" | "completed";
+          status: "pending" | "ongoing" | "completed" | "discarded";
           updatedAt: string;
         }
       | components["schemas"]["ComposedMatch"];
@@ -1789,6 +1863,7 @@ export interface components {
       uuid: string;
     };
     PhysicalMatch: {
+      completionReason?: "normal" | "room-process-exit" | "room-closed";
       createdAt: string;
       endedAt: (string | null) | null;
       eventSchema:
@@ -1801,7 +1876,7 @@ export interface components {
       kind: "single";
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
-      status: "ongoing" | "completed";
+      status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } & {
       events: components["schemas"]["MatchEvent"][];
@@ -2276,7 +2351,7 @@ export interface components {
         red: string | number;
       };
       /** @enum {string} */
-      status?: "ongoing" | "completed";
+      status?: "pending" | "ongoing" | "completed" | "discarded";
     };
     UpdatePermissionBody: {
       key?: string;
@@ -4415,6 +4490,68 @@ export interface operations {
       };
     };
   };
+  postApiMatchesByIdCheckpoints: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CheckpointMatchBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CheckpointMatchResponse"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
   getApiMatchesByIdEvents: {
     parameters: {
       query?: {
@@ -4739,6 +4876,68 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PhysicalMatch"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 404 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["NotFoundError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiMatchesByIdRecording-checkpoint": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["CheckpointMatchRecordingBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CheckpointMatchRecordingResponse"];
         };
       };
       /** @description Response for status 400 */
