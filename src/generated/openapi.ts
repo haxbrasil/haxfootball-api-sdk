@@ -1333,6 +1333,11 @@ export interface components {
           initiatedAt: (string | null) | null;
           /** @constant */
           kind: "single";
+          players: {
+            id: string;
+            name: string;
+            team: "red" | "blue";
+          }[];
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
           status: "pending" | "ongoing" | "completed" | "discarded";
@@ -1837,6 +1842,11 @@ export interface components {
           initiatedAt: (string | null) | null;
           /** @constant */
           kind: "single";
+          players: {
+            id: string;
+            name: string;
+            team: "red" | "blue";
+          }[];
           recording: (components["schemas"]["Recording"] | null) | null;
           score: (components["schemas"]["MatchScore"] | null) | null;
           status: "pending" | "ongoing" | "completed" | "discarded";
@@ -1874,6 +1884,11 @@ export interface components {
       initiatedAt: (string | null) | null;
       /** @constant */
       kind: "single";
+      players: {
+        id: string;
+        name: string;
+        team: "red" | "blue";
+      }[];
       recording: (components["schemas"]["Recording"] | null) | null;
       score: (components["schemas"]["MatchScore"] | null) | null;
       status: "pending" | "ongoing" | "completed" | "discarded";
