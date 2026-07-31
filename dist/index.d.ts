@@ -6558,7 +6558,7 @@ interface components {
       expectedRevision: string | number;
       reason?: string;
       /** @enum {string} */
-      transition: "publish" | "unpublish" | "activate" | "complete" | "archive" | "cancel";
+      transition: "publish" | "unpublish" | "activate" | "complete" | "archive" | "cancel" | "delete";
     };
     TransitionChampionshipRegistrationBody: {
       /** Format: uuid */
