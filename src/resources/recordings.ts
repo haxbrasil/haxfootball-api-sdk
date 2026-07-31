@@ -3,7 +3,8 @@ import type {
   CreateRecordingInput,
   ListRecordingsResponse,
   PaginationQuery,
-  Recording
+  Recording,
+  RecordingInspection
 } from "../types";
 import type { RequestConfig } from "./shared";
 
@@ -18,6 +19,17 @@ export function createRecordingsResource(client: HaxFootballApiClient) {
     get: (id: string, config?: RequestConfig) =>
       client.request<Recording>({
         path: `/recs/${encodeURIComponent(id)}`,
+        ...config
+      }),
+    getInspection: (id: string, config?: RequestConfig) =>
+      client.request<RecordingInspection>({
+        path: `/recs/${encodeURIComponent(id)}/inspection`,
+        ...config
+      }),
+    inspect: (id: string, config?: RequestConfig) =>
+      client.request<RecordingInspection>({
+        method: "POST",
+        path: `/recs/${encodeURIComponent(id)}/inspection`,
         ...config
       }),
     create: (input: CreateRecordingInput, config?: RequestConfig) =>

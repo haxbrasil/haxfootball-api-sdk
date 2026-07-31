@@ -6,6 +6,7 @@ export {
   type HaxFootballApiClientOptions,
   type MaybePromise,
   type RequestOptions,
+  type StreamRequestOptions,
   type TokenProvider
 } from "./client";
 export type { HaxFootballApiResources } from "./resources";

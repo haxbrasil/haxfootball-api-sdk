@@ -12,6 +12,8 @@ import type {
   ListMatchesQuery,
   ListMatchesResponse,
   ListMatchEventsResponse,
+  LogicalMatchEvidence,
+  LogicalMatchEvidenceQuery,
   Match,
   MatchCompositionInput,
   MatchEvent,
@@ -36,6 +38,16 @@ export function createMatchesResource(client: HaxFootballApiClient) {
     get: (id: string, config?: RequestConfig) =>
       client.request<Match>({
         path: `/matches/${encodeURIComponent(id)}`,
+        ...config
+      }),
+    getEvidence: (
+      id: string,
+      query?: LogicalMatchEvidenceQuery,
+      config?: RequestConfig
+    ) =>
+      client.request<LogicalMatchEvidence>({
+        path: `/matches/${encodeURIComponent(id)}/evidence`,
+        query,
         ...config
       }),
     create: (body: CreateMatchInput, config?: RequestConfig) =>

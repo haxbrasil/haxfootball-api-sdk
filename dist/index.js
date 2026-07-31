@@ -52,6 +52,682 @@ function createAuthResource(client) {
 }
 
 //#endregion
+//#region src/resources/championships.ts
+function createChampionshipsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/championships",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: championshipPath(id),
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/championships",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: championshipPath(id),
+			body,
+			...config
+		}),
+		transition: (id, body, config) => client.request({
+			method: "POST",
+			path: `${championshipPath(id)}/transitions`,
+			body,
+			...config
+		}),
+		history: {
+			get: (id, query, config) => client.request({
+				path: `${championshipPath(id)}/history`,
+				query,
+				...config
+			}),
+			replacePlacements: (id, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(id)}/placements`,
+				body,
+				...config
+			}),
+			createAward: (id, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/awards`,
+				body,
+				...config
+			}),
+			updateAward: (id, awardId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(id)}/awards/${encodeURIComponent(awardId)}`,
+				body,
+				...config
+			}),
+			getAccount: (accountId, query, config) => client.request({
+				path: `/championships/accounts/${encodeURIComponent(accountId)}/history`,
+				query,
+				...config
+			}),
+			imports: {
+				list: (id, query, config) => client.request({
+					path: `${championshipPath(id)}/historical-imports`,
+					query,
+					...config
+				}),
+				preview: (id, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(id)}/historical-imports/preview`,
+					body,
+					...config
+				}),
+				get: (id, batchId, query, config) => client.request({
+					path: `${championshipPath(id)}/historical-imports/${encodeURIComponent(batchId)}`,
+					query,
+					...config
+				}),
+				apply: (id, batchId, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(id)}/historical-imports/${encodeURIComponent(batchId)}/apply`,
+					body,
+					...config
+				}),
+				rollback: (id, batchId, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(id)}/historical-imports/${encodeURIComponent(batchId)}/rollback`,
+					body,
+					...config
+				})
+			},
+			linkHistoricalPlayer: (id, historicalPlayerId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/historical-players/${encodeURIComponent(historicalPlayerId)}/link`,
+				body,
+				...config
+			})
+		},
+		types: {
+			list: (query, config) => client.request({
+				path: "/championships/competition-types",
+				query,
+				...config
+			}),
+			create: (body, config) => client.request({
+				method: "POST",
+				path: "/championships/competition-types",
+				body,
+				...config
+			}),
+			update: (id, body, config) => client.request({
+				method: "PATCH",
+				path: `/championships/competition-types/${encodeURIComponent(id)}`,
+				body,
+				...config
+			})
+		},
+		teamIdentities: {
+			list: (query, config) => client.request({
+				path: "/championships/team-identities",
+				query,
+				...config
+			}),
+			getHistory: (identityId, query, config) => client.request({
+				path: `/championships/team-identities/${encodeURIComponent(identityId)}/history`,
+				query,
+				...config
+			}),
+			create: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/team-identities`,
+				body,
+				...config
+			}),
+			update: (championshipId, identityId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/team-identities/${encodeURIComponent(identityId)}`,
+				body,
+				...config
+			})
+		},
+		teams: {
+			list: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/teams`,
+				query,
+				...config
+			}),
+			create: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/teams`,
+				body,
+				...config
+			}),
+			update: (championshipId, teamId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/teams/${encodeURIComponent(teamId)}`,
+				body,
+				...config
+			})
+		},
+		participants: {
+			list: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/participants`,
+				query,
+				...config
+			}),
+			create: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/participants`,
+				body,
+				...config
+			}),
+			update: (championshipId, participantId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/participants/${encodeURIComponent(participantId)}`,
+				body,
+				...config
+			})
+		},
+		registration: {
+			getSelf: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/registrations/self`,
+				query,
+				...config
+			}),
+			transition: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/registration/transitions`,
+				body,
+				...config
+			}),
+			selfRegister: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/registrations/self`,
+				body,
+				...config
+			}),
+			withdraw: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/registrations/self/withdraw`,
+				body,
+				...config
+			})
+		},
+		salary: {
+			getPublic: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/salary`,
+				query,
+				...config
+			}),
+			getAdmin: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/salary/admin`,
+				query,
+				...config
+			}),
+			upsertPrices: (championshipId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(championshipId)}/salary/prices`,
+				body,
+				...config
+			}),
+			freezePrices: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/salary/prices/freeze`,
+				body,
+				...config
+			})
+		},
+		rosters: {
+			previewMove: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/roster-moves/preview`,
+				body,
+				...config
+			}),
+			executeMove: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/roster-moves`,
+				body,
+				...config
+			}),
+			history: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/roster-history`,
+				query,
+				...config
+			})
+		},
+		draft: {
+			get: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/draft`,
+				query,
+				...config
+			}),
+			configure: (championshipId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(championshipId)}/draft`,
+				body,
+				...config
+			}),
+			start: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/start`,
+				body,
+				...config
+			}),
+			pick: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/picks`,
+				body,
+				...config
+			}),
+			end: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/end`,
+				body,
+				...config
+			}),
+			previewCorrection: (championshipId, turnId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/draft/turns/${encodeURIComponent(turnId)}/correction-preview`,
+				query,
+				...config
+			}),
+			reversePick: (championshipId, turnId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/turns/${encodeURIComponent(turnId)}/void`,
+				body,
+				...config
+			})
+		},
+		trades: {
+			list: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/trades`,
+				query,
+				...config
+			}),
+			create: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/trades`,
+				body,
+				...config
+			}),
+			accept: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "accept", body, config),
+			reject: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "reject", body, config),
+			cancel: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "cancel", body, config)
+		},
+		format: {
+			get: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/format`,
+				query,
+				...config
+			}),
+			createStage: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages`,
+				body,
+				...config
+			}),
+			updateStage: (championshipId, stageId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}`,
+				body,
+				...config
+			}),
+			createGroup: (championshipId, stageId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/groups`,
+				body,
+				...config
+			}),
+			configureStandings: (championshipId, stageId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/standings-rules`,
+				body,
+				...config
+			}),
+			getStandings: (championshipId, stageId, groupId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/groups/${encodeURIComponent(groupId)}/standings`,
+				query,
+				...config
+			}),
+			previewRoundRobin: (championshipId, stageId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/round-robin/preview`,
+				body,
+				...config
+			}),
+			generateRoundRobin: (championshipId, stageId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/round-robin`,
+				body,
+				...config
+			}),
+			previewClassification: (championshipId, stageId, groupId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/groups/${encodeURIComponent(groupId)}/classification/preview`,
+				body,
+				...config
+			}),
+			applyClassification: (championshipId, stageId, groupId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/groups/${encodeURIComponent(groupId)}/classification/apply`,
+				body,
+				...config
+			}),
+			generateSingleElimination: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/single-elimination`,
+				body,
+				...config
+			}),
+			previewDoubleElimination: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/double-elimination/preview`,
+				body,
+				...config
+			}),
+			generateDoubleElimination: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/stages/double-elimination`,
+				body,
+				...config
+			}),
+			createSpot: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/spots`,
+				body,
+				...config
+			}),
+			placeSpot: (championshipId, spotId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/spots/${encodeURIComponent(spotId)}/place`,
+				body,
+				...config
+			}),
+			previewSpotPlacement: (championshipId, spotId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/spots/${encodeURIComponent(spotId)}/placement-preview`,
+				body,
+				...config
+			}),
+			createRoute: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/progression-routes`,
+				body,
+				...config
+			}),
+			updateRoute: (championshipId, routeId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/progression-routes/${encodeURIComponent(routeId)}`,
+				body,
+				...config
+			}),
+			createCompetitionRound: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/competition-rounds`,
+				body,
+				...config
+			}),
+			createMatch: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches`,
+				body,
+				...config
+			}),
+			scheduleMatch: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/schedule`,
+				body,
+				...config
+			})
+		},
+		scheduling: {
+			get: (championshipId, championshipMatchId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/scheduling`,
+				query,
+				...config
+			}),
+			propose: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/schedule-proposals`,
+				body,
+				...config
+			}),
+			decide: (championshipId, championshipMatchId, proposalId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/schedule-proposals/${encodeURIComponent(proposalId)}/decision`,
+				body,
+				...config
+			}),
+			authorizeLatePlay: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/late-play-authorizations`,
+				body,
+				...config
+			}),
+			revokeLatePlay: (championshipId, championshipMatchId, authorizationId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/late-play-authorizations/${encodeURIComponent(authorizationId)}/revoke`,
+				body,
+				...config
+			}),
+			remind: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/championship-matches/${encodeURIComponent(championshipMatchId)}/schedule-reminders`,
+				body,
+				...config
+			})
+		},
+		matches: {
+			get: (championshipId, championshipMatchId, query, config) => client.request({
+				path: championshipMatchPath(championshipId, championshipMatchId),
+				query,
+				...config
+			}),
+			listEvidenceCandidates: (championshipId, championshipMatchId, query, config) => client.request({
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/evidence-candidates`,
+				query,
+				...config
+			}),
+			attachEvidence: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/evidence`,
+				body,
+				...config
+			}),
+			detachEvidence: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "DELETE",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/evidence`,
+				body,
+				...config
+			}),
+			previewSettlement: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/settlement-previews`,
+				body,
+				...config
+			}),
+			settle: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/settlements`,
+				body,
+				...config
+			}),
+			previewCorrection: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/correction-previews`,
+				body,
+				...config
+			}),
+			correct: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/corrections`,
+				body,
+				...config
+			}),
+			updateAttributions: (championshipId, championshipMatchId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipMatchPath(championshipId, championshipMatchId)}/attributions`,
+				body,
+				...config
+			})
+		},
+		statistics: {
+			get: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/statistics`,
+				query,
+				...config
+			}),
+			listMappings: (championshipId, query, config) => client.request({
+				path: `${championshipPath(championshipId)}/statistic-mappings`,
+				query,
+				...config
+			}),
+			replaceMappings: (championshipId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(championshipId)}/statistic-mappings`,
+				body,
+				...config
+			})
+		},
+		roomPrograms: { change: (championshipId, body, config) => client.request({
+			method: "POST",
+			path: `${championshipPath(championshipId)}/room-programs`,
+			body,
+			...config
+		}) },
+		grants: { change: (championshipId, body, config) => client.request({
+			method: "POST",
+			path: `${championshipPath(championshipId)}/grants`,
+			body,
+			...config
+		}) },
+		audit: { list: (championshipId, query, config) => client.request({
+			path: `${championshipPath(championshipId)}/audit`,
+			query,
+			...config
+		}) },
+		events: { open: (championshipId, query, config = {}) => {
+			const headers = new Headers(config.headers);
+			if (config.lastEventId !== void 0) headers.set("last-event-id", String(config.lastEventId));
+			return client.openStream({
+				path: `${championshipPath(championshipId)}/events`,
+				query,
+				headers,
+				signal: config.signal
+			});
+		} },
+		collaboration: {
+			threads: {
+				list: (championshipId, query, config) => client.request({
+					path: `${championshipPath(championshipId)}/threads`,
+					query,
+					...config
+				}),
+				create: (championshipId, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(championshipId)}/threads`,
+					body,
+					...config
+				}),
+				update: (championshipId, threadId, body, config) => client.request({
+					method: "PATCH",
+					path: `${threadPath(championshipId, threadId)}`,
+					body,
+					...config
+				}),
+				listComments: (championshipId, threadId, query, config) => client.request({
+					path: `${threadPath(championshipId, threadId)}/comments`,
+					query,
+					...config
+				}),
+				addComment: (championshipId, threadId, body, config) => client.request({
+					method: "POST",
+					path: `${threadPath(championshipId, threadId)}/comments`,
+					body,
+					...config
+				})
+			},
+			assignments: {
+				list: (championshipId, query, config) => client.request({
+					path: `${championshipPath(championshipId)}/assignments`,
+					query,
+					...config
+				}),
+				create: (championshipId, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(championshipId)}/assignments`,
+					body,
+					...config
+				}),
+				update: (championshipId, assignmentId, body, config) => client.request({
+					method: "PATCH",
+					path: `${championshipPath(championshipId)}/assignments/${encodeURIComponent(assignmentId)}`,
+					body,
+					...config
+				})
+			},
+			presence: {
+				list: (championshipId, query, config) => client.request({
+					path: `${championshipPath(championshipId)}/presence`,
+					query,
+					...config
+				}),
+				heartbeat: (championshipId, body, config) => client.request({
+					method: "POST",
+					path: `${championshipPath(championshipId)}/presence`,
+					body,
+					...config
+				})
+			},
+			inbox: {
+				list: (query, config) => client.request({
+					path: "/championships/inbox",
+					query,
+					...config
+				}),
+				update: (inboxItemId, body, config) => client.request({
+					method: "PATCH",
+					path: `/championships/inbox/${encodeURIComponent(inboxItemId)}`,
+					body,
+					...config
+				})
+			},
+			savedViews: {
+				list: (championshipId, query, config) => client.request({
+					path: `${championshipPath(championshipId)}/saved-views`,
+					query,
+					...config
+				}),
+				upsert: (championshipId, body, config) => client.request({
+					method: "PUT",
+					path: `${championshipPath(championshipId)}/saved-views`,
+					body,
+					...config
+				})
+			}
+		}
+	};
+}
+function championshipPath(id) {
+	return `/championships/${encodeURIComponent(id)}`;
+}
+function championshipMatchPath(championshipId, championshipMatchId) {
+	return `${championshipPath(championshipId)}/matches/${encodeURIComponent(championshipMatchId)}`;
+}
+function threadPath(championshipId, threadId) {
+	return `${championshipPath(championshipId)}/threads/${encodeURIComponent(threadId)}`;
+}
+function decideTrade(client, championshipId, tradeId, action, body, config) {
+	return client.request({
+		method: "POST",
+		path: `${championshipPath(championshipId)}/trades/${encodeURIComponent(tradeId)}/${action}`,
+		body,
+		...config
+	});
+}
+
+//#endregion
 //#region src/resources/game-modes.ts
 function createGameModesResource(client) {
 	return {
@@ -94,6 +770,11 @@ function createMatchesResource(client) {
 		}),
 		get: (id, config) => client.request({
 			path: `/matches/${encodeURIComponent(id)}`,
+			...config
+		}),
+		getEvidence: (id, query, config) => client.request({
+			path: `/matches/${encodeURIComponent(id)}/evidence`,
+			query,
 			...config
 		}),
 		create: (body, config) => client.request({
@@ -276,6 +957,15 @@ function createRecordingsResource(client) {
 		}),
 		get: (id, config) => client.request({
 			path: `/recs/${encodeURIComponent(id)}`,
+			...config
+		}),
+		getInspection: (id, config) => client.request({
+			path: `/recs/${encodeURIComponent(id)}/inspection`,
+			...config
+		}),
+		inspect: (id, config) => client.request({
+			method: "POST",
+			path: `/recs/${encodeURIComponent(id)}/inspection`,
 			...config
 		}),
 		create: (input, config) => client.request({
@@ -739,6 +1429,7 @@ function createResources(client) {
 	return {
 		accounts: createAccountsResource(client),
 		auth: createAuthResource(client),
+		championships: createChampionshipsResource(client),
 		gameModes: createGameModesResource(client),
 		matches: createMatchesResource(client),
 		permissions: createPermissionsResource(client),
@@ -775,6 +1466,7 @@ function responseMeta(response) {
 var HaxFootballApiClient = class {
 	accounts;
 	auth;
+	championships;
 	gameModes;
 	matches;
 	permissions;
@@ -805,6 +1497,7 @@ var HaxFootballApiClient = class {
 		const resources = createResources(this);
 		this.accounts = resources.accounts;
 		this.auth = resources.auth;
+		this.championships = resources.championships;
 		this.gameModes = resources.gameModes;
 		this.matches = resources.matches;
 		this.permissions = resources.permissions;
@@ -851,6 +1544,25 @@ var HaxFootballApiClient = class {
 			return fetchFailure(cause);
 		} finally {
 			signal.dispose();
+		}
+	}
+	async openStream(options) {
+		const authResult = await this.resolveBearerToken();
+		if (!authResult.ok) return authResult;
+		const url = buildUrl(this.apiUrl, options.path, options.query);
+		const headers = await this.buildHeaders({ headers: options.headers }, authResult.token);
+		headers.set("accept", "text/event-stream");
+		try {
+			const init = {
+				method: "GET",
+				headers
+			};
+			if (options.signal) init.signal = options.signal;
+			const response = await this.fetcher(url, init);
+			if (!response.ok) return parseJsonResponse(response);
+			return success(response, response);
+		} catch (cause) {
+			return fetchFailure(cause);
 		}
 	}
 	async bearerToken() {

@@ -20,6 +20,261 @@ export type PageInfo = {
   nextCursor: string | null;
 };
 
+export type Championship = Schema<"Championship">;
+export type ChampionshipDetail = Schema<"ChampionshipDetail">;
+export type ChampionshipRules = ChampionshipDetail["rules"];
+export type ChampionshipCompetitionType = Schema<"ChampionshipCompetitionType">;
+export type ChampionshipTeamIdentity = Schema<"ChampionshipTeamIdentity">;
+export type ChampionshipTeam = Schema<"ChampionshipTeam">;
+export type ChampionshipParticipant = Schema<"ChampionshipParticipant">;
+export type ChampionshipAuditEvent = Schema<"ChampionshipAuditEvent">;
+export type ChampionshipThread = Schema<"ChampionshipThread">;
+export type ChampionshipComment = Schema<"ChampionshipComment">;
+export type ChampionshipAssignment = Schema<"ChampionshipAssignment">;
+export type ChampionshipPresence = Schema<"ChampionshipPresence">;
+export type ChampionshipInboxItem = Schema<"ChampionshipInboxItem">;
+export type ChampionshipSavedView = Schema<"ChampionshipSavedView">;
+export type ChampionshipRosterMembership =
+  Schema<"ChampionshipRosterMembership">;
+export type ChampionshipRosterMovePreview =
+  Schema<"ChampionshipRosterMovePreview">;
+export type ChampionshipSalaryProjection =
+  Schema<"ChampionshipSalaryProjection">;
+export type ChampionshipDraft = Schema<"ChampionshipDraft">;
+export type ChampionshipDraftCorrectionPreview =
+  Schema<"ChampionshipDraftCorrectionPreview">;
+export type ChampionshipTrade = Schema<"ChampionshipTrade">;
+export type ChampionshipFormat = Schema<"ChampionshipFormat">;
+export type ChampionshipStandings = Schema<"ChampionshipStandings">;
+export type ChampionshipRoundRobinPreview =
+  Schema<"ChampionshipRoundRobinPreview">;
+export type ChampionshipSpotPlacementPreview =
+  Schema<"ChampionshipSpotPlacementPreview">;
+export type ChampionshipMatchScheduling = Schema<"ChampionshipMatchScheduling">;
+export type ChampionshipDoubleEliminationPreview =
+  Schema<"ChampionshipDoubleEliminationPreview">;
+export type ChampionshipMatchOperations = Schema<"ChampionshipMatchOperations">;
+export type ChampionshipEvidenceCandidates =
+  Schema<"ChampionshipEvidenceCandidates">;
+export type ChampionshipSettlementPreview =
+  Schema<"ChampionshipSettlementPreview">;
+export type ChampionshipStatistics = Schema<"ChampionshipStatistics">;
+export type ChampionshipMetricMappings = Schema<"ChampionshipMetricMappings">;
+export type ChampionshipHistory = Schema<"ChampionshipHistory">;
+export type ChampionshipAward = Schema<"ChampionshipAward">;
+export type ChampionshipHistoricalImportBatch =
+  Schema<"ChampionshipHistoricalImportBatch">;
+export type ChampionshipHistoricalPlayer =
+  Schema<"ChampionshipHistoricalPlayer">;
+export type TeamIdentityHistory = Schema<"TeamIdentityHistory">;
+export type AccountChampionshipHistory = Schema<"AccountChampionshipHistory">;
+export type CreateCompetitionTypeInput = Schema<"CreateCompetitionTypeBody">;
+export type UpdateCompetitionTypeInput = Schema<"UpdateCompetitionTypeBody">;
+export type CreateChampionshipInput = Schema<"CreateChampionshipBody">;
+export type UpdateChampionshipInput = Schema<"UpdateChampionshipBody">;
+export type TransitionChampionshipInput = Schema<"TransitionChampionshipBody">;
+export type CreateChampionshipTeamInput = Schema<"CreateChampionshipTeamBody">;
+export type UpdateChampionshipTeamInput = Schema<"UpdateChampionshipTeamBody">;
+export type CreateChampionshipParticipantInput =
+  Schema<"CreateChampionshipParticipantBody">;
+export type UpdateChampionshipParticipantInput =
+  Schema<"UpdateChampionshipParticipantBody">;
+export type TransitionChampionshipRegistrationInput =
+  Schema<"TransitionChampionshipRegistrationBody">;
+export type SelfRegisterChampionshipInput =
+  Schema<"SelfRegisterChampionshipBody">;
+export type WithdrawChampionshipRegistrationInput =
+  Schema<"WithdrawChampionshipRegistrationBody">;
+export type UpsertChampionshipPricesInput =
+  Schema<"UpsertChampionshipPricesBody">;
+export type FreezeChampionshipPricesInput =
+  Schema<"FreezeChampionshipPricesBody">;
+export type PreviewChampionshipRosterMoveInput =
+  Schema<"PreviewChampionshipRosterMoveBody">;
+export type ExecuteChampionshipRosterMoveInput =
+  Schema<"ExecuteChampionshipRosterMoveBody">;
+export type ConfigureChampionshipDraftInput =
+  Schema<"ConfigureChampionshipDraftBody">;
+export type StartChampionshipDraftInput = Schema<"StartChampionshipDraftBody">;
+export type MakeChampionshipDraftPickInput =
+  Schema<"MakeChampionshipDraftPickBody">;
+export type EndChampionshipDraftInput = Schema<"EndChampionshipDraftBody">;
+export type VoidChampionshipDraftPickInput =
+  Schema<"VoidChampionshipDraftPickBody">;
+export type CreateChampionshipTradeInput =
+  Schema<"CreateChampionshipTradeBody">;
+export type DecideChampionshipTradeInput =
+  Schema<"DecideChampionshipTradeBody">;
+export type CreateChampionshipStageInput =
+  Schema<"CreateChampionshipStageBody">;
+export type UpdateChampionshipStageInput =
+  Schema<"UpdateChampionshipStageBody">;
+export type CreateChampionshipGroupInput =
+  Schema<"CreateChampionshipGroupBody">;
+export type ConfigureChampionshipStandingsInput =
+  Schema<"ConfigureChampionshipStandingsBody">;
+export type PreviewChampionshipRoundRobinInput =
+  Schema<"PreviewChampionshipRoundRobinBody">;
+export type GenerateChampionshipRoundRobinInput =
+  Schema<"GenerateChampionshipRoundRobinBody">;
+export type PreviewChampionshipClassificationInput =
+  Schema<"PreviewChampionshipClassificationBody">;
+export type ApplyChampionshipClassificationInput =
+  Schema<"ApplyChampionshipClassificationBody">;
+export type GenerateSingleEliminationInput =
+  Schema<"GenerateSingleEliminationBody">;
+export type PreviewDoubleEliminationInput =
+  Schema<"PreviewDoubleEliminationBody">;
+export type GenerateDoubleEliminationInput =
+  Schema<"GenerateDoubleEliminationBody">;
+export type CreateChampionshipSpotInput = Schema<"CreateChampionshipSpotBody">;
+export type PlaceChampionshipSpotInput = Schema<"PlaceChampionshipSpotBody">;
+export type PreviewChampionshipSpotPlacementInput =
+  Schema<"PreviewChampionshipSpotPlacementBody">;
+export type CreateChampionshipRouteInput =
+  Schema<"CreateChampionshipRouteBody">;
+export type UpdateChampionshipRouteInput =
+  Schema<"UpdateChampionshipRouteBody">;
+export type CreateChampionshipCompetitionRoundInput =
+  Schema<"CreateChampionshipCompetitionRoundBody">;
+export type CreateChampionshipLogicalMatchInput =
+  Schema<"CreateChampionshipMatchBody">;
+export type ScheduleChampionshipMatchInput =
+  Schema<"ScheduleChampionshipMatchBody">;
+export type CreateChampionshipScheduleProposalInput =
+  Schema<"CreateChampionshipScheduleProposalBody">;
+export type DecideChampionshipScheduleProposalInput =
+  Schema<"DecideChampionshipScheduleProposalBody">;
+export type AuthorizeChampionshipLatePlayInput =
+  Schema<"AuthorizeChampionshipLatePlayBody">;
+export type RevokeChampionshipLatePlayInput =
+  Schema<"RevokeChampionshipLatePlayBody">;
+export type RemindChampionshipScheduleInput =
+  Schema<"RemindChampionshipScheduleBody">;
+export type AttachChampionshipMatchEvidenceInput =
+  Schema<"AttachChampionshipMatchEvidenceBody">;
+export type DetachChampionshipMatchEvidenceInput =
+  Schema<"DetachChampionshipMatchEvidenceBody">;
+export type PreviewChampionshipSettlementInput =
+  Schema<"PreviewChampionshipSettlementBody">;
+export type SettleChampionshipMatchInput =
+  Schema<"SettleChampionshipMatchBody">;
+export type UpdateChampionshipAttributionsInput =
+  Schema<"UpdateChampionshipAttributionsBody">;
+export type ReplaceChampionshipMetricMappingsInput =
+  Schema<"ReplaceChampionshipMetricMappingsBody">;
+export type ReplaceChampionshipPlacementsInput =
+  Schema<"ReplaceChampionshipPlacementsBody">;
+export type CreateChampionshipAwardInput =
+  Schema<"CreateChampionshipAwardBody">;
+export type UpdateChampionshipAwardInput =
+  Schema<"UpdateChampionshipAwardBody">;
+export type PreviewChampionshipHistoricalImportInput =
+  Schema<"PreviewChampionshipHistoricalImportBody">;
+export type ApplyChampionshipHistoricalImportInput =
+  Schema<"ApplyChampionshipHistoricalImportBody">;
+export type RollbackChampionshipHistoricalImportInput =
+  Schema<"RollbackChampionshipHistoricalImportBody">;
+export type LinkChampionshipHistoricalPlayerInput =
+  Schema<"LinkChampionshipHistoricalPlayerBody">;
+export type CreateTeamIdentityInput = Schema<"CreateTeamIdentityBody">;
+export type UpdateTeamIdentityInput = Schema<"UpdateTeamIdentityBody">;
+export type UpdateChampionshipRoomProgramInput =
+  Schema<"UpdateChampionshipRoomProgramBody">;
+export type UpdateChampionshipGrantInput =
+  Schema<"UpdateChampionshipGrantBody">;
+export type CreateChampionshipThreadInput =
+  Schema<"CreateChampionshipThreadBody">;
+export type AddChampionshipCommentInput = Schema<"AddChampionshipCommentBody">;
+export type UpdateChampionshipThreadInput =
+  Schema<"UpdateChampionshipThreadBody">;
+export type CreateChampionshipAssignmentInput =
+  Schema<"CreateChampionshipAssignmentBody">;
+export type UpdateChampionshipAssignmentInput =
+  Schema<"UpdateChampionshipAssignmentBody">;
+export type ChampionshipPresenceInput = NonNullable<
+  operations["postApiChampionshipsByIdPresence"]["requestBody"]
+>["content"]["application/json"];
+export type ListChampionshipsQuery =
+  operations["getApiChampionships"]["parameters"]["query"];
+export type ListCompetitionTypesQuery =
+  operations["getApiChampionshipsCompetition-types"]["parameters"]["query"];
+export type ListChampionshipParticipantsQuery =
+  operations["getApiChampionshipsByIdParticipants"]["parameters"]["query"];
+export type ListChampionshipAuditQuery =
+  operations["getApiChampionshipsByIdAudit"]["parameters"]["query"];
+export type ListChampionshipCollaborationQuery =
+  operations["getApiChampionshipsByIdThreads"]["parameters"]["query"];
+export type ChampionshipEventsQuery =
+  operations["getApiChampionshipsByIdEvents"]["parameters"]["query"];
+export type ChampionshipPresenceQuery =
+  operations["getApiChampionshipsByIdPresence"]["parameters"]["query"];
+export type ChampionshipInboxQuery =
+  operations["getApiChampionshipsInbox"]["parameters"]["query"];
+export type ChampionshipSavedViewsQuery =
+  operations["getApiChampionshipsByIdSaved-views"]["parameters"]["query"];
+export type ChampionshipSalaryQuery =
+  operations["getApiChampionshipsByIdSalary"]["parameters"]["query"];
+export type ChampionshipSalaryAdminQuery =
+  operations["getApiChampionshipsByIdSalaryAdmin"]["parameters"]["query"];
+export type ChampionshipSelfRegistrationQuery =
+  operations["getApiChampionshipsByIdRegistrationsSelf"]["parameters"]["query"];
+export type ChampionshipRosterHistoryQuery =
+  operations["getApiChampionshipsByIdRoster-history"]["parameters"]["query"];
+export type ChampionshipDraftQuery =
+  operations["getApiChampionshipsByIdDraft"]["parameters"]["query"];
+export type ChampionshipDraftCorrectionQuery =
+  operations["getApiChampionshipsByIdDraftTurnsByTurnIdCorrection-preview"]["parameters"]["query"];
+export type ChampionshipTradesQuery =
+  operations["getApiChampionshipsByIdTrades"]["parameters"]["query"];
+export type ChampionshipFormatQuery =
+  operations["getApiChampionshipsByIdFormat"]["parameters"]["query"];
+export type ChampionshipStandingsQuery =
+  operations["getApiChampionshipsByIdStagesByStageIdGroupsByGroupIdStandings"]["parameters"]["query"];
+export type ChampionshipMatchSchedulingQuery =
+  operations["getApiChampionshipsByIdChampionship-matchesByChampionshipMatchIdScheduling"]["parameters"]["query"];
+export type ChampionshipMatchOperationsQuery =
+  operations["getApiChampionshipsByIdMatchesByChampionshipMatchId"]["parameters"]["query"];
+export type ChampionshipEvidenceCandidatesQuery =
+  operations["getApiChampionshipsByIdMatchesByChampionshipMatchIdEvidence-candidates"]["parameters"]["query"];
+export type ChampionshipStatisticsQuery =
+  operations["getApiChampionshipsByIdStatistics"]["parameters"]["query"];
+export type ChampionshipMetricMappingsQuery =
+  operations["getApiChampionshipsByIdStatistic-mappings"]["parameters"]["query"];
+export type ChampionshipHistoryQuery =
+  operations["getApiChampionshipsByIdHistory"]["parameters"]["query"];
+export type ChampionshipHistoricalImportsQuery =
+  operations["getApiChampionshipsByIdHistorical-imports"]["parameters"]["query"];
+export type UpdateChampionshipInboxItemInput =
+  Schema<"UpdateChampionshipInboxItemBody">;
+export type UpsertChampionshipSavedViewInput =
+  Schema<"UpsertChampionshipSavedViewBody">;
+export type ListChampionshipsResponse = PaginatedResponse<Championship>;
+export type ListCompetitionTypesResponse =
+  PaginatedResponse<ChampionshipCompetitionType>;
+export type ListChampionshipTeamsResponse = PaginatedResponse<ChampionshipTeam>;
+export type ListTeamIdentitiesResponse =
+  PaginatedResponse<ChampionshipTeamIdentity>;
+export type ListChampionshipParticipantsResponse =
+  PaginatedResponse<ChampionshipParticipant>;
+export type ListChampionshipAuditResponse =
+  PaginatedResponse<ChampionshipAuditEvent>;
+export type ListChampionshipThreadsResponse =
+  PaginatedResponse<ChampionshipThread>;
+export type ListChampionshipCommentsResponse =
+  PaginatedResponse<ChampionshipComment>;
+export type ListChampionshipAssignmentsResponse =
+  PaginatedResponse<ChampionshipAssignment>;
+export type ListChampionshipInboxResponse =
+  PaginatedResponse<ChampionshipInboxItem>;
+export type ListChampionshipSavedViewsResponse =
+  PaginatedResponse<ChampionshipSavedView>;
+export type ListChampionshipRosterHistoryResponse =
+  PaginatedResponse<ChampionshipRosterMembership>;
+export type ListChampionshipTradesResponse = Schema<"ListChampionshipTrades">;
+export type ListChampionshipHistoricalImportsResponse =
+  Schema<"ListChampionshipHistoricalImports">;
+
 export type Account = Schema<"Account">;
 export type ConfirmAccountInput = Schema<"ConfirmAccountBody">;
 export type ConfirmAccountResponse = Schema<"ConfirmAccountResponse">;
@@ -59,6 +314,7 @@ export type ListPlayersResponse = PaginatedResponse<Player>;
 export type ListPlayerMatchesResponse = PaginatedResponse<MatchSummary>;
 
 export type Recording = Schema<"Recording">;
+export type RecordingInspection = Schema<"RecordingInspection">;
 export type ListRecordingsResponse = PaginatedResponse<Recording>;
 
 export type Match = Schema<"Match">;
@@ -70,6 +326,9 @@ export type MatchRoundOrientation = MatchRound["orientation"];
 export type MatchEvent = Schema<"MatchEvent">;
 export type MatchEventInput = Schema<"MatchEventInput">;
 export type MatchMetrics = Schema<"MatchMetrics">;
+export type LogicalMatchEvidence = Schema<"LogicalMatchEvidence">;
+export type LogicalMatchEvidenceQuery =
+  operations["getApiMatchesByIdEvidence"]["parameters"]["query"];
 export type QueryMatchMetricsInput = Schema<"QueryMatchMetricsBody">;
 export type QueryMatchMetricsResponse = Schema<"QueryMatchMetrics">;
 export type MatchScore = Schema<"MatchScore">;

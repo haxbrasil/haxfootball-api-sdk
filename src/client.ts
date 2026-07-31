@@ -38,9 +38,17 @@ export type RequestOptions = {
   timeoutMs?: number | undefined;
 };
 
+export type StreamRequestOptions = {
+  path: string;
+  query?: Record<string, unknown> | undefined;
+  headers?: HeadersInit | undefined;
+  signal?: AbortSignal | undefined;
+};
+
 export class HaxFootballApiClient {
   readonly accounts: HaxFootballApiResources["accounts"];
   readonly auth: HaxFootballApiResources["auth"];
+  readonly championships: HaxFootballApiResources["championships"];
   readonly gameModes: HaxFootballApiResources["gameModes"];
   readonly matches: HaxFootballApiResources["matches"];
   readonly permissions: HaxFootballApiResources["permissions"];
@@ -88,6 +96,7 @@ export class HaxFootballApiClient {
 
     this.accounts = resources.accounts;
     this.auth = resources.auth;
+    this.championships = resources.championships;
     this.gameModes = resources.gameModes;
     this.matches = resources.matches;
     this.permissions = resources.permissions;
@@ -155,6 +164,45 @@ export class HaxFootballApiClient {
       return fetchFailure(cause);
     } finally {
       signal.dispose();
+    }
+  }
+
+  async openStream(
+    options: StreamRequestOptions
+  ): Promise<ApiResult<Response>> {
+    const authResult = await this.resolveBearerToken();
+
+    if (!authResult.ok) {
+      return authResult;
+    }
+
+    const url = buildUrl(this.apiUrl, options.path, options.query);
+    const headers = await this.buildHeaders(
+      { headers: options.headers },
+      authResult.token
+    );
+
+    headers.set("accept", "text/event-stream");
+
+    try {
+      const init: RequestInit = {
+        method: "GET",
+        headers
+      };
+
+      if (options.signal) {
+        init.signal = options.signal;
+      }
+
+      const response = await this.fetcher(url, init);
+
+      if (!response.ok) {
+        return parseJsonResponse<Response>(response);
+      }
+
+      return success(response, response);
+    } catch (cause) {
+      return fetchFailure(cause);
     }
   }
 
