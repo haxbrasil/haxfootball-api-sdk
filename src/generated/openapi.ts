@@ -6879,7 +6879,8 @@ export interface components {
         | "activate"
         | "complete"
         | "archive"
-        | "cancel";
+        | "cancel"
+        | "delete";
     };
     TransitionChampionshipRegistrationBody: {
       /** Format: uuid */
