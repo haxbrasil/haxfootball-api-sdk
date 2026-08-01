@@ -379,6 +379,12 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			deleteStage: (championshipId, stageId, body, config) => client.request({
+				method: "DELETE",
+				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}`,
+				body,
+				...config
+			}),
 			createGroup: (championshipId, stageId, body, config) => client.request({
 				method: "POST",
 				path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(stageId)}/groups`,
