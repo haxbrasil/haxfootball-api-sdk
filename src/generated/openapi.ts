@@ -1352,7 +1352,8 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    delete?: never;
+    /** Delete an empty championship stage */
+    delete: operations["deleteApiChampionshipsByIdStagesByStageId"];
     options?: never;
     head?: never;
     /** Update a championship stage */
@@ -5509,6 +5510,13 @@ export interface components {
       expectedRevision: string | number;
       expectedTradeRevision: string | number;
       reason?: string;
+    };
+    DeleteChampionshipStageBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
     };
     DetachChampionshipMatchEvidenceBody: {
       /** Format: uuid */
@@ -13735,6 +13743,78 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["GenerateSingleEliminationBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipFormat"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  deleteApiChampionshipsByIdStagesByStageId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        stageId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeleteChampionshipStageBody"];
       };
     };
     responses: {

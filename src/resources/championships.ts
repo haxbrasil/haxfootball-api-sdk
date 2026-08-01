@@ -68,6 +68,7 @@ import type {
   CreateChampionshipRouteInput,
   CreateChampionshipSpotInput,
   CreateChampionshipStageInput,
+  DeleteChampionshipStageInput,
   CreateChampionshipGroupInput,
   CreateChampionshipScheduleProposalInput,
   CreateChampionshipAssignmentInput,
@@ -760,6 +761,20 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
       ) =>
         client.request<ChampionshipFormat>({
           method: "PATCH",
+          path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(
+            stageId
+          )}`,
+          body,
+          ...config
+        }),
+      deleteStage: (
+        championshipId: string,
+        stageId: string,
+        body: DeleteChampionshipStageInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipFormat>({
+          method: "DELETE",
           path: `${championshipPath(championshipId)}/stages/${encodeURIComponent(
             stageId
           )}`,

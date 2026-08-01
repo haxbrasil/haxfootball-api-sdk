@@ -112,6 +112,8 @@ export type CreateChampionshipStageInput =
   Schema<"CreateChampionshipStageBody">;
 export type UpdateChampionshipStageInput =
   Schema<"UpdateChampionshipStageBody">;
+export type DeleteChampionshipStageInput =
+  Schema<"DeleteChampionshipStageBody">;
 export type CreateChampionshipGroupInput =
   Schema<"CreateChampionshipGroupBody">;
 export type ConfigureChampionshipStandingsInput =
