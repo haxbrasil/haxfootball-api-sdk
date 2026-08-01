@@ -32,6 +32,15 @@ describe("championship resources", () => {
       includeDrafts: true,
       limit: 20
     });
+    await client.championships.honors.previewResolution(championshipUuid, honorUuid, {
+      actorAccountUuid
+    });
+    await client.championships.honors.resolve(championshipUuid, honorUuid, {
+      actorAccountUuid,
+      commandUuid: crypto.randomUUID(),
+      expectedRevision: 8,
+      reason: "Resultado calculado confirmado"
+    });
     await client.championships.honors.grant(championshipUuid, honorUuid, {
       actorAccountUuid,
       commandUuid: crypto.randomUUID(),
@@ -50,6 +59,12 @@ describe("championship resources", () => {
       `https://api.example.com/api/championships/${championshipUuid}/honors?actorAccountUuid=${actorAccountUuid}&includeDrafts=true&limit=20`
     );
     expect(fetcher.mock.calls[3]?.[0].toString()).toBe(
+      `https://api.example.com/api/championships/${championshipUuid}/honors/${honorUuid}/resolution-preview?actorAccountUuid=${actorAccountUuid}`
+    );
+    expect(fetcher.mock.calls[4]?.[0].toString()).toBe(
+      `https://api.example.com/api/championships/${championshipUuid}/honors/${honorUuid}/resolve`
+    );
+    expect(fetcher.mock.calls[5]?.[0].toString()).toBe(
       `https://api.example.com/api/championships/${championshipUuid}/honors/${honorUuid}/grants`
     );
   });

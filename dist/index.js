@@ -131,6 +131,17 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			previewResolution: (id, honorId, query, config) => client.request({
+				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/resolution-preview`,
+				query,
+				...config
+			}),
+			resolve: (id, honorId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/resolve`,
+				body,
+				...config
+			}),
 			grant: (id, honorId, body, config) => client.request({
 				method: "POST",
 				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/grants`,

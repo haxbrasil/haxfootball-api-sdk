@@ -914,6 +914,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/honors/{honorId}/resolution-preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Preview the calculated result of a championship honor */
+    get: operations["getApiChampionshipsByIdHonorsByHonorIdResolution-preview"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/{id}/honors/{honorId}/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm the calculated result of a championship honor */
+    post: operations["postApiChampionshipsByIdHonorsByHonorIdResolve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/matches/{championshipMatchId}": {
     parameters: {
       query?: never;
@@ -4351,6 +4385,58 @@ export interface components {
         version: string | number;
       }[];
     };
+    ChampionshipHonorResolutionPreview: {
+      blockers: string[];
+      contenders: {
+        displayLabel: string;
+        rank: string | number;
+        target: {
+          /** @enum {string} */
+          type:
+            | "team"
+            | "team-identity"
+            | "participant"
+            | "account"
+            | "historical-player";
+          /** Format: uuid */
+          uuid: string;
+        };
+        tied: boolean;
+        value: (number | null) | null;
+      }[];
+      explanation: string;
+      /** Format: uuid */
+      honorUuid: string;
+      policy:
+        | {
+            ranks: (string | number)[];
+            /** @constant */
+            type: "placement";
+          }
+        | {
+            outcome: "winner" | "loser" | "occupant";
+            spotUuids: string[];
+            /** @constant */
+            type: "spot-result";
+          }
+        | {
+            direction: "highest" | "lowest";
+            limit: string | number;
+            metricKey: string;
+            /** @constant */
+            type: "metric-ranking";
+          }
+        | {
+            /** @constant */
+            type: "staff-selection";
+          }
+        | {
+            note: string;
+            /** @constant */
+            type: "hybrid";
+          };
+      ready: boolean;
+    };
     ChampionshipInboxItem: {
       body: (string | null) | null;
       championshipName: string;
@@ -7186,6 +7272,14 @@ export interface components {
     ReportRoomReadyBody: {
       commId: string;
       roomLink: string;
+    };
+    ResolveChampionshipHonorBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
+      reason: string;
     };
     ResolveSessionBody: {
       auth: (string | null) | null;
@@ -12441,6 +12535,148 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["RevokeChampionshipHonorGrantBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonor"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiChampionshipsByIdHonorsByHonorIdResolution-preview": {
+    parameters: {
+      query?: {
+        actorAccountUuid?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+        honorId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonorResolutionPreview"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdHonorsByHonorIdResolve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        honorId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResolveChampionshipHonorBody"];
       };
     };
     responses: {

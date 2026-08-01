@@ -23,6 +23,7 @@ import type {
   ChampionshipHistoricalPlayer,
   ChampionshipAward,
   ChampionshipHonor,
+  ChampionshipHonorResolutionPreview,
   ChampionshipHonorDefinition,
   ChampionshipHonorsQuery,
   AccountChampionshipHistory,
@@ -135,6 +136,7 @@ import type {
   RevokeChampionshipLatePlayInput,
   RollbackChampionshipHistoricalImportInput,
   RevokeChampionshipHonorGrantInput,
+  ResolveChampionshipHonorInput,
   ScheduleChampionshipMatchInput,
   SelfRegisterChampionshipInput,
   SettleChampionshipMatchInput,
@@ -300,6 +302,29 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipHonor>({
           method: "PATCH",
           path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}`,
+          body,
+          ...config
+        }),
+      previewResolution: (
+        id: string,
+        honorId: string,
+        query?: { actorAccountUuid?: string },
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonorResolutionPreview>({
+          path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/resolution-preview`,
+          query,
+          ...config
+        }),
+      resolve: (
+        id: string,
+        honorId: string,
+        body: ResolveChampionshipHonorInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor>({
+          method: "POST",
+          path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/resolve`,
           body,
           ...config
         }),

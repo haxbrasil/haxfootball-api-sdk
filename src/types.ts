@@ -64,6 +64,8 @@ export type ChampionshipHistory = Schema<"ChampionshipHistory">;
 export type ChampionshipAward = Schema<"ChampionshipAward">;
 export type ChampionshipHonorDefinition = Schema<"ChampionshipHonorDefinition">;
 export type ChampionshipHonor = Schema<"ChampionshipHonor">;
+export type ChampionshipHonorResolutionPreview =
+  Schema<"ChampionshipHonorResolutionPreview">;
 export type ChampionshipHistoricalImportBatch =
   Schema<"ChampionshipHistoricalImportBatch">;
 export type ChampionshipHistoricalPlayer =
@@ -194,6 +196,8 @@ export type CreateChampionshipHonorGrantInput =
   Schema<"CreateChampionshipHonorGrantBody">;
 export type RevokeChampionshipHonorGrantInput =
   Schema<"RevokeChampionshipHonorGrantBody">;
+export type ResolveChampionshipHonorInput =
+  Schema<"ResolveChampionshipHonorBody">;
 export type PreviewChampionshipHistoricalImportInput =
   Schema<"PreviewChampionshipHistoricalImportBody">;
 export type ApplyChampionshipHistoricalImportInput =
