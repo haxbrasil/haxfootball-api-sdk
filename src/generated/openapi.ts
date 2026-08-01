@@ -5669,8 +5669,14 @@ export interface components {
       expectedRevision: string | number;
       firstRoundStartsAt?: string | null;
       name: string;
+      qualificationSources?: {
+        /** Format: uuid */
+        groupId: string;
+        label?: string;
+        rank: string | number;
+      }[];
       roundDurationHours?: string | number;
-      teamIds: string[];
+      teamIds?: string[];
     };
     InternalServerError: {
       error: {
