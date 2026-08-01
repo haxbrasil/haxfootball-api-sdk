@@ -1120,6 +1120,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/roster-order": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Reorder an active championship roster */
+    put: operations["putApiChampionshipsByIdRoster-order"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/salary": {
     parameters: {
       query?: never;
@@ -4172,6 +4189,7 @@ export interface components {
         | "trade"
         | "replacement"
         | "historical-import";
+      displayOrder: string | number;
       effectiveFromRevision: string | number;
       effectiveToRevision: ((string | number) | null) | null;
       endedAt: (string | null) | null;
@@ -4230,6 +4248,12 @@ export interface components {
         | null;
       valid: boolean;
       violations: string[];
+    };
+    ChampionshipRosterOrder: {
+      participantIds: string[];
+      rosterRevision: string | number;
+      /** Format: uuid */
+      teamUuid: string;
     };
     ChampionshipRoundRobinPreview: {
       canGenerate: boolean;
@@ -4302,6 +4326,7 @@ export interface components {
           frozenAt: (string | null) | null;
           membership:
             | ({
+                displayOrder: string | number;
                 priceUnitsSnapshot: ((string | number) | null) | null;
                 role: "gm" | "player";
                 teamName: string;
@@ -6464,6 +6489,16 @@ export interface components {
     };
     RemoveRoleResponse: {
       deleted: boolean;
+    };
+    ReorderChampionshipRosterBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
+      participantIds: string[];
+      /** Format: uuid */
+      teamId: string;
     };
     ReplaceChampionshipMetricMappingsBody: {
       /** Format: uuid */
@@ -12710,6 +12745,77 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChampionshipRosterMovePreview"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "putApiChampionshipsByIdRoster-order": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReorderChampionshipRosterBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipRosterOrder"];
         };
       };
       /** @description Response for status 400 */

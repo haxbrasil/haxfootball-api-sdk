@@ -291,6 +291,12 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			reorder: (championshipId, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(championshipId)}/roster-order`,
+				body,
+				...config
+			}),
 			history: (championshipId, query, config) => client.request({
 				path: `${championshipPath(championshipId)}/roster-history`,
 				query,

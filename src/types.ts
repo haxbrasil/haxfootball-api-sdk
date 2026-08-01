@@ -93,6 +93,9 @@ export type PreviewChampionshipRosterMoveInput =
   Schema<"PreviewChampionshipRosterMoveBody">;
 export type ExecuteChampionshipRosterMoveInput =
   Schema<"ExecuteChampionshipRosterMoveBody">;
+export type ReorderChampionshipRosterInput =
+  Schema<"ReorderChampionshipRosterBody">;
+export type ChampionshipRosterOrder = Schema<"ChampionshipRosterOrder">;
 export type ConfigureChampionshipDraftInput =
   Schema<"ConfigureChampionshipDraftBody">;
 export type StartChampionshipDraftInput = Schema<"StartChampionshipDraftBody">;

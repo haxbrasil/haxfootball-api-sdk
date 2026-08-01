@@ -45,6 +45,7 @@ import type {
   ChampionshipRosterHistoryQuery,
   ChampionshipRosterMembership,
   ChampionshipRosterMovePreview,
+  ChampionshipRosterOrder,
   ChampionshipSalaryAdminQuery,
   ChampionshipSalaryProjection,
   ChampionshipSalaryQuery,
@@ -82,6 +83,7 @@ import type {
   DecideChampionshipScheduleProposalInput,
   DetachChampionshipMatchEvidenceInput,
   ExecuteChampionshipRosterMoveInput,
+  ReorderChampionshipRosterInput,
   EndChampionshipDraftInput,
   GenerateSingleEliminationInput,
   GenerateDoubleEliminationInput,
@@ -579,6 +581,17 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipRosterMembership>({
           method: "POST",
           path: `${championshipPath(championshipId)}/roster-moves`,
+          body,
+          ...config
+        }),
+      reorder: (
+        championshipId: string,
+        body: ReorderChampionshipRosterInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipRosterOrder>({
+          method: "PUT",
+          path: `${championshipPath(championshipId)}/roster-order`,
           body,
           ...config
         }),
