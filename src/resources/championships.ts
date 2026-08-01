@@ -22,6 +22,9 @@ import type {
   ChampionshipHistoricalImportsQuery,
   ChampionshipHistoricalPlayer,
   ChampionshipAward,
+  ChampionshipHonor,
+  ChampionshipHonorDefinition,
+  ChampionshipHonorsQuery,
   AccountChampionshipHistory,
   ChampionshipEventsQuery,
   ChampionshipFormat,
@@ -74,6 +77,9 @@ import type {
   CreateChampionshipScheduleProposalInput,
   CreateChampionshipAssignmentInput,
   CreateChampionshipAwardInput,
+  CreateChampionshipHonorDefinitionInput,
+  CreateChampionshipHonorGrantInput,
+  CreateChampionshipHonorInput,
   CreateChampionshipInput,
   CreateChampionshipParticipantInput,
   CreateChampionshipTeamInput,
@@ -98,6 +104,9 @@ import type {
   ListChampionshipCommentsResponse,
   ListChampionshipInboxResponse,
   ListChampionshipHistoricalImportsResponse,
+  ListChampionshipHonorDefinitionsQuery,
+  ListChampionshipHonorDefinitionsResponse,
+  ListChampionshipHonorsResponse,
   ListChampionshipSavedViewsResponse,
   ListChampionshipParticipantsQuery,
   ListChampionshipParticipantsResponse,
@@ -125,6 +134,7 @@ import type {
   RemindChampionshipScheduleInput,
   RevokeChampionshipLatePlayInput,
   RollbackChampionshipHistoricalImportInput,
+  RevokeChampionshipHonorGrantInput,
   ScheduleChampionshipMatchInput,
   SelfRegisterChampionshipInput,
   SettleChampionshipMatchInput,
@@ -133,6 +143,8 @@ import type {
   TransitionChampionshipRegistrationInput,
   UpdateChampionshipAssignmentInput,
   UpdateChampionshipAwardInput,
+  UpdateChampionshipHonorDefinitionDraftInput,
+  UpdateChampionshipHonorInput,
   UpdateChampionshipAttributionsInput,
   UpdateChampionshipGrantInput,
   UpdateChampionshipInput,
@@ -149,7 +161,9 @@ import type {
   UpsertChampionshipPricesInput,
   UpsertChampionshipSavedViewInput,
   VoidChampionshipDraftPickInput,
-  WithdrawChampionshipRegistrationInput
+  WithdrawChampionshipRegistrationInput,
+  PublishChampionshipHonorDefinitionInput,
+  ArchiveChampionshipHonorDefinitionInput
 } from "../types";
 import type { RequestConfig } from "./shared";
 
@@ -201,6 +215,120 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         body,
         ...config
       }),
+    honorDefinitions: {
+      list: (
+        query?: ListChampionshipHonorDefinitionsQuery,
+        config?: RequestConfig
+      ) =>
+        client.request<ListChampionshipHonorDefinitionsResponse>({
+          path: "/championships/honor-definitions",
+          query,
+          ...config
+        }),
+      create: (
+        body: CreateChampionshipHonorDefinitionInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonorDefinition>({
+          method: "POST",
+          path: "/championships/honor-definitions",
+          body,
+          ...config
+        }),
+      updateDraft: (
+        definitionId: string,
+        body: UpdateChampionshipHonorDefinitionDraftInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonorDefinition>({
+          method: "PUT",
+          path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/draft`,
+          body,
+          ...config
+        }),
+      publish: (
+        definitionId: string,
+        body: PublishChampionshipHonorDefinitionInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonorDefinition & { published: boolean }>({
+          method: "POST",
+          path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/publish`,
+          body,
+          ...config
+        }),
+      archive: (
+        definitionId: string,
+        body: ArchiveChampionshipHonorDefinitionInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonorDefinition>({
+          method: "POST",
+          path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/archive`,
+          body,
+          ...config
+        })
+    },
+    honors: {
+      list: (
+        id: string,
+        query?: ChampionshipHonorsQuery,
+        config?: RequestConfig
+      ) =>
+        client.request<ListChampionshipHonorsResponse>({
+          path: `${championshipPath(id)}/honors`,
+          query,
+          ...config
+        }),
+      create: (
+        id: string,
+        body: CreateChampionshipHonorInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor>({
+          method: "POST",
+          path: `${championshipPath(id)}/honors`,
+          body,
+          ...config
+        }),
+      update: (
+        id: string,
+        honorId: string,
+        body: UpdateChampionshipHonorInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor>({
+          method: "PATCH",
+          path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}`,
+          body,
+          ...config
+        }),
+      grant: (
+        id: string,
+        honorId: string,
+        body: CreateChampionshipHonorGrantInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor>({
+          method: "POST",
+          path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/grants`,
+          body,
+          ...config
+        }),
+      revokeGrant: (
+        id: string,
+        honorId: string,
+        grantId: string,
+        body: RevokeChampionshipHonorGrantInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor>({
+          method: "POST",
+          path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/grants/${encodeURIComponent(grantId)}/revoke`,
+          body,
+          ...config
+        })
+    },
     history: {
       get: (
         id: string,

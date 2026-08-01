@@ -62,6 +62,8 @@ export type ChampionshipStatistics = Schema<"ChampionshipStatistics">;
 export type ChampionshipMetricMappings = Schema<"ChampionshipMetricMappings">;
 export type ChampionshipHistory = Schema<"ChampionshipHistory">;
 export type ChampionshipAward = Schema<"ChampionshipAward">;
+export type ChampionshipHonorDefinition = Schema<"ChampionshipHonorDefinition">;
+export type ChampionshipHonor = Schema<"ChampionshipHonor">;
 export type ChampionshipHistoricalImportBatch =
   Schema<"ChampionshipHistoricalImportBatch">;
 export type ChampionshipHistoricalPlayer =
@@ -176,6 +178,22 @@ export type CreateChampionshipAwardInput =
   Schema<"CreateChampionshipAwardBody">;
 export type UpdateChampionshipAwardInput =
   Schema<"UpdateChampionshipAwardBody">;
+export type CreateChampionshipHonorDefinitionInput =
+  Schema<"CreateChampionshipHonorDefinitionBody">;
+export type UpdateChampionshipHonorDefinitionDraftInput =
+  Schema<"UpdateChampionshipHonorDefinitionDraftBody">;
+export type PublishChampionshipHonorDefinitionInput =
+  Schema<"PublishChampionshipHonorDefinitionBody">;
+export type ArchiveChampionshipHonorDefinitionInput =
+  Schema<"ArchiveChampionshipHonorDefinitionBody">;
+export type CreateChampionshipHonorInput =
+  Schema<"CreateChampionshipHonorBody">;
+export type UpdateChampionshipHonorInput =
+  Schema<"UpdateChampionshipHonorBody">;
+export type CreateChampionshipHonorGrantInput =
+  Schema<"CreateChampionshipHonorGrantBody">;
+export type RevokeChampionshipHonorGrantInput =
+  Schema<"RevokeChampionshipHonorGrantBody">;
 export type PreviewChampionshipHistoricalImportInput =
   Schema<"PreviewChampionshipHistoricalImportBody">;
 export type ApplyChampionshipHistoricalImportInput =
@@ -252,6 +270,14 @@ export type ChampionshipHistoryQuery =
   operations["getApiChampionshipsByIdHistory"]["parameters"]["query"];
 export type ChampionshipHistoricalImportsQuery =
   operations["getApiChampionshipsByIdHistorical-imports"]["parameters"]["query"];
+export type ListChampionshipHonorDefinitionsQuery = PaginationQuery & {
+  kind?: "title" | "award";
+  state?: "active" | "archived" | "all";
+};
+export type ChampionshipHonorsQuery = PaginationQuery & {
+  actorAccountUuid?: string;
+  includeDrafts?: boolean;
+};
 export type UpdateChampionshipInboxItemInput =
   Schema<"UpdateChampionshipInboxItemBody">;
 export type UpsertChampionshipSavedViewInput =
@@ -281,6 +307,10 @@ export type ListChampionshipRosterHistoryResponse =
 export type ListChampionshipTradesResponse = Schema<"ListChampionshipTrades">;
 export type ListChampionshipHistoricalImportsResponse =
   Schema<"ListChampionshipHistoricalImports">;
+export type ListChampionshipHonorDefinitionsResponse =
+  PaginatedResponse<ChampionshipHonorDefinition>;
+export type ListChampionshipHonorsResponse =
+  PaginatedResponse<ChampionshipHonor>;
 
 export type Account = Schema<"Account">;
 export type ConfirmAccountInput = Schema<"ConfirmAccountBody">;

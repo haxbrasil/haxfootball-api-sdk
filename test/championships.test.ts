@@ -5,6 +5,55 @@ const actorAccountUuid = "00000000-0000-4000-8000-000000000001";
 const championshipUuid = "00000000-0000-4000-8000-000000000002";
 
 describe("championship resources", () => {
+  it("exposes the reusable honor catalog and edition award lifecycle", async () => {
+    const fetcher = vi
+      .fn<FetchLike>()
+      .mockImplementation(async () =>
+        jsonResponse({ items: [], page: { limit: 20, nextCursor: null } })
+      );
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+    const definitionUuid = "00000000-0000-4000-8000-000000000005";
+    const honorUuid = "00000000-0000-4000-8000-000000000006";
+
+    await client.championships.honorDefinitions.list({
+      kind: "title",
+      limit: 20
+    });
+    await client.championships.honorDefinitions.publish(definitionUuid, {
+      actorAccountUuid,
+      expectedRevision: 2
+    });
+    await client.championships.honors.list(championshipUuid, {
+      actorAccountUuid,
+      includeDrafts: true,
+      limit: 20
+    });
+    await client.championships.honors.grant(championshipUuid, honorUuid, {
+      actorAccountUuid,
+      commandUuid: crypto.randomUUID(),
+      expectedRevision: 8,
+      target: { type: "account", uuid: actorAccountUuid },
+      reason: "Resultado oficial"
+    });
+
+    expect(fetcher.mock.calls[0]?.[0].toString()).toBe(
+      "https://api.example.com/api/championships/honor-definitions?kind=title&limit=20"
+    );
+    expect(fetcher.mock.calls[1]?.[0].toString()).toBe(
+      `https://api.example.com/api/championships/honor-definitions/${definitionUuid}/publish`
+    );
+    expect(fetcher.mock.calls[2]?.[0].toString()).toBe(
+      `https://api.example.com/api/championships/${championshipUuid}/honors?actorAccountUuid=${actorAccountUuid}&includeDrafts=true&limit=20`
+    );
+    expect(fetcher.mock.calls[3]?.[0].toString()).toBe(
+      `https://api.example.com/api/championships/${championshipUuid}/honors/${honorUuid}/grants`
+    );
+  });
+
   it("builds bounded list and nested team requests", async () => {
     const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
       jsonResponse({
