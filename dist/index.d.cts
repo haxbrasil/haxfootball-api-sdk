@@ -170,6 +170,75 @@ interface paths {
     patch: operations["patchApiChampionshipsCompetition-typesById"];
     trace?: never;
   };
+  "/api/championships/honor-definitions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List reusable championship honor definitions */
+    get: operations["getApiChampionshipsHonor-definitions"];
+    put?: never;
+    /** Create a reusable championship honor definition */
+    post: operations["postApiChampionshipsHonor-definitions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/honor-definitions/{definitionId}/archive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Archive or restore a championship honor definition */
+    post: operations["postApiChampionshipsHonor-definitionsByDefinitionIdArchive"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/honor-definitions/{definitionId}/draft": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update a championship honor definition draft */
+    put: operations["putApiChampionshipsHonor-definitionsByDefinitionIdDraft"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/honor-definitions/{definitionId}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Publish an immutable championship honor definition version */
+    post: operations["postApiChampionshipsHonor-definitionsByDefinitionIdPublish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/inbox": {
     parameters: {
       query?: never;
@@ -779,6 +848,75 @@ interface paths {
     get: operations["getApiChampionshipsByIdHistory"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/{id}/honors": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List honors in dispute and awarded in a championship */
+    get: operations["getApiChampionshipsByIdHonors"];
+    put?: never;
+    /** Add a published honor to a championship */
+    post: operations["postApiChampionshipsByIdHonors"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/{id}/honors/{honorId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update a championship honor */
+    patch: operations["patchApiChampionshipsByIdHonorsByHonorId"];
+    trace?: never;
+  };
+  "/api/championships/{id}/honors/{honorId}/grants": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Award a championship honor */
+    post: operations["postApiChampionshipsByIdHonorsByHonorIdGrants"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/{id}/honors/{honorId}/grants/{grantId}/revoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Revoke a championship honor grant */
+    post: operations["postApiChampionshipsByIdHonorsByHonorIdGrantsByGrantIdRevoke"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3160,6 +3298,12 @@ interface components {
       expectedRevision: string | number;
       reason: string;
     };
+    ArchiveChampionshipHonorDefinitionBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      archived: boolean;
+      expectedRevision: string | number;
+    };
     AssociateMatchRecordingBody: {
       recordingId: string;
     };
@@ -3753,6 +3897,12 @@ interface components {
           matchRulesOverride: ({
             [key: string]: unknown;
           } | null) | null;
+          result: ({
+            sideAOfficialScore: string | number;
+            sideAOutcome: "win" | "loss" | "draw";
+            sideBOfficialScore: string | number;
+            sideBOutcome: "win" | "loss" | "draw";
+          } | null) | null;
           resultRevision: string | number;
           revision: string | number;
           roomProgram: ({
@@ -3998,6 +4148,122 @@ interface components {
         totalCount: string | number;
         truncated: boolean;
       };
+    };
+    ChampionshipHonor: {
+      announcedAt: (string | null) | null;
+      awardedAt: (string | null) | null;
+      createdAt: string;
+      decisionPolicy: {
+        ranks: (string | number)[];
+        /** @constant */
+        type: "placement";
+      } | {
+        outcome: "winner" | "loser" | "occupant";
+        spotUuids: string[];
+        /** @constant */
+        type: "spot-result";
+      } | {
+        direction: "highest" | "lowest";
+        limit: string | number;
+        metricKey: string;
+        /** @constant */
+        type: "metric-ranking";
+      } | {
+        /** @constant */
+        type: "staff-selection";
+      } | {
+        note: string;
+        /** @constant */
+        type: "hybrid";
+      };
+      definition: {
+        aggregateByIdentity: boolean;
+        maximumRecipients: string | number;
+        minimumRecipients: string | number;
+        presentation: {
+          [key: string]: unknown;
+        };
+        recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+        slug: string;
+        /** Format: uuid */
+        uuid: string;
+        version: string | number;
+        /** Format: uuid */
+        versionUuid: string;
+      };
+      description: (string | null) | null;
+      displayOrder: string | number;
+      grants: {
+        awardedAt: string;
+        displayLabel: string;
+        identitySnapshot: ({
+          name: string;
+          /** Format: uuid */
+          uuid: string;
+        } | null) | null;
+        note: (string | null) | null;
+        rank: ((string | number) | null) | null;
+        revocationReason: (string | null) | null;
+        revokedAt: (string | null) | null;
+        target: {
+          /** @enum {string} */
+          type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+          /** Format: uuid */
+          uuid: string;
+        };
+        /** Format: uuid */
+        uuid: string;
+      }[];
+      /** @enum {string} */
+      kind: "title" | "award";
+      name: string;
+      revision: string | number;
+      /** @enum {string} */
+      state: "draft" | "announced" | "deciding" | "awarded" | "void";
+      updatedAt: string;
+      /** Format: uuid */
+      uuid: string;
+      voidedAt: (string | null) | null;
+    };
+    ChampionshipHonorDefinition: {
+      createdAt: string;
+      draft: {
+        aggregateByIdentity: boolean;
+        description: (string | null) | null;
+        maximumRecipients: string | number;
+        minimumRecipients: string | number;
+        name: string;
+        presentation: {
+          [key: string]: unknown;
+        };
+        recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+        revision: string | number;
+        updatedAt: string;
+      };
+      /** @enum {string} */
+      kind: "title" | "award";
+      revision: string | number;
+      slug: string;
+      /** @enum {string} */
+      state: "active" | "archived";
+      updatedAt: string;
+      /** Format: uuid */
+      uuid: string;
+      versions: {
+        aggregateByIdentity: boolean;
+        description: (string | null) | null;
+        maximumRecipients: string | number;
+        minimumRecipients: string | number;
+        name: string;
+        presentation: {
+          [key: string]: unknown;
+        };
+        publishedAt: string;
+        recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+        /** Format: uuid */
+        uuid: string;
+        version: string | number;
+      }[];
     };
     ChampionshipInboxItem: {
       body: (string | null) | null;
@@ -5179,6 +5445,75 @@ interface components {
       name: string;
       teamIds?: string[];
     };
+    CreateChampionshipHonorBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      decisionPolicy: {
+        ranks: (string | number)[];
+        /** @constant */
+        type: "placement";
+      } | {
+        outcome: "winner" | "loser" | "occupant";
+        spotUuids: string[];
+        /** @constant */
+        type: "spot-result";
+      } | {
+        direction: "highest" | "lowest";
+        limit: string | number;
+        metricKey: string;
+        /** @constant */
+        type: "metric-ranking";
+      } | {
+        /** @constant */
+        type: "staff-selection";
+      } | {
+        note: string;
+        /** @constant */
+        type: "hybrid";
+      };
+      /** Format: uuid */
+      definitionVersionUuid: string;
+      descriptionOverride?: string | null;
+      displayOrder?: string | number;
+      expectedRevision: string | number;
+      nameOverride?: string | null;
+      /** @enum {string} */
+      state?: "draft" | "announced";
+    };
+    CreateChampionshipHonorDefinitionBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      aggregateByIdentity: boolean;
+      description?: string | null;
+      /** @enum {string} */
+      kind: "title" | "award";
+      maximumRecipients: string | number;
+      minimumRecipients: string | number;
+      name: string;
+      presentation?: {
+        [key: string]: unknown;
+      };
+      recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+      slug: string;
+    };
+    CreateChampionshipHonorGrantBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
+      note?: string | null;
+      rank?: (string | number) | null;
+      reason: string;
+      target: {
+        /** @enum {string} */
+        type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+        /** Format: uuid */
+        uuid: string;
+      };
+    };
     CreateChampionshipMatchBody: {
       /** Format: uuid */
       actorAccountUuid: string;
@@ -5756,6 +6091,14 @@ interface components {
       items: components["schemas"]["ChampionshipHistoricalImportBatch"][];
       page: components["schemas"]["PageInfo"];
     };
+    ListChampionshipHonorDefinitions: {
+      items: components["schemas"]["ChampionshipHonorDefinition"][];
+      page: components["schemas"]["PageInfo"];
+    };
+    ListChampionshipHonors: {
+      items: components["schemas"]["ChampionshipHonor"][];
+      page: components["schemas"]["PageInfo"];
+    };
     ListChampionshipInbox: {
       items: components["schemas"]["ChampionshipInboxItem"][];
       page: components["schemas"]["PageInfo"];
@@ -6277,6 +6620,11 @@ interface components {
       grandFinalReset: boolean;
       teamIds: string[];
     };
+    PublishChampionshipHonorDefinitionBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      expectedRevision: string | number;
+    };
     PublishEventSchemaVersionBody: {
       definition: unknown;
     };
@@ -6516,6 +6864,14 @@ interface components {
       playerId: string;
       /** @constant */
       status: "password_required";
+    };
+    RevokeChampionshipHonorGrantBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
+      reason: string;
     };
     RevokeChampionshipLatePlayBody: {
       /** Format: uuid */
@@ -6981,6 +7337,56 @@ interface components {
       operation: "grant" | "revoke";
       /** @enum {string} */
       permission: "championship:admin" | "championship:operate" | "championship-history:admin";
+    };
+    UpdateChampionshipHonorBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      decisionPolicy?: {
+        ranks: (string | number)[];
+        /** @constant */
+        type: "placement";
+      } | {
+        outcome: "winner" | "loser" | "occupant";
+        spotUuids: string[];
+        /** @constant */
+        type: "spot-result";
+      } | {
+        direction: "highest" | "lowest";
+        limit: string | number;
+        metricKey: string;
+        /** @constant */
+        type: "metric-ranking";
+      } | {
+        /** @constant */
+        type: "staff-selection";
+      } | {
+        note: string;
+        /** @constant */
+        type: "hybrid";
+      };
+      descriptionOverride?: string | null;
+      displayOrder?: string | number;
+      expectedRevision: string | number;
+      nameOverride?: string | null;
+      reason: string;
+      /** @enum {string} */
+      state?: "draft" | "announced" | "deciding" | "void";
+    };
+    UpdateChampionshipHonorDefinitionDraftBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      aggregateByIdentity: boolean;
+      description?: string | null;
+      expectedRevision: string | number;
+      maximumRecipients: string | number;
+      minimumRecipients: string | number;
+      name: string;
+      presentation?: {
+        [key: string]: unknown;
+      };
+      recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
     };
     UpdateChampionshipInboxItemBody: {
       /** Format: uuid */
@@ -8161,6 +8567,360 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChampionshipCompetitionType"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "getApiChampionshipsHonor-definitions": {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+        kind?: "title" | "award";
+        state?: "active" | "archived" | "all";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListChampionshipHonorDefinitions"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiChampionshipsHonor-definitions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateChampionshipHonorDefinitionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonorDefinition"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiChampionshipsHonor-definitionsByDefinitionIdArchive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        definitionId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArchiveChampionshipHonorDefinitionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonorDefinition"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "putApiChampionshipsHonor-definitionsByDefinitionIdDraft": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        definitionId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateChampionshipHonorDefinitionDraftBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonorDefinition"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiChampionshipsHonor-definitionsByDefinitionIdPublish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        definitionId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PublishChampionshipHonorDefinitionBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonorDefinition"] & {
+            published: boolean;
+          };
         };
       };
       /** @description Response for status 400 */
@@ -10939,6 +11699,366 @@ interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChampionshipHistory"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  getApiChampionshipsByIdHonors: {
+    parameters: {
+      query?: {
+        limit?: string | number;
+        cursor?: string;
+        actorAccountUuid?: string;
+        includeDrafts?: boolean;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListChampionshipHonors"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdHonors: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateChampionshipHonorBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 201 */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonor"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  patchApiChampionshipsByIdHonorsByHonorId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        honorId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateChampionshipHonorBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonor"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdHonorsByHonorIdGrants: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        honorId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateChampionshipHonorGrantBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonor"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdHonorsByHonorIdGrantsByGrantIdRevoke: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        honorId: string;
+        grantId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RevokeChampionshipHonorGrantBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipHonor"];
         };
       };
       /** @description Response for status 400 */
@@ -23404,8 +24524,13 @@ interface operations {
         "application/json": {
           /** Format: uuid */
           actorAccountUuid?: string;
+          description?: (string | null) | null;
           expectedRevision: string | number;
+          name: string;
+          /** @enum {string} */
+          scope: "match" | "championship";
           specification: unknown;
+          title: string;
         };
       };
     };
@@ -23738,6 +24863,8 @@ type ChampionshipStatistics = Schema<"ChampionshipStatistics">;
 type ChampionshipMetricMappings = Schema<"ChampionshipMetricMappings">;
 type ChampionshipHistory = Schema<"ChampionshipHistory">;
 type ChampionshipAward = Schema<"ChampionshipAward">;
+type ChampionshipHonorDefinition = Schema<"ChampionshipHonorDefinition">;
+type ChampionshipHonor = Schema<"ChampionshipHonor">;
 type ChampionshipHistoricalImportBatch = Schema<"ChampionshipHistoricalImportBatch">;
 type ChampionshipHistoricalPlayer = Schema<"ChampionshipHistoricalPlayer">;
 type TeamIdentityHistory = Schema<"TeamIdentityHistory">;
@@ -23802,6 +24929,14 @@ type ReplaceChampionshipMetricMappingsInput = Schema<"ReplaceChampionshipMetricM
 type ReplaceChampionshipPlacementsInput = Schema<"ReplaceChampionshipPlacementsBody">;
 type CreateChampionshipAwardInput = Schema<"CreateChampionshipAwardBody">;
 type UpdateChampionshipAwardInput = Schema<"UpdateChampionshipAwardBody">;
+type CreateChampionshipHonorDefinitionInput = Schema<"CreateChampionshipHonorDefinitionBody">;
+type UpdateChampionshipHonorDefinitionDraftInput = Schema<"UpdateChampionshipHonorDefinitionDraftBody">;
+type PublishChampionshipHonorDefinitionInput = Schema<"PublishChampionshipHonorDefinitionBody">;
+type ArchiveChampionshipHonorDefinitionInput = Schema<"ArchiveChampionshipHonorDefinitionBody">;
+type CreateChampionshipHonorInput = Schema<"CreateChampionshipHonorBody">;
+type UpdateChampionshipHonorInput = Schema<"UpdateChampionshipHonorBody">;
+type CreateChampionshipHonorGrantInput = Schema<"CreateChampionshipHonorGrantBody">;
+type RevokeChampionshipHonorGrantInput = Schema<"RevokeChampionshipHonorGrantBody">;
 type PreviewChampionshipHistoricalImportInput = Schema<"PreviewChampionshipHistoricalImportBody">;
 type ApplyChampionshipHistoricalImportInput = Schema<"ApplyChampionshipHistoricalImportBody">;
 type RollbackChampionshipHistoricalImportInput = Schema<"RollbackChampionshipHistoricalImportBody">;
@@ -23841,6 +24976,14 @@ type ChampionshipStatisticsQuery = operations["getApiChampionshipsByIdStatistics
 type ChampionshipMetricMappingsQuery = operations["getApiChampionshipsByIdStatistic-mappings"]["parameters"]["query"];
 type ChampionshipHistoryQuery = operations["getApiChampionshipsByIdHistory"]["parameters"]["query"];
 type ChampionshipHistoricalImportsQuery = operations["getApiChampionshipsByIdHistorical-imports"]["parameters"]["query"];
+type ListChampionshipHonorDefinitionsQuery = PaginationQuery & {
+  kind?: "title" | "award";
+  state?: "active" | "archived" | "all";
+};
+type ChampionshipHonorsQuery = PaginationQuery & {
+  actorAccountUuid?: string;
+  includeDrafts?: boolean;
+};
 type UpdateChampionshipInboxItemInput = Schema<"UpdateChampionshipInboxItemBody">;
 type UpsertChampionshipSavedViewInput = Schema<"UpsertChampionshipSavedViewBody">;
 type ListChampionshipsResponse = PaginatedResponse<Championship>;
@@ -23857,6 +25000,8 @@ type ListChampionshipSavedViewsResponse = PaginatedResponse<ChampionshipSavedVie
 type ListChampionshipRosterHistoryResponse = PaginatedResponse<ChampionshipRosterMembership>;
 type ListChampionshipTradesResponse = Schema<"ListChampionshipTrades">;
 type ListChampionshipHistoricalImportsResponse = Schema<"ListChampionshipHistoricalImports">;
+type ListChampionshipHonorDefinitionsResponse = PaginatedResponse<ChampionshipHonorDefinition>;
+type ListChampionshipHonorsResponse = PaginatedResponse<ChampionshipHonor>;
 type Account = Schema<"Account">;
 type ConfirmAccountInput = Schema<"ConfirmAccountBody">;
 type ConfirmAccountResponse = Schema<"ConfirmAccountResponse">;
@@ -24692,6 +25837,406 @@ declare function createResources(client: HaxFootballApiClient): {
       uuid: string;
       visibility: "private" | "public";
     }>>;
+    honorDefinitions: {
+      list: (query?: ListChampionshipHonorDefinitionsQuery, config?: RequestConfig) => Promise<ApiResult<ListChampionshipHonorDefinitionsResponse>>;
+      create: (body: CreateChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        draft: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          revision: string | number;
+          updatedAt: string;
+        };
+        kind: "title" | "award";
+        revision: string | number;
+        slug: string;
+        state: "active" | "archived";
+        updatedAt: string;
+        uuid: string;
+        versions: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          publishedAt: string;
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          uuid: string;
+          version: string | number;
+        }[];
+      }>>;
+      updateDraft: (definitionId: string, body: UpdateChampionshipHonorDefinitionDraftInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        draft: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          revision: string | number;
+          updatedAt: string;
+        };
+        kind: "title" | "award";
+        revision: string | number;
+        slug: string;
+        state: "active" | "archived";
+        updatedAt: string;
+        uuid: string;
+        versions: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          publishedAt: string;
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          uuid: string;
+          version: string | number;
+        }[];
+      }>>;
+      publish: (definitionId: string, body: PublishChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        draft: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          revision: string | number;
+          updatedAt: string;
+        };
+        kind: "title" | "award";
+        revision: string | number;
+        slug: string;
+        state: "active" | "archived";
+        updatedAt: string;
+        uuid: string;
+        versions: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          publishedAt: string;
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          uuid: string;
+          version: string | number;
+        }[];
+      } & {
+        published: boolean;
+      }>>;
+      archive: (definitionId: string, body: ArchiveChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        createdAt: string;
+        draft: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          revision: string | number;
+          updatedAt: string;
+        };
+        kind: "title" | "award";
+        revision: string | number;
+        slug: string;
+        state: "active" | "archived";
+        updatedAt: string;
+        uuid: string;
+        versions: {
+          aggregateByIdentity: boolean;
+          description: (string | null) | null;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          name: string;
+          presentation: {
+            [key: string]: unknown;
+          };
+          publishedAt: string;
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          uuid: string;
+          version: string | number;
+        }[];
+      }>>;
+    };
+    honors: {
+      list: (id: string, query?: ChampionshipHonorsQuery, config?: RequestConfig) => Promise<ApiResult<ListChampionshipHonorsResponse>>;
+      create: (id: string, body: CreateChampionshipHonorInput, config?: RequestConfig) => Promise<ApiResult<{
+        announcedAt: (string | null) | null;
+        awardedAt: (string | null) | null;
+        createdAt: string;
+        decisionPolicy: {
+          ranks: (string | number)[];
+          type: "placement";
+        } | {
+          outcome: "winner" | "loser" | "occupant";
+          spotUuids: string[];
+          type: "spot-result";
+        } | {
+          direction: "highest" | "lowest";
+          limit: string | number;
+          metricKey: string;
+          type: "metric-ranking";
+        } | {
+          type: "staff-selection";
+        } | {
+          note: string;
+          type: "hybrid";
+        };
+        definition: {
+          aggregateByIdentity: boolean;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          slug: string;
+          uuid: string;
+          version: string | number;
+          versionUuid: string;
+        };
+        description: (string | null) | null;
+        displayOrder: string | number;
+        grants: {
+          awardedAt: string;
+          displayLabel: string;
+          identitySnapshot: ({
+            name: string;
+            uuid: string;
+          } | null) | null;
+          note: (string | null) | null;
+          rank: ((string | number) | null) | null;
+          revocationReason: (string | null) | null;
+          revokedAt: (string | null) | null;
+          target: {
+            type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+            uuid: string;
+          };
+          uuid: string;
+        }[];
+        kind: "title" | "award";
+        name: string;
+        revision: string | number;
+        state: "draft" | "announced" | "deciding" | "awarded" | "void";
+        updatedAt: string;
+        uuid: string;
+        voidedAt: (string | null) | null;
+      }>>;
+      update: (id: string, honorId: string, body: UpdateChampionshipHonorInput, config?: RequestConfig) => Promise<ApiResult<{
+        announcedAt: (string | null) | null;
+        awardedAt: (string | null) | null;
+        createdAt: string;
+        decisionPolicy: {
+          ranks: (string | number)[];
+          type: "placement";
+        } | {
+          outcome: "winner" | "loser" | "occupant";
+          spotUuids: string[];
+          type: "spot-result";
+        } | {
+          direction: "highest" | "lowest";
+          limit: string | number;
+          metricKey: string;
+          type: "metric-ranking";
+        } | {
+          type: "staff-selection";
+        } | {
+          note: string;
+          type: "hybrid";
+        };
+        definition: {
+          aggregateByIdentity: boolean;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          slug: string;
+          uuid: string;
+          version: string | number;
+          versionUuid: string;
+        };
+        description: (string | null) | null;
+        displayOrder: string | number;
+        grants: {
+          awardedAt: string;
+          displayLabel: string;
+          identitySnapshot: ({
+            name: string;
+            uuid: string;
+          } | null) | null;
+          note: (string | null) | null;
+          rank: ((string | number) | null) | null;
+          revocationReason: (string | null) | null;
+          revokedAt: (string | null) | null;
+          target: {
+            type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+            uuid: string;
+          };
+          uuid: string;
+        }[];
+        kind: "title" | "award";
+        name: string;
+        revision: string | number;
+        state: "draft" | "announced" | "deciding" | "awarded" | "void";
+        updatedAt: string;
+        uuid: string;
+        voidedAt: (string | null) | null;
+      }>>;
+      grant: (id: string, honorId: string, body: CreateChampionshipHonorGrantInput, config?: RequestConfig) => Promise<ApiResult<{
+        announcedAt: (string | null) | null;
+        awardedAt: (string | null) | null;
+        createdAt: string;
+        decisionPolicy: {
+          ranks: (string | number)[];
+          type: "placement";
+        } | {
+          outcome: "winner" | "loser" | "occupant";
+          spotUuids: string[];
+          type: "spot-result";
+        } | {
+          direction: "highest" | "lowest";
+          limit: string | number;
+          metricKey: string;
+          type: "metric-ranking";
+        } | {
+          type: "staff-selection";
+        } | {
+          note: string;
+          type: "hybrid";
+        };
+        definition: {
+          aggregateByIdentity: boolean;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          slug: string;
+          uuid: string;
+          version: string | number;
+          versionUuid: string;
+        };
+        description: (string | null) | null;
+        displayOrder: string | number;
+        grants: {
+          awardedAt: string;
+          displayLabel: string;
+          identitySnapshot: ({
+            name: string;
+            uuid: string;
+          } | null) | null;
+          note: (string | null) | null;
+          rank: ((string | number) | null) | null;
+          revocationReason: (string | null) | null;
+          revokedAt: (string | null) | null;
+          target: {
+            type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+            uuid: string;
+          };
+          uuid: string;
+        }[];
+        kind: "title" | "award";
+        name: string;
+        revision: string | number;
+        state: "draft" | "announced" | "deciding" | "awarded" | "void";
+        updatedAt: string;
+        uuid: string;
+        voidedAt: (string | null) | null;
+      }>>;
+      revokeGrant: (id: string, honorId: string, grantId: string, body: RevokeChampionshipHonorGrantInput, config?: RequestConfig) => Promise<ApiResult<{
+        announcedAt: (string | null) | null;
+        awardedAt: (string | null) | null;
+        createdAt: string;
+        decisionPolicy: {
+          ranks: (string | number)[];
+          type: "placement";
+        } | {
+          outcome: "winner" | "loser" | "occupant";
+          spotUuids: string[];
+          type: "spot-result";
+        } | {
+          direction: "highest" | "lowest";
+          limit: string | number;
+          metricKey: string;
+          type: "metric-ranking";
+        } | {
+          type: "staff-selection";
+        } | {
+          note: string;
+          type: "hybrid";
+        };
+        definition: {
+          aggregateByIdentity: boolean;
+          maximumRecipients: string | number;
+          minimumRecipients: string | number;
+          presentation: {
+            [key: string]: unknown;
+          };
+          recipientTypes: ("team" | "team-identity" | "participant" | "account" | "historical-player")[];
+          slug: string;
+          uuid: string;
+          version: string | number;
+          versionUuid: string;
+        };
+        description: (string | null) | null;
+        displayOrder: string | number;
+        grants: {
+          awardedAt: string;
+          displayLabel: string;
+          identitySnapshot: ({
+            name: string;
+            uuid: string;
+          } | null) | null;
+          note: (string | null) | null;
+          rank: ((string | number) | null) | null;
+          revocationReason: (string | null) | null;
+          revokedAt: (string | null) | null;
+          target: {
+            type: "team" | "team-identity" | "participant" | "account" | "historical-player";
+            uuid: string;
+          };
+          uuid: string;
+        }[];
+        kind: "title" | "award";
+        name: string;
+        revision: string | number;
+        state: "draft" | "announced" | "deciding" | "awarded" | "void";
+        updatedAt: string;
+        uuid: string;
+        voidedAt: (string | null) | null;
+      }>>;
+    };
     history: {
       get: (id: string, query?: ChampionshipHistoryQuery, config?: RequestConfig) => Promise<ApiResult<{
         awards: {
@@ -26516,6 +28061,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -26661,6 +28212,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -26808,6 +28365,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -26953,6 +28516,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -27100,6 +28669,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -27245,6 +28820,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -27541,6 +29122,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -27882,6 +29469,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -28067,6 +29660,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -28213,6 +29812,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -28358,6 +29963,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -28551,6 +30162,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -28696,6 +30313,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -28843,6 +30466,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -28989,6 +30618,12 @@ declare function createResources(client: HaxFootballApiClient): {
             matchRulesOverride: ({
               [key: string]: unknown;
             } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
+            } | null) | null;
             resultRevision: string | number;
             revision: string | number;
             roomProgram: ({
@@ -29134,6 +30769,12 @@ declare function createResources(client: HaxFootballApiClient): {
             label: string;
             matchRulesOverride: ({
               [key: string]: unknown;
+            } | null) | null;
+            result: ({
+              sideAOfficialScore: string | number;
+              sideAOutcome: "win" | "loss" | "draw";
+              sideBOfficialScore: string | number;
+              sideBOutcome: "win" | "loss" | "draw";
             } | null) | null;
             resultRevision: string | number;
             revision: string | number;
@@ -32495,5 +34136,5 @@ declare const queries: {
   }>;
 };
 //#endregion
-export { type AbortedFailure, Account, AccountChampionshipHistory, AddChampionshipCommentInput, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, ApplyChampionshipClassificationInput, ApplyChampionshipHistoricalImportInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, AttachChampionshipMatchEvidenceInput, type AttachLiveRoomInput, AuthorizeChampionshipLatePlayInput, CancelChampionshipDraftInput, Championship, ChampionshipAssignment, ChampionshipAuditEvent, ChampionshipAward, ChampionshipComment, ChampionshipCompetitionType, ChampionshipDetail, ChampionshipDoubleEliminationPreview, ChampionshipDraft, ChampionshipDraftCorrectionPreview, ChampionshipDraftCorrectionQuery, ChampionshipDraftQuery, ChampionshipEventsQuery, ChampionshipEvidenceCandidates, ChampionshipEvidenceCandidatesQuery, ChampionshipFormat, ChampionshipFormatQuery, ChampionshipHistoricalImportBatch, ChampionshipHistoricalImportsQuery, ChampionshipHistoricalPlayer, ChampionshipHistory, ChampionshipHistoryQuery, ChampionshipInboxItem, ChampionshipInboxQuery, ChampionshipMatchOperations, ChampionshipMatchOperationsQuery, ChampionshipMatchScheduling, ChampionshipMatchSchedulingQuery, ChampionshipMetricMappings, ChampionshipMetricMappingsQuery, ChampionshipParticipant, ChampionshipPresence, ChampionshipPresenceInput, ChampionshipPresenceQuery, ChampionshipRosterHistoryQuery, ChampionshipRosterMembership, ChampionshipRosterMovePreview, ChampionshipRosterOrder, ChampionshipRoundRobinPreview, ChampionshipRules, ChampionshipSalaryAdminQuery, ChampionshipSalaryProjection, ChampionshipSalaryQuery, ChampionshipSavedView, ChampionshipSavedViewsQuery, ChampionshipSelfRegistrationQuery, ChampionshipSettlementPreview, ChampionshipSpotPlacementPreview, ChampionshipStandings, ChampionshipStandingsQuery, ChampionshipStatistics, ChampionshipStatisticsQuery, ChampionshipTeam, ChampionshipTeamIdentity, ChampionshipThread, ChampionshipTrade, ChampionshipTradesQuery, CheckpointMatchInput, CheckpointMatchRecordingInput, CheckpointMatchRecordingResponse, CheckpointMatchResponse, ComposedMatch, ConfigureChampionshipDraftInput, ConfigureChampionshipStandingsInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateChampionshipAssignmentInput, CreateChampionshipAwardInput, CreateChampionshipCompetitionRoundInput, CreateChampionshipGroupInput, CreateChampionshipInput, CreateChampionshipLogicalMatchInput, CreateChampionshipParticipantInput, CreateChampionshipRouteInput, CreateChampionshipScheduleProposalInput, CreateChampionshipSpotInput, CreateChampionshipStageInput, CreateChampionshipTeamInput, CreateChampionshipThreadInput, CreateChampionshipTradeInput, CreateCompetitionTypeInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTeamIdentityInput, CreateTokenInput, CreateTokenResponse, DecideChampionshipScheduleProposalInput, DecideChampionshipTradeInput, DeleteChampionshipStageInput, DetachChampionshipMatchEvidenceInput, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EndChampionshipDraftInput, EventSchema, EventSchemaReference, ExecuteChampionshipRosterMoveInput, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, FreezeChampionshipPricesInput, GameMode, GameModeReference, GenerateChampionshipRoundRobinInput, GenerateDoubleEliminationInput, GenerateSingleEliminationInput, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, LinkChampionshipHistoricalPlayerInput, ListAccountsQuery, ListAccountsResponse, ListChampionshipAssignmentsResponse, ListChampionshipAuditQuery, ListChampionshipAuditResponse, ListChampionshipCollaborationQuery, ListChampionshipCommentsResponse, ListChampionshipHistoricalImportsResponse, ListChampionshipInboxResponse, ListChampionshipParticipantsQuery, ListChampionshipParticipantsResponse, ListChampionshipRosterHistoryResponse, ListChampionshipSavedViewsResponse, ListChampionshipTeamsResponse, ListChampionshipThreadsResponse, ListChampionshipTradesResponse, ListChampionshipsQuery, ListChampionshipsResponse, ListCompetitionTypesQuery, ListCompetitionTypesResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, ListTeamIdentitiesResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, LogicalMatchEvidence, LogicalMatchEvidenceQuery, MakeChampionshipDraftPickInput, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, PlaceChampionshipSpotInput, Player, PlayerAccount, PreviewChampionshipClassificationInput, PreviewChampionshipHistoricalImportInput, PreviewChampionshipRosterMoveInput, PreviewChampionshipRoundRobinInput, PreviewChampionshipSettlementInput, PreviewChampionshipSpotPlacementInput, PreviewDoubleEliminationInput, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RecordingInspection, RemindChampionshipScheduleInput, RemovePermissionResponse, RemoveRoleResponse, RenderedVisualization, ReorderChampionshipRosterInput, ReplaceChampionshipMetricMappingsInput, ReplaceChampionshipPlacementsInput, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, RevokeChampionshipLatePlayInput, Role, RollbackChampionshipHistoricalImportInput, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, ScheduleChampionshipMatchInput, Schema, SelfRegisterChampionshipInput, SessionAccount, SettleChampionshipMatchInput, StartChampionshipDraftInput, type StreamRequestOptions, TeamIdentityHistory, type TokenProvider, TransitionChampionshipInput, TransitionChampionshipRegistrationInput, UpdateAccountInput, UpdateChampionshipAssignmentInput, UpdateChampionshipAttributionsInput, UpdateChampionshipAwardInput, UpdateChampionshipGrantInput, UpdateChampionshipInboxItemInput, UpdateChampionshipInput, UpdateChampionshipParticipantInput, UpdateChampionshipRoomProgramInput, UpdateChampionshipRouteInput, UpdateChampionshipStageInput, UpdateChampionshipTeamInput, UpdateChampionshipThreadInput, UpdateCompetitionTypeInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateTeamIdentityInput, UpsertChampionshipPricesInput, UpsertChampionshipSavedViewInput, VisualizationDashboard, VisualizationRow, VisualizationScope, VisualizationSpecification, VisualizationTemplate, VisualizationTemplateList, VoidChampionshipDraftPickInput, WithdrawChampionshipRegistrationInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
+export { type AbortedFailure, Account, AccountChampionshipHistory, AddChampionshipCommentInput, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, ApplyChampionshipClassificationInput, ApplyChampionshipHistoricalImportInput, ArchiveChampionshipHonorDefinitionInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, AttachChampionshipMatchEvidenceInput, type AttachLiveRoomInput, AuthorizeChampionshipLatePlayInput, CancelChampionshipDraftInput, Championship, ChampionshipAssignment, ChampionshipAuditEvent, ChampionshipAward, ChampionshipComment, ChampionshipCompetitionType, ChampionshipDetail, ChampionshipDoubleEliminationPreview, ChampionshipDraft, ChampionshipDraftCorrectionPreview, ChampionshipDraftCorrectionQuery, ChampionshipDraftQuery, ChampionshipEventsQuery, ChampionshipEvidenceCandidates, ChampionshipEvidenceCandidatesQuery, ChampionshipFormat, ChampionshipFormatQuery, ChampionshipHistoricalImportBatch, ChampionshipHistoricalImportsQuery, ChampionshipHistoricalPlayer, ChampionshipHistory, ChampionshipHistoryQuery, ChampionshipHonor, ChampionshipHonorDefinition, ChampionshipHonorsQuery, ChampionshipInboxItem, ChampionshipInboxQuery, ChampionshipMatchOperations, ChampionshipMatchOperationsQuery, ChampionshipMatchScheduling, ChampionshipMatchSchedulingQuery, ChampionshipMetricMappings, ChampionshipMetricMappingsQuery, ChampionshipParticipant, ChampionshipPresence, ChampionshipPresenceInput, ChampionshipPresenceQuery, ChampionshipRosterHistoryQuery, ChampionshipRosterMembership, ChampionshipRosterMovePreview, ChampionshipRosterOrder, ChampionshipRoundRobinPreview, ChampionshipRules, ChampionshipSalaryAdminQuery, ChampionshipSalaryProjection, ChampionshipSalaryQuery, ChampionshipSavedView, ChampionshipSavedViewsQuery, ChampionshipSelfRegistrationQuery, ChampionshipSettlementPreview, ChampionshipSpotPlacementPreview, ChampionshipStandings, ChampionshipStandingsQuery, ChampionshipStatistics, ChampionshipStatisticsQuery, ChampionshipTeam, ChampionshipTeamIdentity, ChampionshipThread, ChampionshipTrade, ChampionshipTradesQuery, CheckpointMatchInput, CheckpointMatchRecordingInput, CheckpointMatchRecordingResponse, CheckpointMatchResponse, ComposedMatch, ConfigureChampionshipDraftInput, ConfigureChampionshipStandingsInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateChampionshipAssignmentInput, CreateChampionshipAwardInput, CreateChampionshipCompetitionRoundInput, CreateChampionshipGroupInput, CreateChampionshipHonorDefinitionInput, CreateChampionshipHonorGrantInput, CreateChampionshipHonorInput, CreateChampionshipInput, CreateChampionshipLogicalMatchInput, CreateChampionshipParticipantInput, CreateChampionshipRouteInput, CreateChampionshipScheduleProposalInput, CreateChampionshipSpotInput, CreateChampionshipStageInput, CreateChampionshipTeamInput, CreateChampionshipThreadInput, CreateChampionshipTradeInput, CreateCompetitionTypeInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTeamIdentityInput, CreateTokenInput, CreateTokenResponse, DecideChampionshipScheduleProposalInput, DecideChampionshipTradeInput, DeleteChampionshipStageInput, DetachChampionshipMatchEvidenceInput, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EndChampionshipDraftInput, EventSchema, EventSchemaReference, ExecuteChampionshipRosterMoveInput, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, FreezeChampionshipPricesInput, GameMode, GameModeReference, GenerateChampionshipRoundRobinInput, GenerateDoubleEliminationInput, GenerateSingleEliminationInput, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, LinkChampionshipHistoricalPlayerInput, ListAccountsQuery, ListAccountsResponse, ListChampionshipAssignmentsResponse, ListChampionshipAuditQuery, ListChampionshipAuditResponse, ListChampionshipCollaborationQuery, ListChampionshipCommentsResponse, ListChampionshipHistoricalImportsResponse, ListChampionshipHonorDefinitionsQuery, ListChampionshipHonorDefinitionsResponse, ListChampionshipHonorsResponse, ListChampionshipInboxResponse, ListChampionshipParticipantsQuery, ListChampionshipParticipantsResponse, ListChampionshipRosterHistoryResponse, ListChampionshipSavedViewsResponse, ListChampionshipTeamsResponse, ListChampionshipThreadsResponse, ListChampionshipTradesResponse, ListChampionshipsQuery, ListChampionshipsResponse, ListCompetitionTypesQuery, ListCompetitionTypesResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, ListTeamIdentitiesResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, LogicalMatchEvidence, LogicalMatchEvidenceQuery, MakeChampionshipDraftPickInput, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, PlaceChampionshipSpotInput, Player, PlayerAccount, PreviewChampionshipClassificationInput, PreviewChampionshipHistoricalImportInput, PreviewChampionshipRosterMoveInput, PreviewChampionshipRoundRobinInput, PreviewChampionshipSettlementInput, PreviewChampionshipSpotPlacementInput, PreviewDoubleEliminationInput, PublishChampionshipHonorDefinitionInput, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RecordingInspection, RemindChampionshipScheduleInput, RemovePermissionResponse, RemoveRoleResponse, RenderedVisualization, ReorderChampionshipRosterInput, ReplaceChampionshipMetricMappingsInput, ReplaceChampionshipPlacementsInput, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, RevokeChampionshipHonorGrantInput, RevokeChampionshipLatePlayInput, Role, RollbackChampionshipHistoricalImportInput, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, ScheduleChampionshipMatchInput, Schema, SelfRegisterChampionshipInput, SessionAccount, SettleChampionshipMatchInput, StartChampionshipDraftInput, type StreamRequestOptions, TeamIdentityHistory, type TokenProvider, TransitionChampionshipInput, TransitionChampionshipRegistrationInput, UpdateAccountInput, UpdateChampionshipAssignmentInput, UpdateChampionshipAttributionsInput, UpdateChampionshipAwardInput, UpdateChampionshipGrantInput, UpdateChampionshipHonorDefinitionDraftInput, UpdateChampionshipHonorInput, UpdateChampionshipInboxItemInput, UpdateChampionshipInput, UpdateChampionshipParticipantInput, UpdateChampionshipRoomProgramInput, UpdateChampionshipRouteInput, UpdateChampionshipStageInput, UpdateChampionshipTeamInput, UpdateChampionshipThreadInput, UpdateCompetitionTypeInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateTeamIdentityInput, UpsertChampionshipPricesInput, UpsertChampionshipSavedViewInput, VisualizationDashboard, VisualizationRow, VisualizationScope, VisualizationSpecification, VisualizationTemplate, VisualizationTemplateList, VoidChampionshipDraftPickInput, WithdrawChampionshipRegistrationInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
 //# sourceMappingURL=index.d.cts.map

@@ -82,6 +82,68 @@ function createChampionshipsResource(client) {
 			body,
 			...config
 		}),
+		honorDefinitions: {
+			list: (query, config) => client.request({
+				path: "/championships/honor-definitions",
+				query,
+				...config
+			}),
+			create: (body, config) => client.request({
+				method: "POST",
+				path: "/championships/honor-definitions",
+				body,
+				...config
+			}),
+			updateDraft: (definitionId, body, config) => client.request({
+				method: "PUT",
+				path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/draft`,
+				body,
+				...config
+			}),
+			publish: (definitionId, body, config) => client.request({
+				method: "POST",
+				path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/publish`,
+				body,
+				...config
+			}),
+			archive: (definitionId, body, config) => client.request({
+				method: "POST",
+				path: `/championships/honor-definitions/${encodeURIComponent(definitionId)}/archive`,
+				body,
+				...config
+			})
+		},
+		honors: {
+			list: (id, query, config) => client.request({
+				path: `${championshipPath(id)}/honors`,
+				query,
+				...config
+			}),
+			create: (id, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/honors`,
+				body,
+				...config
+			}),
+			update: (id, honorId, body, config) => client.request({
+				method: "PATCH",
+				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}`,
+				body,
+				...config
+			}),
+			grant: (id, honorId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/grants`,
+				body,
+				...config
+			}),
+			revokeGrant: (id, honorId, grantId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/grants/${encodeURIComponent(grantId)}/revoke`,
+				body,
+				...config
+			})
+		},
 		history: {
 			get: (id, query, config) => client.request({
 				path: `${championshipPath(id)}/history`,
