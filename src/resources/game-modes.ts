@@ -39,6 +39,42 @@ export function createGameModesResource(client: HaxFootballApiClient) {
         path: `/game-modes/${encodeURIComponent(id)}`,
         body,
         ...config
+      }),
+    listEventSchemas: (id: string, config?: RequestConfig) =>
+      client.request<{
+        items: Array<{
+          id: string;
+          name: string;
+          title: string | null;
+          isDefault: boolean;
+          managementMode: "manual" | "external";
+        }>;
+        totalCount: number;
+        truncated: boolean;
+      }>({
+        path: `/game-modes/${encodeURIComponent(id)}/event-schemas`,
+        ...config
+      }),
+    replaceEventSchemas: (
+      id: string,
+      body: { items: Array<{ eventSchemaId: string; isDefault?: boolean }> },
+      config?: RequestConfig
+    ) =>
+      client.request<{
+        items: Array<{
+          id: string;
+          name: string;
+          title: string | null;
+          isDefault: boolean;
+          managementMode: "manual" | "external";
+        }>;
+        totalCount: number;
+        truncated: boolean;
+      }>({
+        method: "PUT",
+        path: `/game-modes/${encodeURIComponent(id)}/event-schemas`,
+        body,
+        ...config
       })
   };
 }

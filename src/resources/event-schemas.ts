@@ -72,6 +72,39 @@ export function createEventSchemasResource(client: HaxFootballApiClient) {
         )}/versions/${encodeURIComponent(String(version))}`,
         body,
         ...config
+      }),
+    getDraft: (id: string, config?: RequestConfig) =>
+      client.request<Record<string, unknown>>({
+        path: `/event-schemas/${encodeURIComponent(id)}/draft`,
+        ...config
+      }),
+    saveDraft: (
+      id: string,
+      body: { definition: unknown; expectedRevision?: number },
+      config?: RequestConfig
+    ) =>
+      client.request<Record<string, unknown>>({
+        method: "PUT",
+        path: `/event-schemas/${encodeURIComponent(id)}/draft`,
+        body,
+        ...config
+      }),
+    validateDraft: (id: string, config?: RequestConfig) =>
+      client.request<{ valid: boolean; issues: string[] }>({
+        method: "POST",
+        path: `/event-schemas/${encodeURIComponent(id)}/draft/validate`,
+        ...config
+      }),
+    clone: (
+      id: string,
+      body: { name: string; title?: string; description?: string },
+      config?: RequestConfig
+    ) =>
+      client.request<Record<string, unknown>>({
+        method: "POST",
+        path: `/event-schemas/${encodeURIComponent(id)}/clone`,
+        body,
+        ...config
       })
   };
 }

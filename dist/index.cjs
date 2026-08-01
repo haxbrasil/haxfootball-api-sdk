@@ -773,6 +773,16 @@ function createGameModesResource(client) {
 			path: `/game-modes/${encodeURIComponent(id)}`,
 			body,
 			...config
+		}),
+		listEventSchemas: (id, config) => client.request({
+			path: `/game-modes/${encodeURIComponent(id)}/event-schemas`,
+			...config
+		}),
+		replaceEventSchemas: (id, body, config) => client.request({
+			method: "PUT",
+			path: `/game-modes/${encodeURIComponent(id)}/event-schemas`,
+			body,
+			...config
 		})
 	};
 }
@@ -1437,6 +1447,80 @@ function createEventSchemasResource(client) {
 			path: `/event-schemas/${encodeURIComponent(id)}/versions/${encodeURIComponent(String(version))}`,
 			body,
 			...config
+		}),
+		getDraft: (id, config) => client.request({
+			path: `/event-schemas/${encodeURIComponent(id)}/draft`,
+			...config
+		}),
+		saveDraft: (id, body, config) => client.request({
+			method: "PUT",
+			path: `/event-schemas/${encodeURIComponent(id)}/draft`,
+			body,
+			...config
+		}),
+		validateDraft: (id, config) => client.request({
+			method: "POST",
+			path: `/event-schemas/${encodeURIComponent(id)}/draft/validate`,
+			...config
+		}),
+		clone: (id, body, config) => client.request({
+			method: "POST",
+			path: `/event-schemas/${encodeURIComponent(id)}/clone`,
+			body,
+			...config
+		})
+	};
+}
+
+//#endregion
+//#region src/resources/visualizations.ts
+function createVisualizationsResource(client) {
+	return {
+		templates: {
+			list: (query, config) => client.request({
+				path: "/visualizations/templates",
+				query,
+				...config
+			}),
+			create: (body, config) => client.request({
+				method: "POST",
+				path: "/visualizations/templates",
+				body,
+				...config
+			}),
+			updateDraft: (id, body, config) => client.request({
+				method: "PUT",
+				path: `/visualizations/templates/${encodeURIComponent(id)}/draft`,
+				body,
+				...config
+			}),
+			publish: (id, body, config) => client.request({
+				method: "POST",
+				path: `/visualizations/templates/${encodeURIComponent(id)}/publish`,
+				body,
+				...config
+			})
+		},
+		preview: (body, config) => client.request({
+			method: "POST",
+			path: "/visualizations/preview",
+			body,
+			...config
+		}),
+		match: (id, config) => client.request({
+			path: `/visualizations/matches/${encodeURIComponent(id)}`,
+			...config
+		}),
+		championship: (id, query, config) => client.request({
+			path: `/visualizations/championships/${encodeURIComponent(id)}`,
+			query,
+			...config
+		}),
+		upsertChampionshipInstance: (id, body, config) => client.request({
+			method: "PUT",
+			path: `/visualizations/championships/${encodeURIComponent(id)}/instances`,
+			body,
+			...config
 		})
 	};
 }
@@ -1457,7 +1541,8 @@ function createResources(client) {
 		live: createLiveResource(client),
 		rooms: createRoomsResource(client),
 		sessions: createSessionsResource(client),
-		eventSchemas: createEventSchemasResource(client)
+		eventSchemas: createEventSchemasResource(client),
+		visualizations: createVisualizationsResource(client)
 	};
 }
 
@@ -1495,6 +1580,7 @@ var HaxFootballApiClient = class {
 	rooms;
 	sessions;
 	eventSchemas;
+	visualizations;
 	apiUrl;
 	authUrl;
 	fetcher;
@@ -1526,6 +1612,7 @@ var HaxFootballApiClient = class {
 		this.rooms = resources.rooms;
 		this.sessions = resources.sessions;
 		this.eventSchemas = resources.eventSchemas;
+		this.visualizations = resources.visualizations;
 	}
 	async request(options) {
 		const authResult = options.auth === "none" ? void 0 : await this.resolveBearerToken();

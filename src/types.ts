@@ -426,6 +426,58 @@ export type PublishEventSchemaVersionInput =
 export type UpdateEventSchemaInput = Schema<"UpdateEventSchemaBody">;
 export type ListEventSchemasResponse = PaginatedResponse<EventSchema>;
 
+export type VisualizationScope = "match" | "championship";
+export type VisualizationRow = Record<string, unknown>;
+export type VisualizationSpecification = {
+  datasets: Array<{
+    id: string;
+    source: string;
+    operations?: Array<Record<string, unknown>>;
+  }>;
+  option: Record<string, unknown>;
+  interactions?: Record<string, unknown>;
+  accessibility?: { summary?: string; table?: boolean };
+};
+export type VisualizationTemplate = {
+  id: string;
+  name: string;
+  title: string;
+  description: string | null;
+  scope: VisualizationScope;
+  state: "active" | "archived";
+  tags: string[];
+  internalNotes: string | null;
+  revision: number;
+  draft: {
+    specification: VisualizationSpecification;
+    revision: number;
+    updatedAt: string;
+  } | null;
+  versions: Array<{ id: number; version: number; createdAt: string }>;
+  latestVersion: number | null;
+};
+export type VisualizationTemplateList = {
+  items: VisualizationTemplate[];
+  totalCount: number;
+  truncated: boolean;
+};
+export type RenderedVisualization = {
+  id: string;
+  title: string;
+  description?: string | null;
+  version?: number;
+  option: Record<string, unknown>;
+  datasets: Array<{ id: string; rows: VisualizationRow[] }>;
+  accessibility: { summary?: string; table?: boolean };
+  interactions: Record<string, unknown>;
+  layout?: {
+    width: "compact" | "half" | "full";
+    height: "short" | "medium" | "tall" | "viewport";
+  };
+  revision?: number;
+};
+export type VisualizationDashboard = { items: RenderedVisualization[] };
+
 export type CreateRecordingInput = {
   file: Blob | ArrayBuffer | ArrayBufferView;
   filename?: string;

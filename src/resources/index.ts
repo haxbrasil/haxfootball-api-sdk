@@ -12,6 +12,7 @@ import { createLiveResource } from "./live";
 import { createRoomsResource } from "./rooms";
 import { createSessionsResource } from "./sessions";
 import { createEventSchemasResource } from "./event-schemas";
+import { createVisualizationsResource } from "./visualizations";
 
 export type { RequestConfig } from "./shared";
 
@@ -31,6 +32,7 @@ export function createResources(client: HaxFootballApiClient) {
     live: createLiveResource(client),
     rooms: createRoomsResource(client),
     sessions: createSessionsResource(client),
-    eventSchemas: createEventSchemasResource(client)
+    eventSchemas: createEventSchemasResource(client),
+    visualizations: createVisualizationsResource(client)
   };
 }
