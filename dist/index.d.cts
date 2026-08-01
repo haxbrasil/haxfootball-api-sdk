@@ -513,6 +513,23 @@ interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/draft/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel a championship draft without completed picks */
+    post: operations["postApiChampionshipsByIdDraftCancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/draft/end": {
     parameters: {
       query?: never;
@@ -3002,6 +3019,15 @@ interface components {
         language: string;
         value: string;
       }[];
+    };
+    CancelChampionshipDraftBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedDraftRevision: string | number;
+      expectedRevision: string | number;
+      reason: string;
     };
     Championship: {
       changeSequence: string | number;
@@ -9559,6 +9585,77 @@ interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ConfigureChampionshipDraftBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipDraft"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdDraftCancel: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CancelChampionshipDraftBody"];
       };
     };
     responses: {
@@ -22357,6 +22454,7 @@ type ConfigureChampionshipDraftInput = Schema<"ConfigureChampionshipDraftBody">;
 type StartChampionshipDraftInput = Schema<"StartChampionshipDraftBody">;
 type MakeChampionshipDraftPickInput = Schema<"MakeChampionshipDraftPickBody">;
 type EndChampionshipDraftInput = Schema<"EndChampionshipDraftBody">;
+type CancelChampionshipDraftInput = Schema<"CancelChampionshipDraftBody">;
 type VoidChampionshipDraftPickInput = Schema<"VoidChampionshipDraftPickBody">;
 type CreateChampionshipTradeInput = Schema<"CreateChampionshipTradeBody">;
 type DecideChampionshipTradeInput = Schema<"DecideChampionshipTradeBody">;
@@ -24579,6 +24677,78 @@ declare function createResources(client: HaxFootballApiClient): {
         } | null) | null;
       }>>;
       end: (championshipId: string, body: EndChampionshipDraftInput, config?: RequestConfig) => Promise<ApiResult<{
+        draft: ({
+          actor: {
+            canManage: boolean;
+            eligibleTurnIds: string[];
+            gmTeamIds: string[];
+          };
+          availableParticipants: {
+            items: {
+              displayName: string;
+              priceUnits: ((string | number) | null) | null;
+              uuid: string;
+            }[];
+            page: components["schemas"]["PageInfo"];
+          };
+          canceledAt: (string | null) | null;
+          championshipRevision: string | number;
+          completedAt: (string | null) | null;
+          countdownSeconds: string | number;
+          createdAt: string;
+          nextTurnSequence: string | number;
+          revision: string | number;
+          rounds: string | number;
+          serverTime: string;
+          startedAt: (string | null) | null;
+          state: "setup" | "live" | "completed" | "canceled";
+          teams: {
+            abbreviation: (string | null) | null;
+            colors: (string[] | null) | null;
+            name: string;
+            overCap: boolean;
+            position: string | number;
+            remainingUnits: string | number;
+            roster: {
+              displayName: string;
+              participantUuid: string;
+              priceUnits: ((string | number) | null) | null;
+              role: "gm" | "player";
+            }[];
+            rosterRevision: string | number;
+            rosterSize: string | number;
+            usageUnits: string | number;
+            uuid: string;
+          }[];
+          turns: {
+            items: {
+              deadlineAt: (string | null) | null;
+              filledAt: (string | null) | null;
+              openedAt: (string | null) | null;
+              overdueAt: (string | null) | null;
+              position: string | number;
+              priceUnitsSnapshot: ((string | number) | null) | null;
+              revision: string | number;
+              round: string | number;
+              selectedParticipant: ({
+                displayName: string;
+                uuid: string;
+              } | null) | null;
+              sequence: string | number;
+              state: "pending" | "open" | "overdue" | "filled" | "voided";
+              team: {
+                name: string;
+                uuid: string;
+              };
+              uuid: string;
+            }[];
+            page: components["schemas"]["PageInfo"];
+          };
+          updatedAt: string;
+          uuid: string;
+        } | null) | null;
+      }>>;
+      cancel: (championshipId: string, body: CancelChampionshipDraftInput, config?: RequestConfig) => Promise<ApiResult<{
         draft: ({
           actor: {
             canManage: boolean;
@@ -30856,5 +31026,5 @@ declare const queries: {
   }>;
 };
 //#endregion
-export { type AbortedFailure, Account, AccountChampionshipHistory, AddChampionshipCommentInput, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, ApplyChampionshipClassificationInput, ApplyChampionshipHistoricalImportInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, AttachChampionshipMatchEvidenceInput, type AttachLiveRoomInput, AuthorizeChampionshipLatePlayInput, Championship, ChampionshipAssignment, ChampionshipAuditEvent, ChampionshipAward, ChampionshipComment, ChampionshipCompetitionType, ChampionshipDetail, ChampionshipDoubleEliminationPreview, ChampionshipDraft, ChampionshipDraftCorrectionPreview, ChampionshipDraftCorrectionQuery, ChampionshipDraftQuery, ChampionshipEventsQuery, ChampionshipEvidenceCandidates, ChampionshipEvidenceCandidatesQuery, ChampionshipFormat, ChampionshipFormatQuery, ChampionshipHistoricalImportBatch, ChampionshipHistoricalImportsQuery, ChampionshipHistoricalPlayer, ChampionshipHistory, ChampionshipHistoryQuery, ChampionshipInboxItem, ChampionshipInboxQuery, ChampionshipMatchOperations, ChampionshipMatchOperationsQuery, ChampionshipMatchScheduling, ChampionshipMatchSchedulingQuery, ChampionshipMetricMappings, ChampionshipMetricMappingsQuery, ChampionshipParticipant, ChampionshipPresence, ChampionshipPresenceInput, ChampionshipPresenceQuery, ChampionshipRosterHistoryQuery, ChampionshipRosterMembership, ChampionshipRosterMovePreview, ChampionshipRosterOrder, ChampionshipRoundRobinPreview, ChampionshipRules, ChampionshipSalaryAdminQuery, ChampionshipSalaryProjection, ChampionshipSalaryQuery, ChampionshipSavedView, ChampionshipSavedViewsQuery, ChampionshipSelfRegistrationQuery, ChampionshipSettlementPreview, ChampionshipSpotPlacementPreview, ChampionshipStandings, ChampionshipStandingsQuery, ChampionshipStatistics, ChampionshipStatisticsQuery, ChampionshipTeam, ChampionshipTeamIdentity, ChampionshipThread, ChampionshipTrade, ChampionshipTradesQuery, CheckpointMatchInput, CheckpointMatchRecordingInput, CheckpointMatchRecordingResponse, CheckpointMatchResponse, ComposedMatch, ConfigureChampionshipDraftInput, ConfigureChampionshipStandingsInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateChampionshipAssignmentInput, CreateChampionshipAwardInput, CreateChampionshipCompetitionRoundInput, CreateChampionshipGroupInput, CreateChampionshipInput, CreateChampionshipLogicalMatchInput, CreateChampionshipParticipantInput, CreateChampionshipRouteInput, CreateChampionshipScheduleProposalInput, CreateChampionshipSpotInput, CreateChampionshipStageInput, CreateChampionshipTeamInput, CreateChampionshipThreadInput, CreateChampionshipTradeInput, CreateCompetitionTypeInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTeamIdentityInput, CreateTokenInput, CreateTokenResponse, DecideChampionshipScheduleProposalInput, DecideChampionshipTradeInput, DeleteChampionshipStageInput, DetachChampionshipMatchEvidenceInput, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EndChampionshipDraftInput, EventSchema, EventSchemaReference, ExecuteChampionshipRosterMoveInput, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, FreezeChampionshipPricesInput, GameMode, GameModeReference, GenerateChampionshipRoundRobinInput, GenerateDoubleEliminationInput, GenerateSingleEliminationInput, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, LinkChampionshipHistoricalPlayerInput, ListAccountsQuery, ListAccountsResponse, ListChampionshipAssignmentsResponse, ListChampionshipAuditQuery, ListChampionshipAuditResponse, ListChampionshipCollaborationQuery, ListChampionshipCommentsResponse, ListChampionshipHistoricalImportsResponse, ListChampionshipInboxResponse, ListChampionshipParticipantsQuery, ListChampionshipParticipantsResponse, ListChampionshipRosterHistoryResponse, ListChampionshipSavedViewsResponse, ListChampionshipTeamsResponse, ListChampionshipThreadsResponse, ListChampionshipTradesResponse, ListChampionshipsQuery, ListChampionshipsResponse, ListCompetitionTypesQuery, ListCompetitionTypesResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, ListTeamIdentitiesResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, LogicalMatchEvidence, LogicalMatchEvidenceQuery, MakeChampionshipDraftPickInput, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, PlaceChampionshipSpotInput, Player, PlayerAccount, PreviewChampionshipClassificationInput, PreviewChampionshipHistoricalImportInput, PreviewChampionshipRosterMoveInput, PreviewChampionshipRoundRobinInput, PreviewChampionshipSettlementInput, PreviewChampionshipSpotPlacementInput, PreviewDoubleEliminationInput, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RecordingInspection, RemindChampionshipScheduleInput, RemovePermissionResponse, RemoveRoleResponse, ReorderChampionshipRosterInput, ReplaceChampionshipMetricMappingsInput, ReplaceChampionshipPlacementsInput, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, RevokeChampionshipLatePlayInput, Role, RollbackChampionshipHistoricalImportInput, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, ScheduleChampionshipMatchInput, Schema, SelfRegisterChampionshipInput, SessionAccount, SettleChampionshipMatchInput, StartChampionshipDraftInput, type StreamRequestOptions, TeamIdentityHistory, type TokenProvider, TransitionChampionshipInput, TransitionChampionshipRegistrationInput, UpdateAccountInput, UpdateChampionshipAssignmentInput, UpdateChampionshipAttributionsInput, UpdateChampionshipAwardInput, UpdateChampionshipGrantInput, UpdateChampionshipInboxItemInput, UpdateChampionshipInput, UpdateChampionshipParticipantInput, UpdateChampionshipRoomProgramInput, UpdateChampionshipRouteInput, UpdateChampionshipStageInput, UpdateChampionshipTeamInput, UpdateChampionshipThreadInput, UpdateCompetitionTypeInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateTeamIdentityInput, UpsertChampionshipPricesInput, UpsertChampionshipSavedViewInput, VoidChampionshipDraftPickInput, WithdrawChampionshipRegistrationInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
+export { type AbortedFailure, Account, AccountChampionshipHistory, AddChampionshipCommentInput, AddMatchEventInput, AddRoomEventInput, AddRoomIncidentInput, type ApiErrorCode, type ApiFailure, type ApiResponseFailure, type ApiResult, type ApiSuccess, ApplyChampionshipClassificationInput, ApplyChampionshipHistoricalImportInput, AssociateMatchRecordingInput, AssociatePlayerAccountInput, AttachChampionshipMatchEvidenceInput, type AttachLiveRoomInput, AuthorizeChampionshipLatePlayInput, CancelChampionshipDraftInput, Championship, ChampionshipAssignment, ChampionshipAuditEvent, ChampionshipAward, ChampionshipComment, ChampionshipCompetitionType, ChampionshipDetail, ChampionshipDoubleEliminationPreview, ChampionshipDraft, ChampionshipDraftCorrectionPreview, ChampionshipDraftCorrectionQuery, ChampionshipDraftQuery, ChampionshipEventsQuery, ChampionshipEvidenceCandidates, ChampionshipEvidenceCandidatesQuery, ChampionshipFormat, ChampionshipFormatQuery, ChampionshipHistoricalImportBatch, ChampionshipHistoricalImportsQuery, ChampionshipHistoricalPlayer, ChampionshipHistory, ChampionshipHistoryQuery, ChampionshipInboxItem, ChampionshipInboxQuery, ChampionshipMatchOperations, ChampionshipMatchOperationsQuery, ChampionshipMatchScheduling, ChampionshipMatchSchedulingQuery, ChampionshipMetricMappings, ChampionshipMetricMappingsQuery, ChampionshipParticipant, ChampionshipPresence, ChampionshipPresenceInput, ChampionshipPresenceQuery, ChampionshipRosterHistoryQuery, ChampionshipRosterMembership, ChampionshipRosterMovePreview, ChampionshipRosterOrder, ChampionshipRoundRobinPreview, ChampionshipRules, ChampionshipSalaryAdminQuery, ChampionshipSalaryProjection, ChampionshipSalaryQuery, ChampionshipSavedView, ChampionshipSavedViewsQuery, ChampionshipSelfRegistrationQuery, ChampionshipSettlementPreview, ChampionshipSpotPlacementPreview, ChampionshipStandings, ChampionshipStandingsQuery, ChampionshipStatistics, ChampionshipStatisticsQuery, ChampionshipTeam, ChampionshipTeamIdentity, ChampionshipThread, ChampionshipTrade, ChampionshipTradesQuery, CheckpointMatchInput, CheckpointMatchRecordingInput, CheckpointMatchRecordingResponse, CheckpointMatchResponse, ComposedMatch, ConfigureChampionshipDraftInput, ConfigureChampionshipStandingsInput, ConfirmAccountInput, ConfirmAccountResponse, ConfirmSessionInput, ConfirmSessionResponse, CreateAccountInput, CreateChampionshipAssignmentInput, CreateChampionshipAwardInput, CreateChampionshipCompetitionRoundInput, CreateChampionshipGroupInput, CreateChampionshipInput, CreateChampionshipLogicalMatchInput, CreateChampionshipParticipantInput, CreateChampionshipRouteInput, CreateChampionshipScheduleProposalInput, CreateChampionshipSpotInput, CreateChampionshipStageInput, CreateChampionshipTeamInput, CreateChampionshipThreadInput, CreateChampionshipTradeInput, CreateCompetitionTypeInput, CreateEventSchemaInput, CreateGameModeInput, CreateMatchInput, CreatePermissionInput, CreatePlayerInput, CreateRecordingInput, CreateRoleInput, CreateRoomInput, CreateRoomProgramInput, CreateRoomProgramVersionInput, CreateRoomProxyEndpointInput, CreateTeamIdentityInput, CreateTokenInput, CreateTokenResponse, DecideChampionshipScheduleProposalInput, DecideChampionshipTradeInput, DeleteChampionshipStageInput, DetachChampionshipMatchEvidenceInput, DisableMatchEventInput, DiscoverRoomProgramVersionsInput, DiscoverRoomProgramVersionsResponse, EndChampionshipDraftInput, EventSchema, EventSchemaReference, ExecuteChampionshipRosterMoveInput, type FetchLike, type FindPlayersByNameQuery, type FindPlayersByNameQueryVariables, FreezeChampionshipPricesInput, GameMode, GameModeReference, GenerateChampionshipRoundRobinInput, GenerateDoubleEliminationInput, GenerateSingleEliminationInput, type GetRoomQuery, type GetRoomQueryVariables, type GraphqlFailure, HaxFootballApiClient, type HaxFootballApiClientOptions, type HaxFootballApiResources, type InvalidResponseFailure, LaunchConfig, LinkChampionshipHistoricalPlayerInput, ListAccountsQuery, ListAccountsResponse, ListChampionshipAssignmentsResponse, ListChampionshipAuditQuery, ListChampionshipAuditResponse, ListChampionshipCollaborationQuery, ListChampionshipCommentsResponse, ListChampionshipHistoricalImportsResponse, ListChampionshipInboxResponse, ListChampionshipParticipantsQuery, ListChampionshipParticipantsResponse, ListChampionshipRosterHistoryResponse, ListChampionshipSavedViewsResponse, ListChampionshipTeamsResponse, ListChampionshipThreadsResponse, ListChampionshipTradesResponse, ListChampionshipsQuery, ListChampionshipsResponse, ListCompetitionTypesQuery, ListCompetitionTypesResponse, ListEventSchemasResponse, ListGameModesQuery, ListGameModesResponse, ListMatchEventsResponse, ListMatchesQuery, ListMatchesResponse, ListPermissionsResponse, ListPlayerMatchesResponse, ListPlayersQuery, ListPlayersResponse, ListRecordingsResponse, ListRolesResponse, type ListRoomCommandsQuery, type ListRoomCommandsQueryVariables, ListRoomEventsResponse, ListRoomIncidentsResponse, ListRoomProgramVersionsResponse, ListRoomProgramsResponse, ListRoomProxyEndpointsResponse, type ListRoomsQuery, type ListRoomsQueryVariables, ListRoomsResponse, ListTeamIdentitiesResponse, type ListRoomsQuery$1 as LiveListRoomsQuery, type LiveRoomAttachment, type LiveRoomControlCommand, type LiveRoomControlCommandHandler, type LiveRoomControlSocket, type LiveRoomControlWebSocketConstructor, type LiveRoomSnapshotProvider, LogicalMatchEvidence, LogicalMatchEvidenceQuery, MakeChampionshipDraftPickInput, Match, MatchCompositionInput, MatchEvent, MatchEventInput, MatchMetrics, MatchRound, MatchRoundOrientation, MatchRoundOrientationInput, MatchScore, MatchStint, MatchSummary, type MaybePromise, type NetworkFailure, PageInfo, PaginatedResponse, PaginationQuery, Permission, PhysicalMatch, PlaceChampionshipSpotInput, Player, PlayerAccount, PreviewChampionshipClassificationInput, PreviewChampionshipHistoricalImportInput, PreviewChampionshipRosterMoveInput, PreviewChampionshipRoundRobinInput, PreviewChampionshipSettlementInput, PreviewChampionshipSpotPlacementInput, PreviewDoubleEliminationInput, PublishEventSchemaVersionInput, QueryMatchMetricsInput, QueryMatchMetricsResponse, Recording, RecordingInspection, RemindChampionshipScheduleInput, RemovePermissionResponse, RemoveRoleResponse, ReorderChampionshipRosterInput, ReplaceChampionshipMetricMappingsInput, ReplaceChampionshipPlacementsInput, ReportRoomReadyInput, type RequestOptions, ResolveSessionInput, ResolveSessionResponse, type ResponseMeta, RevokeChampionshipLatePlayInput, Role, RollbackChampionshipHistoricalImportInput, Room, RoomEvent, RoomIncident, RoomLaunchConfigField, RoomProgram, RoomProgramReleaseSource, RoomProgramVersion, RoomProgramVersionArtifact, RoomProxyEndpoint, RoomResponseProgramSummary, RoomResponseProxyEndpointSummary, RoomResponseVersionSummary, ScheduleChampionshipMatchInput, Schema, SelfRegisterChampionshipInput, SessionAccount, SettleChampionshipMatchInput, StartChampionshipDraftInput, type StreamRequestOptions, TeamIdentityHistory, type TokenProvider, TransitionChampionshipInput, TransitionChampionshipRegistrationInput, UpdateAccountInput, UpdateChampionshipAssignmentInput, UpdateChampionshipAttributionsInput, UpdateChampionshipAwardInput, UpdateChampionshipGrantInput, UpdateChampionshipInboxItemInput, UpdateChampionshipInput, UpdateChampionshipParticipantInput, UpdateChampionshipRoomProgramInput, UpdateChampionshipRouteInput, UpdateChampionshipStageInput, UpdateChampionshipTeamInput, UpdateChampionshipThreadInput, UpdateCompetitionTypeInput, UpdateEventSchemaInput, UpdateGameModeInput, UpdateMatchInput, UpdatePermissionInput, UpdateRoleInput, UpdateRoomProgramInput, UpdateRoomProxyEndpointInput, UpdateTeamIdentityInput, UpsertChampionshipPricesInput, UpsertChampionshipSavedViewInput, VoidChampionshipDraftPickInput, WithdrawChampionshipRegistrationInput, type components, createHaxFootballApiClient, createHaxFootballRoomApiClient, type operations, type paths, queries };
 //# sourceMappingURL=index.d.cts.map

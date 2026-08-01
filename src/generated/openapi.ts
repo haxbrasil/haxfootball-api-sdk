@@ -504,6 +504,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/draft/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel a championship draft without completed picks */
+    post: operations["postApiChampionshipsByIdDraftCancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/draft/end": {
     parameters: {
       query?: never;
@@ -2999,6 +3016,15 @@ export interface components {
         language: string;
         value: string;
       }[];
+    };
+    CancelChampionshipDraftBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedDraftRevision: string | number;
+      expectedRevision: string | number;
+      reason: string;
     };
     Championship: {
       changeSequence: string | number;
@@ -9892,6 +9918,77 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ConfigureChampionshipDraftBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipDraft"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdDraftCancel: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CancelChampionshipDraftBody"];
       };
     };
     responses: {

@@ -333,6 +333,12 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			cancel: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/cancel`,
+				body,
+				...config
+			}),
 			previewCorrection: (championshipId, turnId, query, config) => client.request({
 				path: `${championshipPath(championshipId)}/draft/turns/${encodeURIComponent(turnId)}/correction-preview`,
 				query,

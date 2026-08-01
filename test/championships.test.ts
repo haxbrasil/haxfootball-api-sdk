@@ -355,6 +355,13 @@ describe("championship resources", () => {
       expectedDraftRevision: 4,
       reason: "Encerramento manual"
     });
+    await client.championships.draft.cancel(championshipUuid, {
+      actorAccountUuid,
+      commandUuid,
+      expectedRevision: 9,
+      expectedDraftRevision: 5,
+      reason: "Draft criado por engano"
+    });
 
     expect(fetcher.mock.calls.map(([url]) => url.toString())).toEqual([
       `https://api.example.com/api/championships/${championshipUuid}/draft?actorAccountUuid=${actorAccountUuid}&turnLimit=64&participantLimit=80`,
@@ -363,7 +370,8 @@ describe("championship resources", () => {
       `https://api.example.com/api/championships/${championshipUuid}/draft/picks`,
       `https://api.example.com/api/championships/${championshipUuid}/draft/turns/${turnId}/correction-preview?actorAccountUuid=${actorAccountUuid}`,
       `https://api.example.com/api/championships/${championshipUuid}/draft/turns/${turnId}/void`,
-      `https://api.example.com/api/championships/${championshipUuid}/draft/end`
+      `https://api.example.com/api/championships/${championshipUuid}/draft/end`,
+      `https://api.example.com/api/championships/${championshipUuid}/draft/cancel`
     ]);
     expect(fetcher.mock.calls[1]?.[1]).toMatchObject({ method: "PUT" });
     expect(fetcher.mock.calls[2]?.[1]?.method).toBe("POST");
@@ -371,6 +379,7 @@ describe("championship resources", () => {
     expect(fetcher.mock.calls[4]?.[1]?.method).toBe("GET");
     expect(fetcher.mock.calls[5]?.[1]?.method).toBe("POST");
     expect(fetcher.mock.calls[6]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[7]?.[1]?.method).toBe("POST");
   });
 
   it("keeps pending trade operations in one typed resource family", async () => {

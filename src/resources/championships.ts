@@ -13,6 +13,7 @@ import type {
   ChampionshipDraftCorrectionPreview,
   ChampionshipDraftCorrectionQuery,
   ChampionshipDraftQuery,
+  CancelChampionshipDraftInput,
   ChampionshipEvidenceCandidates,
   ChampionshipEvidenceCandidatesQuery,
   ChampionshipHistory,
@@ -659,6 +660,17 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipDraft>({
           method: "POST",
           path: `${championshipPath(championshipId)}/draft/end`,
+          body,
+          ...config
+        }),
+      cancel: (
+        championshipId: string,
+        body: CancelChampionshipDraftInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipDraft>({
+          method: "POST",
+          path: `${championshipPath(championshipId)}/draft/cancel`,
           body,
           ...config
         }),

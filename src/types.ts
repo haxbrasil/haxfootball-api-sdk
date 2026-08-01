@@ -102,6 +102,8 @@ export type StartChampionshipDraftInput = Schema<"StartChampionshipDraftBody">;
 export type MakeChampionshipDraftPickInput =
   Schema<"MakeChampionshipDraftPickBody">;
 export type EndChampionshipDraftInput = Schema<"EndChampionshipDraftBody">;
+export type CancelChampionshipDraftInput =
+  Schema<"CancelChampionshipDraftBody">;
 export type VoidChampionshipDraftPickInput =
   Schema<"VoidChampionshipDraftPickBody">;
 export type CreateChampionshipTradeInput =
