@@ -49,6 +49,7 @@ export class HaxFootballApiClient {
   readonly accounts: HaxFootballApiResources["accounts"];
   readonly auth: HaxFootballApiResources["auth"];
   readonly championships: HaxFootballApiResources["championships"];
+  readonly clips: HaxFootballApiResources["clips"];
   readonly gameModes: HaxFootballApiResources["gameModes"];
   readonly matches: HaxFootballApiResources["matches"];
   readonly permissions: HaxFootballApiResources["permissions"];
@@ -98,6 +99,7 @@ export class HaxFootballApiClient {
     this.accounts = resources.accounts;
     this.auth = resources.auth;
     this.championships = resources.championships;
+    this.clips = resources.clips;
     this.gameModes = resources.gameModes;
     this.matches = resources.matches;
     this.permissions = resources.permissions;

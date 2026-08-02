@@ -2,6 +2,7 @@ import type { HaxFootballApiClient } from "../client";
 import { createAccountsResource } from "./accounts";
 import { createAuthResource } from "./auth";
 import { createChampionshipsResource } from "./championships";
+import { createClipsResource } from "./clips";
 import { createGameModesResource } from "./game-modes";
 import { createMatchesResource } from "./matches";
 import { createPermissionsResource } from "./permissions";
@@ -23,6 +24,7 @@ export function createResources(client: HaxFootballApiClient) {
     accounts: createAccountsResource(client),
     auth: createAuthResource(client),
     championships: createChampionshipsResource(client),
+    clips: createClipsResource(client),
     gameModes: createGameModesResource(client),
     matches: createMatchesResource(client),
     permissions: createPermissionsResource(client),

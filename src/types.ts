@@ -360,6 +360,12 @@ export type Recording = Schema<"Recording">;
 export type RecordingInspection = Schema<"RecordingInspection">;
 export type ListRecordingsResponse = PaginatedResponse<Recording>;
 
+export type Clip = Schema<"Clip">;
+export type CreateClipInput = Schema<"CreateClipBody">;
+export type UpdateClipInput = Schema<"UpdateClipBody">;
+export type ListClipsQuery = operations["getApiClips"]["parameters"]["query"];
+export type ListClipsResponse = PaginatedResponse<Clip>;
+
 export type Match = Schema<"Match">;
 export type PhysicalMatch = Schema<"PhysicalMatch">;
 export type ComposedMatch = Schema<"ComposedMatch">;

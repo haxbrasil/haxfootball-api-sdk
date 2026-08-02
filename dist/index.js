@@ -825,6 +825,39 @@ function decideTrade(client, championshipId, tradeId, action, body, config) {
 }
 
 //#endregion
+//#region src/resources/clips.ts
+function createClipsResource(client) {
+	return {
+		list: (query, config) => client.request({
+			path: "/clips",
+			query,
+			...config
+		}),
+		get: (id, config) => client.request({
+			path: `/clips/${encodeURIComponent(id)}`,
+			...config
+		}),
+		create: (body, config) => client.request({
+			method: "POST",
+			path: "/clips",
+			body,
+			...config
+		}),
+		update: (id, body, config) => client.request({
+			method: "PATCH",
+			path: `/clips/${encodeURIComponent(id)}`,
+			body,
+			...config
+		}),
+		archive: (id, config) => client.request({
+			method: "DELETE",
+			path: `/clips/${encodeURIComponent(id)}`,
+			...config
+		})
+	};
+}
+
+//#endregion
 //#region src/resources/game-modes.ts
 function createGameModesResource(client) {
 	return {
@@ -1611,6 +1644,7 @@ function createResources(client) {
 		accounts: createAccountsResource(client),
 		auth: createAuthResource(client),
 		championships: createChampionshipsResource(client),
+		clips: createClipsResource(client),
 		gameModes: createGameModesResource(client),
 		matches: createMatchesResource(client),
 		permissions: createPermissionsResource(client),
@@ -1649,6 +1683,7 @@ var HaxFootballApiClient = class {
 	accounts;
 	auth;
 	championships;
+	clips;
 	gameModes;
 	matches;
 	permissions;
@@ -1681,6 +1716,7 @@ var HaxFootballApiClient = class {
 		this.accounts = resources.accounts;
 		this.auth = resources.auth;
 		this.championships = resources.championships;
+		this.clips = resources.clips;
 		this.gameModes = resources.gameModes;
 		this.matches = resources.matches;
 		this.permissions = resources.permissions;

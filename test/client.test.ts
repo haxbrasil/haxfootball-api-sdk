@@ -374,6 +374,59 @@ describe("HaxFootballApiClient", () => {
     expect(deleted).toMatchObject({ ok: true, data: undefined });
   });
 
+  it("supports clip list, creation, update, and archive helpers", async () => {
+    const fetcher = vi
+      .fn<FetchLike>()
+      .mockImplementation(async (_url, init) => {
+        if (init?.method === "DELETE") {
+          return new Response(null, { status: 204 });
+        }
+
+        return jsonResponse({
+          id: "00000000-0000-4000-8000-000000000001",
+          recording: { id: "abcdef1", url: "https://recs.example/clip.hbr2" },
+          startTick: 60,
+          endTick: 180,
+          durationTicks: 120,
+          title: "Momento",
+          sourceKind: "web",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          updatedAt: "2026-01-01T00:00:00.000Z"
+        });
+      });
+    const client = createHaxFootballApiClient({
+      apiUrl: "https://api.example.com/api",
+      token: "api-token",
+      fetch: fetcher
+    });
+
+    await client.clips.list({ limit: 12, recordingId: "abcdef1" });
+    await client.clips.create({
+      recordingId: "abcdef1",
+      startTick: 60,
+      endTick: 180
+    });
+    await client.clips.get("00000000-0000-4000-8000-000000000001");
+    await client.clips.update("00000000-0000-4000-8000-000000000001", {
+      title: "Atualizado"
+    });
+    const archived = await client.clips.archive(
+      "00000000-0000-4000-8000-000000000001"
+    );
+
+    expect(fetcher.mock.calls.map(([url]) => url.toString())).toEqual([
+      "https://api.example.com/api/clips?limit=12&recordingId=abcdef1",
+      "https://api.example.com/api/clips",
+      "https://api.example.com/api/clips/00000000-0000-4000-8000-000000000001",
+      "https://api.example.com/api/clips/00000000-0000-4000-8000-000000000001",
+      "https://api.example.com/api/clips/00000000-0000-4000-8000-000000000001"
+    ]);
+    expect(fetcher.mock.calls[1]?.[1]?.method).toBe("POST");
+    expect(fetcher.mock.calls[3]?.[1]?.method).toBe("PATCH");
+    expect(fetcher.mock.calls[4]?.[1]?.method).toBe("DELETE");
+    expect(archived).toMatchObject({ ok: true, data: undefined });
+  });
+
   it("supports event schema lookup by name", async () => {
     const fetcher = vi.fn<FetchLike>().mockImplementation(async () =>
       jsonResponse({
