@@ -4260,6 +4260,12 @@ interface components {
       voidedAt: (string | null) | null;
     };
     ChampionshipHonorDefinition: {
+      competitionType: {
+        name: string;
+        slug: string;
+        /** Format: uuid */
+        uuid: string;
+      };
       createdAt: string;
       draft: {
         aggregateByIdentity: boolean;
@@ -5562,6 +5568,8 @@ interface components {
       /** Format: uuid */
       actorAccountUuid: string;
       aggregateByIdentity: boolean;
+      /** Format: uuid */
+      competitionTypeId: string;
       description?: string | null;
       /** @enum {string} */
       kind: "title" | "award";
@@ -8706,6 +8714,7 @@ interface operations {
         limit?: string | number;
         cursor?: string;
         kind?: "title" | "award";
+        competitionTypeId?: string;
         state?: "active" | "archived" | "all";
       };
       header?: never;
@@ -26068,6 +26077,11 @@ declare function createResources(client: HaxFootballApiClient): {
     honorDefinitions: {
       list: (query?: ListChampionshipHonorDefinitionsQuery, config?: RequestConfig) => Promise<ApiResult<ListChampionshipHonorDefinitionsResponse>>;
       create: (body: CreateChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        competitionType: {
+          name: string;
+          slug: string;
+          uuid: string;
+        };
         createdAt: string;
         draft: {
           aggregateByIdentity: boolean;
@@ -26104,6 +26118,11 @@ declare function createResources(client: HaxFootballApiClient): {
         }[];
       }>>;
       updateDraft: (definitionId: string, body: UpdateChampionshipHonorDefinitionDraftInput, config?: RequestConfig) => Promise<ApiResult<{
+        competitionType: {
+          name: string;
+          slug: string;
+          uuid: string;
+        };
         createdAt: string;
         draft: {
           aggregateByIdentity: boolean;
@@ -26140,6 +26159,11 @@ declare function createResources(client: HaxFootballApiClient): {
         }[];
       }>>;
       publish: (definitionId: string, body: PublishChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        competitionType: {
+          name: string;
+          slug: string;
+          uuid: string;
+        };
         createdAt: string;
         draft: {
           aggregateByIdentity: boolean;
@@ -26178,6 +26202,11 @@ declare function createResources(client: HaxFootballApiClient): {
         published: boolean;
       }>>;
       archive: (definitionId: string, body: ArchiveChampionshipHonorDefinitionInput, config?: RequestConfig) => Promise<ApiResult<{
+        competitionType: {
+          name: string;
+          slug: string;
+          uuid: string;
+        };
         createdAt: string;
         draft: {
           aggregateByIdentity: boolean;
