@@ -3892,6 +3892,11 @@ interface components {
           /** Format: uuid */
           uuid: string;
         } | null) | null;
+        orientationRecommendation: ({
+          matchedPlayers: string | number;
+          opposingPlayers: string | number;
+          orientation: "aligned" | "swapped";
+        } | null) | null;
         programCompatible: boolean;
       }[];
       nextCursor: (string | null) | null;
@@ -6816,7 +6821,7 @@ interface components {
         domains?: ("room" | "game" | "agent" | "system")[];
         eventTypes?: string[];
         gameModeNames?: string[];
-        matchIds?: string[];
+        matchIds?: (string)[];
         period?: {
           /** @enum {string} */
           field: "initiatedAt" | "endedAt" | "createdAt";
@@ -32023,6 +32028,11 @@ declare function createResources(client: HaxFootballApiClient): {
           expectedProgram: ({
             name: string;
             uuid: string;
+          } | null) | null;
+          orientationRecommendation: ({
+            matchedPlayers: string | number;
+            opposingPlayers: string | number;
+            orientation: "aligned" | "swapped";
           } | null) | null;
           programCompatible: boolean;
         }[];
