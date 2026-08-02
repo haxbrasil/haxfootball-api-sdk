@@ -192,6 +192,8 @@ export type CreateChampionshipHonorInput =
   Schema<"CreateChampionshipHonorBody">;
 export type UpdateChampionshipHonorInput =
   Schema<"UpdateChampionshipHonorBody">;
+export type ReorderChampionshipHonorsInput =
+  Schema<"ReorderChampionshipHonorsBody">;
 export type CreateChampionshipHonorGrantInput =
   Schema<"CreateChampionshipHonorGrantBody">;
 export type RevokeChampionshipHonorGrantInput =

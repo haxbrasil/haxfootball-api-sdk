@@ -137,6 +137,7 @@ import type {
   RollbackChampionshipHistoricalImportInput,
   RevokeChampionshipHonorGrantInput,
   ResolveChampionshipHonorInput,
+  ReorderChampionshipHonorsInput,
   ScheduleChampionshipMatchInput,
   SelfRegisterChampionshipInput,
   SettleChampionshipMatchInput,
@@ -302,6 +303,17 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipHonor>({
           method: "PATCH",
           path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}`,
+          body,
+          ...config
+        }),
+      reorder: (
+        id: string,
+        body: ReorderChampionshipHonorsInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipHonor[]>({
+          method: "PUT",
+          path: `${championshipPath(id)}/honors/order`,
           body,
           ...config
         }),

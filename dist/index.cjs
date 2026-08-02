@@ -131,6 +131,12 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			reorder: (id, body, config) => client.request({
+				method: "PUT",
+				path: `${championshipPath(id)}/honors/order`,
+				body,
+				...config
+			}),
 			previewResolution: (id, honorId, query, config) => client.request({
 				path: `${championshipPath(id)}/honors/${encodeURIComponent(honorId)}/resolution-preview`,
 				query,
