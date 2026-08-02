@@ -4334,6 +4334,12 @@ export interface components {
       voidedAt: (string | null) | null;
     };
     ChampionshipHonorDefinition: {
+      competitionType: {
+        name: string;
+        slug: string;
+        /** Format: uuid */
+        uuid: string;
+      };
       createdAt: string;
       draft: {
         aggregateByIdentity: boolean;
@@ -5822,6 +5828,8 @@ export interface components {
       /** Format: uuid */
       actorAccountUuid: string;
       aggregateByIdentity: boolean;
+      /** Format: uuid */
+      competitionTypeId: string;
       description?: string | null;
       /** @enum {string} */
       kind: "title" | "award";
@@ -9108,6 +9116,7 @@ export interface operations {
         limit?: string | number;
         cursor?: string;
         kind?: "title" | "award";
+        competitionTypeId?: string;
         state?: "active" | "archived" | "all";
       };
       header?: never;
