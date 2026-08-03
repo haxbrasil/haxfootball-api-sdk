@@ -5747,6 +5747,19 @@ export interface components {
       endTick: string | number;
       /** Format: uuid */
       id: string;
+      preview: {
+        durationTicks: ((string | number) | null) | null;
+        height: ((string | number) | null) | null;
+        /** @enum {string} */
+        posterStatus: "pending" | "ready" | "failed";
+        posterUrl: (string | null) | null;
+        /** @enum {string} */
+        status: "pending" | "ready" | "failed";
+        /** @enum {string} */
+        videoStatus: "pending" | "ready" | "failed";
+        videoUrl: (string | null) | null;
+        width: ((string | number) | null) | null;
+      };
       recording: components["schemas"]["Recording"];
       /** @enum {string} */
       sourceKind: "web" | "room_command";
