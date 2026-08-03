@@ -394,6 +394,18 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			previewRecorded: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/record/preview`,
+				body,
+				...config
+			}),
+			record: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/draft/record`,
+				body,
+				...config
+			}),
 			start: (championshipId, body, config) => client.request({
 				method: "POST",
 				path: `${championshipPath(championshipId)}/draft/start`,

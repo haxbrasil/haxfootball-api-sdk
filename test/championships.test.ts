@@ -32,9 +32,13 @@ describe("championship resources", () => {
       includeDrafts: true,
       limit: 20
     });
-    await client.championships.honors.previewResolution(championshipUuid, honorUuid, {
-      actorAccountUuid
-    });
+    await client.championships.honors.previewResolution(
+      championshipUuid,
+      honorUuid,
+      {
+        actorAccountUuid
+      }
+    );
     await client.championships.honors.resolve(championshipUuid, honorUuid, {
       actorAccountUuid,
       commandUuid: crypto.randomUUID(),
