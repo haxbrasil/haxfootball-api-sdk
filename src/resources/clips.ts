@@ -1,6 +1,7 @@
 import type { HaxFootballApiClient } from "../client";
 import type {
   Clip,
+  ClipConfig,
   CreateClipInput,
   ListClipsQuery,
   ListClipsResponse,
@@ -10,6 +11,11 @@ import type { RequestConfig } from "./shared";
 
 export function createClipsResource(client: HaxFootballApiClient) {
   return {
+    config: (config?: RequestConfig) =>
+      client.request<ClipConfig>({
+        path: "/clips/config",
+        ...config
+      }),
     list: (query?: ListClipsQuery, config?: RequestConfig) =>
       client.request<ListClipsResponse>({
         path: "/clips",
