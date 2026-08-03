@@ -840,6 +840,10 @@ function decideTrade(client, championshipId, tradeId, action, body, config) {
 //#region src/resources/clips.ts
 function createClipsResource(client) {
 	return {
+		config: (config) => client.request({
+			path: "/clips/config",
+			...config
+		}),
 		list: (query, config) => client.request({
 			path: "/clips",
 			query,
