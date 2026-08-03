@@ -5239,7 +5239,7 @@ interface components {
         draws: string | number;
         losses: string | number;
         played: string | number;
-        points: string | number;
+        points: ((string | number) | null) | null;
         rank: string | number;
         scoreAgainst: string | number;
         scoreDifference: string | number;
@@ -5269,7 +5269,15 @@ interface components {
       scoring: {
         draw: string | number;
         loss: string | number;
+        /** @constant */
+        mode: "points";
         win: string | number;
+      } | {
+        draw: null;
+        loss: null;
+        /** @constant */
+        mode: "results";
+        win: null;
       };
       stage: {
         name: string;
@@ -5283,6 +5291,7 @@ interface components {
         rankTo: string | number;
         teamUuids: string[];
       }[];
+      visibleMetrics: ("played" | "wins" | "draws" | "losses" | "score-for" | "score-against" | "score-difference" | "points")[];
     };
     ChampionshipStatistics: {
       /** Format: uuid */
@@ -5600,8 +5609,18 @@ interface components {
       scoring: {
         draw: string | number;
         loss: string | number;
+        /** @constant */
+        mode: "points";
+        win: string | number;
+      } | {
+        /** @constant */
+        mode: "results";
+      } | {
+        draw: string | number;
+        loss: string | number;
         win: string | number;
       };
+      visibleMetrics?: ("played" | "wins" | "draws" | "losses" | "score-for" | "score-against" | "score-difference" | "points")[];
     };
     ConfirmAccountBody: {
       name: string;
@@ -30478,7 +30497,7 @@ declare function createResources(client: HaxFootballApiClient): {
           draws: string | number;
           losses: string | number;
           played: string | number;
-          points: string | number;
+          points: ((string | number) | null) | null;
           rank: string | number;
           scoreAgainst: string | number;
           scoreDifference: string | number;
@@ -30505,7 +30524,13 @@ declare function createResources(client: HaxFootballApiClient): {
         scoring: {
           draw: string | number;
           loss: string | number;
+          mode: "points";
           win: string | number;
+        } | {
+          draw: null;
+          loss: null;
+          mode: "results";
+          win: null;
         };
         stage: {
           name: string;
@@ -30518,6 +30543,7 @@ declare function createResources(client: HaxFootballApiClient): {
           rankTo: string | number;
           teamUuids: string[];
         }[];
+        visibleMetrics: ("played" | "wins" | "draws" | "losses" | "score-for" | "score-against" | "score-difference" | "points")[];
       }>>;
       previewRoundRobin: (championshipId: string, stageId: string, body: PreviewChampionshipRoundRobinInput, config?: RequestConfig) => Promise<ApiResult<{
         canGenerate: boolean;
@@ -30780,7 +30806,7 @@ declare function createResources(client: HaxFootballApiClient): {
           draws: string | number;
           losses: string | number;
           played: string | number;
-          points: string | number;
+          points: ((string | number) | null) | null;
           rank: string | number;
           scoreAgainst: string | number;
           scoreDifference: string | number;
@@ -30807,7 +30833,13 @@ declare function createResources(client: HaxFootballApiClient): {
         scoring: {
           draw: string | number;
           loss: string | number;
+          mode: "points";
           win: string | number;
+        } | {
+          draw: null;
+          loss: null;
+          mode: "results";
+          win: null;
         };
         stage: {
           name: string;
@@ -30820,6 +30852,7 @@ declare function createResources(client: HaxFootballApiClient): {
           rankTo: string | number;
           teamUuids: string[];
         }[];
+        visibleMetrics: ("played" | "wins" | "draws" | "losses" | "score-for" | "score-against" | "score-difference" | "points")[];
       }>>;
       applyClassification: (championshipId: string, stageId: string, groupId: string, body: ApplyChampionshipClassificationInput, config?: RequestConfig) => Promise<ApiResult<{
         affectedMatches: {
@@ -30877,7 +30910,7 @@ declare function createResources(client: HaxFootballApiClient): {
           draws: string | number;
           losses: string | number;
           played: string | number;
-          points: string | number;
+          points: ((string | number) | null) | null;
           rank: string | number;
           scoreAgainst: string | number;
           scoreDifference: string | number;
@@ -30904,7 +30937,13 @@ declare function createResources(client: HaxFootballApiClient): {
         scoring: {
           draw: string | number;
           loss: string | number;
+          mode: "points";
           win: string | number;
+        } | {
+          draw: null;
+          loss: null;
+          mode: "results";
+          win: null;
         };
         stage: {
           name: string;
@@ -30917,6 +30956,7 @@ declare function createResources(client: HaxFootballApiClient): {
           rankTo: string | number;
           teamUuids: string[];
         }[];
+        visibleMetrics: ("played" | "wins" | "draws" | "losses" | "score-for" | "score-against" | "score-difference" | "points")[];
       }>>;
       generateSingleElimination: (championshipId: string, body: GenerateSingleEliminationInput, config?: RequestConfig) => Promise<ApiResult<{
         championshipRevision: string | number;

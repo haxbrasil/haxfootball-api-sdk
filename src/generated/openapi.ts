@@ -5452,7 +5452,7 @@ export interface components {
         draws: string | number;
         losses: string | number;
         played: string | number;
-        points: string | number;
+        points: ((string | number) | null) | null;
         rank: string | number;
         scoreAgainst: string | number;
         scoreDifference: string | number;
@@ -5490,11 +5490,21 @@ export interface components {
         position: string | number;
         uuid: (string | null) | null;
       }[];
-      scoring: {
-        draw: string | number;
-        loss: string | number;
-        win: string | number;
-      };
+      scoring:
+        | {
+            draw: string | number;
+            loss: string | number;
+            /** @constant */
+            mode: "points";
+            win: string | number;
+          }
+        | {
+            draw: null;
+            loss: null;
+            /** @constant */
+            mode: "results";
+            win: null;
+          };
       stage: {
         name: string;
         revision: string | number;
@@ -5507,6 +5517,16 @@ export interface components {
         rankTo: string | number;
         teamUuids: string[];
       }[];
+      visibleMetrics: (
+        | "played"
+        | "wins"
+        | "draws"
+        | "losses"
+        | "score-for"
+        | "score-against"
+        | "score-difference"
+        | "points"
+      )[];
     };
     ChampionshipStatistics: {
       /** Format: uuid */
@@ -5853,11 +5873,33 @@ export interface components {
         /** @enum {string} */
         direction: "asc" | "desc";
       }[];
-      scoring: {
-        draw: string | number;
-        loss: string | number;
-        win: string | number;
-      };
+      scoring:
+        | {
+            draw: string | number;
+            loss: string | number;
+            /** @constant */
+            mode: "points";
+            win: string | number;
+          }
+        | {
+            /** @constant */
+            mode: "results";
+          }
+        | {
+            draw: string | number;
+            loss: string | number;
+            win: string | number;
+          };
+      visibleMetrics?: (
+        | "played"
+        | "wins"
+        | "draws"
+        | "losses"
+        | "score-for"
+        | "score-against"
+        | "score-difference"
+        | "points"
+      )[];
     };
     ConfirmAccountBody: {
       name: string;
