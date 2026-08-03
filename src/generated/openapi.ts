@@ -624,6 +624,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/draft/record": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Register a championship draft that happened outside the system */
+    post: operations["postApiChampionshipsByIdDraftRecord"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/championships/{id}/draft/record/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Preview a recorded championship draft */
+    post: operations["postApiChampionshipsByIdDraftRecordPreview"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/draft/start": {
     parameters: {
       query?: never;
@@ -3847,7 +3881,10 @@ export interface components {
             completedAt: (string | null) | null;
             countdownSeconds: string | number;
             createdAt: string;
+            mode: "live" | "recorded";
             nextTurnSequence: string | number;
+            occurredAt: (string | null) | null;
+            recordedAt: (string | null) | null;
             revision: string | number;
             rounds: string | number;
             serverTime: string;
@@ -3877,10 +3914,14 @@ export interface components {
               items: {
                 deadlineAt: (string | null) | null;
                 filledAt: (string | null) | null;
+                occurredAt: (string | null) | null;
                 openedAt: (string | null) | null;
                 overdueAt: (string | null) | null;
                 position: string | number;
                 priceUnitsSnapshot: ((string | number) | null) | null;
+                recordedResolution:
+                  | (("selected" | "unresolved" | "skipped") | null)
+                  | null;
                 revision: string | number;
                 round: string | number;
                 selectedParticipant:
@@ -4864,6 +4905,61 @@ export interface components {
       name: string;
       /** Format: uuid */
       sessionUuid: string;
+    };
+    ChampionshipRecordedDraftPreview: {
+      currentChampionshipRevision: string | number;
+      issues: {
+        code: string;
+        message: string;
+        participantUuid: (string | null) | null;
+        sequence: ((string | number) | null) | null;
+        /** @enum {string} */
+        severity: "error" | "warning";
+      }[];
+      previewHash: string;
+      requiresCapException: boolean;
+      rounds: string | number;
+      selectedCount: string | number;
+      skippedCount: string | number;
+      slots: {
+        existingTeam:
+          | ({
+              name: string;
+              /** Format: uuid */
+              uuid: string;
+            } | null)
+          | null;
+        participant:
+          | ({
+              displayName: string;
+              /** Format: uuid */
+              uuid: string;
+            } | null)
+          | null;
+        position: string | number;
+        priceUnitsSnapshot: ((string | number) | null) | null;
+        /** @enum {string} */
+        resolution: "selected" | "unresolved" | "skipped";
+        round: string | number;
+        sequence: string | number;
+        team: {
+          name: string;
+          /** Format: uuid */
+          uuid: string;
+        };
+      }[];
+      teams: {
+        name: string;
+        overCapAfter: boolean;
+        remainingAfterUnits: string | number;
+        selectedCount: string | number;
+        usageAfterUnits: string | number;
+        usageBeforeUnits: string | number;
+        /** Format: uuid */
+        uuid: string;
+      }[];
+      unresolvedCount: string | number;
+      valid: boolean;
     };
     ChampionshipRosterMembership: {
       acquisitionReferenceUuid: (string | null) | null;
@@ -7071,6 +7167,27 @@ export interface components {
       source: string;
       sourceName: string;
     };
+    PreviewChampionshipRecordedDraftBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      expectedRevision: string | number;
+      occurredAt?: string;
+      recordedNote?: string;
+      rounds: string | number;
+      slots: {
+        occurredAt?: string;
+        participantId: string | null;
+        position: string | number;
+        recordedNote?: string;
+        /** @enum {string} */
+        resolution: "selected" | "unresolved" | "skipped";
+        round: string | number;
+        sequence: string | number;
+        /** Format: uuid */
+        teamId: string;
+      }[];
+      teamIds: string[];
+    };
     PreviewChampionshipRosterMoveBody: {
       /** Format: uuid */
       actorAccountUuid: string;
@@ -7281,6 +7398,32 @@ export interface components {
       )[];
       /** @enum {string} */
       target?: "player" | "team" | "match";
+    };
+    RecordChampionshipDraftBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      confirmCapException?: boolean;
+      expectedRevision: string | number;
+      occurredAt?: string;
+      previewHash: string;
+      reason?: string;
+      recordedNote?: string;
+      rounds: string | number;
+      slots: {
+        occurredAt?: string;
+        participantId: string | null;
+        position: string | number;
+        recordedNote?: string;
+        /** @enum {string} */
+        resolution: "selected" | "unresolved" | "skipped";
+        round: string | number;
+        sequence: string | number;
+        /** Format: uuid */
+        teamId: string;
+      }[];
+      teamIds: string[];
     };
     Recording: {
       createdAt: string;
@@ -11376,6 +11519,148 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChampionshipDraft"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdDraftRecord: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RecordChampionshipDraftBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipDraft"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  postApiChampionshipsByIdDraftRecordPreview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreviewChampionshipRecordedDraftBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipRecordedDraftPreview"];
         };
       };
       /** @description Response for status 400 */

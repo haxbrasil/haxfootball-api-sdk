@@ -10,6 +10,7 @@ import type {
   ChampionshipCompetitionType,
   ChampionshipDetail,
   ChampionshipDraft,
+  ChampionshipRecordedDraftPreview,
   ChampionshipDraftCorrectionPreview,
   ChampionshipDraftCorrectionQuery,
   ChampionshipDraftQuery,
@@ -67,6 +68,8 @@ import type {
   ChampionshipTrade,
   ChampionshipTradesQuery,
   ConfigureChampionshipDraftInput,
+  PreviewChampionshipRecordedDraftInput,
+  RecordChampionshipDraftInput,
   ConfigureChampionshipStandingsInput,
   CreateChampionshipCompetitionRoundInput,
   CreateChampionshipLogicalMatchInput,
@@ -792,6 +795,28 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipDraft>({
           method: "PUT",
           path: `${championshipPath(championshipId)}/draft`,
+          body,
+          ...config
+        }),
+      previewRecorded: (
+        championshipId: string,
+        body: PreviewChampionshipRecordedDraftInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipRecordedDraftPreview>({
+          method: "POST",
+          path: `${championshipPath(championshipId)}/draft/record/preview`,
+          body,
+          ...config
+        }),
+      record: (
+        championshipId: string,
+        body: RecordChampionshipDraftInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipDraft>({
+          method: "POST",
+          path: `${championshipPath(championshipId)}/draft/record`,
           body,
           ...config
         }),

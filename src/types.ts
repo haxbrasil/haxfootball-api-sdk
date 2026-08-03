@@ -41,6 +41,8 @@ export type ChampionshipRosterMovePreview =
 export type ChampionshipSalaryProjection =
   Schema<"ChampionshipSalaryProjection">;
 export type ChampionshipDraft = Schema<"ChampionshipDraft">;
+export type ChampionshipRecordedDraftPreview =
+  Schema<"ChampionshipRecordedDraftPreview">;
 export type ChampionshipDraftCorrectionPreview =
   Schema<"ChampionshipDraftCorrectionPreview">;
 export type ChampionshipTrade = Schema<"ChampionshipTrade">;
@@ -102,6 +104,10 @@ export type ReorderChampionshipRosterInput =
 export type ChampionshipRosterOrder = Schema<"ChampionshipRosterOrder">;
 export type ConfigureChampionshipDraftInput =
   Schema<"ConfigureChampionshipDraftBody">;
+export type PreviewChampionshipRecordedDraftInput =
+  Schema<"PreviewChampionshipRecordedDraftBody">;
+export type RecordChampionshipDraftInput =
+  Schema<"RecordChampionshipDraftBody">;
 export type StartChampionshipDraftInput = Schema<"StartChampionshipDraftBody">;
 export type MakeChampionshipDraftPickInput =
   Schema<"MakeChampionshipDraftPickBody">;
