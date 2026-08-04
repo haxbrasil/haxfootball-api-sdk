@@ -5844,7 +5844,7 @@ export interface components {
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       /** @enum {string} */
       status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
@@ -6958,7 +6958,7 @@ export interface components {
       }[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       /** @enum {string} */
       status: "pending" | "ongoing" | "completed" | "discarded";
     };
@@ -6995,7 +6995,7 @@ export interface components {
           }
       )[];
       /** @enum {string} */
-      scoreMode?: "cumulative" | "per-game";
+      scoreMode?: "cumulative" | "per-game" | "last-round";
     };
     MatchEvent: {
       actorPlayer: (components["schemas"]["Player"] | null) | null;

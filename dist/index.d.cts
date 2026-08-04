@@ -5498,6 +5498,19 @@ interface components {
       endTick: string | number;
       /** Format: uuid */
       id: string;
+      preview: {
+        durationTicks: ((string | number) | null) | null;
+        height: ((string | number) | null) | null;
+        /** @enum {string} */
+        posterStatus: "pending" | "ready" | "failed";
+        posterUrl: (string | null) | null;
+        /** @enum {string} */
+        status: "pending" | "ready" | "failed";
+        /** @enum {string} */
+        videoStatus: "pending" | "ready" | "failed";
+        videoUrl: (string | null) | null;
+        width: ((string | number) | null) | null;
+      };
       recording: components["schemas"]["Recording"];
       /** @enum {string} */
       sourceKind: "web" | "room_command";
@@ -5573,7 +5586,7 @@ interface components {
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       /** @enum {string} */
       status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
@@ -6608,7 +6621,7 @@ interface components {
       }[];
       score: (components["schemas"]["MatchScore"] | null) | null;
       /** @enum {string} */
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       /** @enum {string} */
       status: "pending" | "ongoing" | "completed" | "discarded";
     };
@@ -6640,7 +6653,7 @@ interface components {
         orientation?: "auto" | "aligned" | "swapped";
       })[];
       /** @enum {string} */
-      scoreMode?: "cumulative" | "per-game";
+      scoreMode?: "cumulative" | "per-game" | "last-round";
     };
     MatchEvent: {
       actorPlayer: (components["schemas"]["Player"] | null) | null;
@@ -34189,6 +34202,16 @@ declare function createResources(client: HaxFootballApiClient): {
       durationTicks: string | number;
       endTick: string | number;
       id: string;
+      preview: {
+        durationTicks: ((string | number) | null) | null;
+        height: ((string | number) | null) | null;
+        posterStatus: "pending" | "ready" | "failed";
+        posterUrl: (string | null) | null;
+        status: "pending" | "ready" | "failed";
+        videoStatus: "pending" | "ready" | "failed";
+        videoUrl: (string | null) | null;
+        width: ((string | number) | null) | null;
+      };
       recording: components["schemas"]["Recording"];
       sourceKind: "web" | "room_command";
       startTick: string | number;
@@ -34200,6 +34223,16 @@ declare function createResources(client: HaxFootballApiClient): {
       durationTicks: string | number;
       endTick: string | number;
       id: string;
+      preview: {
+        durationTicks: ((string | number) | null) | null;
+        height: ((string | number) | null) | null;
+        posterStatus: "pending" | "ready" | "failed";
+        posterUrl: (string | null) | null;
+        status: "pending" | "ready" | "failed";
+        videoStatus: "pending" | "ready" | "failed";
+        videoUrl: (string | null) | null;
+        width: ((string | number) | null) | null;
+      };
       recording: components["schemas"]["Recording"];
       sourceKind: "web" | "room_command";
       startTick: string | number;
@@ -34211,6 +34244,16 @@ declare function createResources(client: HaxFootballApiClient): {
       durationTicks: string | number;
       endTick: string | number;
       id: string;
+      preview: {
+        durationTicks: ((string | number) | null) | null;
+        height: ((string | number) | null) | null;
+        posterStatus: "pending" | "ready" | "failed";
+        posterUrl: (string | null) | null;
+        status: "pending" | "ready" | "failed";
+        videoStatus: "pending" | "ready" | "failed";
+        videoUrl: (string | null) | null;
+        width: ((string | number) | null) | null;
+      };
       recording: components["schemas"]["Recording"];
       sourceKind: "web" | "room_command";
       startTick: string | number;
@@ -34355,7 +34398,7 @@ declare function createResources(client: HaxFootballApiClient): {
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     } | ({
@@ -34441,7 +34484,7 @@ declare function createResources(client: HaxFootballApiClient): {
         status: "pending" | "ongoing" | "completed" | "discarded";
       }[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       status: "pending" | "ongoing" | "completed" | "discarded";
     }>>;
     create: (body: CreateMatchInput, config?: RequestConfig) => Promise<ApiResult<{
@@ -34663,7 +34706,7 @@ declare function createResources(client: HaxFootballApiClient): {
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     }>>;
@@ -34707,7 +34750,7 @@ declare function createResources(client: HaxFootballApiClient): {
         };
       })[];
       score: (components["schemas"]["MatchScore"] | null) | null;
-      scoreMode: "cumulative" | "per-game";
+      scoreMode: "cumulative" | "per-game" | "last-round";
       status: "pending" | "ongoing" | "completed" | "discarded";
       updatedAt: string;
     }>>;
