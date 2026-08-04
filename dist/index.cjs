@@ -454,6 +454,12 @@ function createChampionshipsResource(client) {
 				body,
 				...config
 			}),
+			updateWindow: (championshipId, body, config) => client.request({
+				method: "POST",
+				path: `${championshipPath(championshipId)}/trade-window`,
+				body,
+				...config
+			}),
 			accept: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "accept", body, config),
 			reject: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "reject", body, config),
 			cancel: (championshipId, tradeId, body, config) => decideTrade(client, championshipId, tradeId, "cancel", body, config)

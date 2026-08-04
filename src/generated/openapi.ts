@@ -1876,6 +1876,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/championships/{id}/trade-window": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Open or close the championship trade window */
+    post: operations["postApiChampionshipsByIdTrade-window"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/championships/{id}/trades": {
     parameters: {
       query?: never;
@@ -3536,6 +3553,8 @@ export interface components {
       revision: string | number;
       slug: string;
       startsAt: (string | null) | null;
+      /** @enum {string} */
+      tradeWindowState: "open" | "closed";
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
@@ -3824,6 +3843,8 @@ export interface components {
       slug: string;
       startsAt: (string | null) | null;
       teams: components["schemas"]["ChampionshipTeam"][];
+      /** @enum {string} */
+      tradeWindowState: "open" | "closed";
       updatedAt: string;
       /** Format: uuid */
       uuid: string;
@@ -8269,6 +8290,16 @@ export interface components {
       expectedRevision: string | number;
       /** @enum {string} */
       state: "open" | "resolved";
+    };
+    UpdateChampionshipTradeWindowBody: {
+      /** Format: uuid */
+      actorAccountUuid: string;
+      /** Format: uuid */
+      commandUuid: string;
+      expectedRevision: string | number;
+      reason?: string;
+      /** @enum {string} */
+      state: "open" | "closed";
     };
     UpdateClipBody: {
       endTick?: string | number;
@@ -17607,6 +17638,77 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChampionshipComment"];
+        };
+      };
+      /** @description Response for status 400 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BadRequestOrValidationError"];
+        };
+      };
+      /** @description Response for status 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnauthorizedError"];
+        };
+      };
+      /** @description Response for status 403 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ForbiddenError"];
+        };
+      };
+      /** @description Response for status 409 */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConflictError"];
+        };
+      };
+      /** @description Response for status 500 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InternalServerError"];
+        };
+      };
+    };
+  };
+  "postApiChampionshipsByIdTrade-window": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateChampionshipTradeWindowBody"];
+      };
+    };
+    responses: {
+      /** @description Response for status 200 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChampionshipDetail"];
         };
       };
       /** @description Response for status 400 */

@@ -152,6 +152,7 @@ import type {
   UpdateChampionshipHonorDefinitionDraftInput,
   UpdateChampionshipHonorInput,
   UpdateChampionshipAttributionsInput,
+  UpdateChampionshipTradeWindowInput,
   UpdateChampionshipGrantInput,
   UpdateChampionshipInput,
   UpdateChampionshipParticipantInput,
@@ -911,6 +912,17 @@ export function createChampionshipsResource(client: HaxFootballApiClient) {
         client.request<ChampionshipTrade>({
           method: "POST",
           path: `${championshipPath(championshipId)}/trades`,
+          body,
+          ...config
+        }),
+      updateWindow: (
+        championshipId: string,
+        body: UpdateChampionshipTradeWindowInput,
+        config?: RequestConfig
+      ) =>
+        client.request<ChampionshipDetail>({
+          method: "POST",
+          path: `${championshipPath(championshipId)}/trade-window`,
           body,
           ...config
         }),

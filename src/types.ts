@@ -120,6 +120,8 @@ export type CreateChampionshipTradeInput =
   Schema<"CreateChampionshipTradeBody">;
 export type DecideChampionshipTradeInput =
   Schema<"DecideChampionshipTradeBody">;
+export type UpdateChampionshipTradeWindowInput =
+  Schema<"UpdateChampionshipTradeWindowBody">;
 export type CreateChampionshipStageInput =
   Schema<"CreateChampionshipStageBody">;
 export type UpdateChampionshipStageInput =
