@@ -5317,6 +5317,14 @@ interface components {
     ChampionshipStatistics: {
       /** Format: uuid */
       championshipUuid: string;
+      featuredMetrics: {
+        points: ({
+          key: string;
+          label: string;
+          precision: (number | null) | null;
+          valueKind: "integer" | "number" | "duration" | "percentage";
+        } | null) | null;
+      };
       metricSources: {
         items: {
           /** Format: uuid */
@@ -33921,6 +33929,14 @@ declare function createResources(client: HaxFootballApiClient): {
     statistics: {
       get: (championshipId: string, query?: ChampionshipStatisticsQuery, config?: RequestConfig) => Promise<ApiResult<{
         championshipUuid: string;
+        featuredMetrics: {
+          points: ({
+            key: string;
+            label: string;
+            precision: (number | null) | null;
+            valueKind: "integer" | "number" | "duration" | "percentage";
+          } | null) | null;
+        };
         metricSources: {
           items: {
             eventSchemaId: string;
